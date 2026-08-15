@@ -61,18 +61,30 @@ const KADOSK_AUTH = (function () {
   }
 
   async function appelJson(url, corps, headersSupplementaires) {
-    const reponse = await fetch(url, {
-      method: "POST",
-      headers: Object.assign({ "Content-Type": "application/json" }, headersSupplementaires || {}),
-      body: JSON.stringify(corps)
-    });
+    let reponse;
+    try {
+      reponse = await fetch(url, {
+        method: "POST",
+        headers: Object.assign({ "Content-Type": "application/json" }, headersSupplementaires || {}),
+        body: JSON.stringify(corps)
+      });
+    } catch (erreurReseau) {
+      console.error("KADOSK_AUTH appel réseau échoué vers", url, erreurReseau);
+      const erreur = new Error("ERREUR_RESEAU");
+      erreur.cause = erreurReseau;
+      throw erreur;
+    }
+
     const donnees = await reponse.json().catch(() => ({}));
+
     if (!reponse.ok) {
+      console.error("KADOSK_AUTH réponse non-OK depuis", url, reponse.status, donnees);
       const erreur = new Error(donnees.message || donnees.details || "ERREUR_AUTHENTIFICATION");
       erreur.status = reponse.status;
       erreur.donnees = donnees;
       throw erreur;
     }
+
     return donnees;
   }
 
