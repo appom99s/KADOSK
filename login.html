@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>KADOSK Marchand — Connexion</title>
-<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <div class="kadosk-page-connexion">
@@ -28,8 +28,8 @@
     </div>
   </div>
 
-  <script src="config.js"></script>
-  <script src="auth.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
   <script>
     const boutonConnexion = document.getElementById("boutonConnexion");
     const champEmail = document.getElementById("champEmail");
@@ -69,7 +69,12 @@
           messageErreur.textContent = "Connexion impossible. Vérifiez vos identifiants.";
         }
       } catch (erreur) {
-        messageErreur.textContent = "Email ou mot de passe incorrect.";
+        console.error("Erreur connexion KADOSK :", erreur);
+        if (erreur.message === "ERREUR_RESEAU") {
+          messageErreur.textContent = "Impossible de contacter Wix (réseau/CORS). Voir la console.";
+        } else {
+          messageErreur.textContent = "Email ou mot de passe incorrect. (Détail en console)";
+        }
       } finally {
         boutonConnexion.disabled = false;
         boutonConnexion.textContent = "Se connecter";
