@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KADOSK Marchand — Tableau de bord</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="kadosk-app">
+    <aside class="kadosk-sidebar">
+      <div class="kadosk-logo">KADOSK</div>
+      <div class="kadosk-slogan">LE CADEAU, SIMPLEMENT</div>
+
+      <nav>
+        <a class="kadosk-nav-item actif" href="dashboard.html">Tableau de bord</a>
+        <a class="kadosk-nav-item" href="cashier.html">Encaisser</a>
+        <a class="kadosk-nav-item" href="orders.html">Commandes</a>
+        <a class="kadosk-nav-item" href="transactions.html">Transactions</a>
+        <a class="kadosk-nav-item" href="gift-cards.html">Cartes cadeaux</a>
+        <a class="kadosk-nav-item" href="finance.html">Finances</a>
+        <a class="kadosk-nav-item" href="business.html">Mon entreprise</a>
+        <a class="kadosk-nav-item" href="settings.html">Paramètres</a>
+      </nav>
+    </aside>
+
+    <main class="kadosk-main">
+      <div class="kadosk-entete">
+        <h1>Tableau de bord</h1>
+        <span class="kadosk-lien-deconnexion" id="lienDeconnexion">Déconnexion</span>
+      </div>
+
+      <div class="kadosk-grille-kpi">
+        <div class="kadosk-carte-kpi">
+          <div class="kadosk-kpi-label">Chiffre d'affaires aujourd'hui</div>
+          <div class="kadosk-kpi-valeur" id="kpiCA">—</div>
+        </div>
+        <div class="kadosk-carte-kpi">
+          <div class="kadosk-kpi-label">Transactions aujourd'hui</div>
+          <div class="kadosk-kpi-valeur" id="kpiTransactions">—</div>
+        </div>
+        <div class="kadosk-carte-kpi">
+          <div class="kadosk-kpi-label">Commandes en attente</div>
+          <div class="kadosk-kpi-valeur" id="kpiEnAttente">—</div>
+          <div class="kadosk-kpi-detail" id="kpiEnAttenteDetail"></div>
+        </div>
+      </div>
+
+      <div class="kadosk-panneau">
+        <h2>Encaisser une carte</h2>
+
+        <div class="kadosk-champ">
+          <label for="champCode">Code de la carte</label>
+          <input type="text" id="champCode" placeholder="Saisir le code" />
+        </div>
+
+        <div class="kadosk-ligne-boutons">
+          <button class="kadosk-bouton kadosk-bouton-secondaire" id="boutonRechercher">Rechercher</button>
+        </div>
+
+        <div class="kadosk-carte-info" id="carteInfo" style="display:none;"></div>
+
+        <div class="kadosk-champ" id="blocMontant" style="display:none; margin-top:16px;">
+          <label for="champMontant">Montant à encaisser</label>
+          <input type="number" id="champMontant" min="0" step="0.01" />
+        </div>
+
+        <div class="kadosk-ligne-boutons" id="blocBoutonEncaisser" style="display:none; margin-top:8px;">
+          <button class="kadosk-bouton" id="boutonEncaisser">Encaisser</button>
+        </div>
+
+        <div class="kadosk-message-erreur" id="messageStatutEncaissement"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

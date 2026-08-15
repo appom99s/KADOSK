@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KADOSK Marchand — Connexion en cours</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="kadosk-page-connexion">
+    <div class="kadosk-carte-connexion" style="text-align:center;">
+      <div class="kadosk-logo">KADOSK</div>
+      <div class="kadosk-message-info" id="messageStatut">Connexion en cours...</div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const messageStatut = document.getElementById("messageStatut");
+
+    (async function () {
+      try {
+        await KADOSK_AUTH.traiterRetourAutorisation();
+        window.location.href = "dashboard.html";
+      } catch (erreur) {
+        messageStatut.textContent = "La connexion a échoué. Merci de réessayer.";
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2500);
+      }
+    })();
+  </script>
+</body>
+</html>
