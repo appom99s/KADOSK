@@ -1,4 +1,3 @@
-///////////////////////1
 const KADOSK_AUTH = (function () {
   const OAUTH_TOKEN_URL = "https://www.wixapis.com/oauth2/token";
   const LOGIN_V2_URL = "https://www.wixapis.com/_api/iam/authentication/v2/login";
@@ -124,23 +123,28 @@ const KADOSK_AUTH = (function () {
     sessionStorage.setItem(STATE_STORAGE_KEY, etat);
 
     const redirectUri = config().frontendBaseUrl + config().loginCallbackPath;
+    const tokenVisiteur = await obtenirTokenVisiteur();
 
-    const reponse = await appelJson(REDIRECT_SESSION_URL, {
-      origin: config().frontendBaseUrl,
-      auth: {
-        authRequest: {
-          clientId: config().clientId,
-          codeChallenge: defi,
-          codeChallengeMethod: "S256",
-          responseMode: "query",
-          responseType: "code",
-          scope: "offline_access",
-          state: etat,
-          sessionToken: sessionToken,
-          redirectUri: redirectUri
+    const reponse = await appelJson(
+      REDIRECT_SESSION_URL,
+      {
+        origin: config().frontendBaseUrl,
+        auth: {
+          authRequest: {
+            clientId: config().clientId,
+            codeChallenge: defi,
+            codeChallengeMethod: "S256",
+            responseMode: "query",
+            responseType: "code",
+            scope: "offline_access",
+            state: etat,
+            sessionToken: sessionToken,
+            redirectUri: redirectUri
+          }
         }
-      }
-    });
+      },
+      { Authorization: tokenVisiteur }
+    );
 
     window.location.href = reponse.redirectSession.fullUrl;
   }
@@ -209,13 +213,18 @@ const KADOSK_AUTH = (function () {
   async function deconnecter() {
     effacerTokens();
     try {
-      const reponse = await appelJson(REDIRECT_SESSION_URL, {
-        origin: config().frontendBaseUrl,
-        logout: {
-          clientId: config().clientId,
-          postFlowUrl: config().frontendBaseUrl + config().logoutRedirectPath
-        }
-      });
+      const tokenVisiteur = await obtenirTokenVisiteur();
+      const reponse = await appelJson(
+        REDIRECT_SESSION_URL,
+        {
+          origin: config().frontendBaseUrl,
+          logout: {
+            clientId: config().clientId,
+            postFlowUrl: config().frontendBaseUrl + config().logoutRedirectPath
+          }
+        },
+        { Authorization: tokenVisiteur }
+      );
       window.location.href = reponse.redirectSession.fullUrl;
     } catch (erreur) {
       window.location.href = config().logoutRedirectPath;
@@ -231,4 +240,4 @@ const KADOSK_AUTH = (function () {
     estConnecte,
     deconnecter
   };
-})(); ////
+})();
