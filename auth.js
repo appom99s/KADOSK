@@ -125,6 +125,7 @@ const KADOSK_AUTH = (function () {
     const redirectUri = config().frontendBaseUrl + config().loginCallbackPath;
 
     const reponse = await appelJson(REDIRECT_SESSION_URL, {
+      origin: config().frontendBaseUrl,
       auth: {
         authRequest: {
           clientId: config().clientId,
@@ -208,6 +209,7 @@ const KADOSK_AUTH = (function () {
     effacerTokens();
     try {
       const reponse = await appelJson(REDIRECT_SESSION_URL, {
+        origin: config().frontendBaseUrl,
         logout: {
           clientId: config().clientId,
           postFlowUrl: config().frontendBaseUrl + config().logoutRedirectPath
@@ -228,4 +230,4 @@ const KADOSK_AUTH = (function () {
     estConnecte,
     deconnecter
   };
-})();
+})(); ////
