@@ -1,6 +1,12 @@
 const KADOSK_API = (function () {
+  // Les fonctions HTTP du site (giftCardSecurity.web.js) ont besoin du "contexte
+  // d'authentification" du membre pour reconnaître qui appelle (getCurrentMember()).
+  // Appeler directement https://www.kadosk.com/_functions/... ne transmet PAS ce
+  // contexte (c'est documenté par Wix : c'est réservé aux appels anonymes/publics).
+  // Il faut obligatoirement passer par la gateway REST de Wix, qui elle transmet
+  // le contexte d'authentification lié au token d'accès fourni dans l'en-tête.
   function urlFonction(nom) {
-    return window.KADOSK_CONFIG.siteBaseUrl + "/_functions/" + nom;
+    return "https://www.wixapis.com/velo/v1/http/invoke/" + nom;
   }
 
   async function appeler(nom, methode, corps, dejaReessaye) {
@@ -9,23 +15,39 @@ const KADOSK_API = (function () {
     const options = {
       method: methode,
       headers: {
-        Authorization: "Bearer " + accessToken,
+        // Important : les API REST Wix attendent le token brut, PAS "Bearer <token>".
+        Authorization: accessToken,
         "Content-Type": "application/json"
       }
     };
-    if (corps !== undefined) {
+    if (corps !== undefined && methode !== "GET") {
       options.body = JSON.stringify(corps);
     }
 
-    const reponse = await fetch(urlFonction(nom), options);
+    let reponse;
+    try {
+      reponse = await fetch(urlFonction(nom), options);
+    } catch (erreurReseau) {
+      console.error("KADOSK_API appel réseau échoué vers", nom, erreurReseau);
+      const erreur = new Error("ERREUR_RESEAU");
+      erreur.cause = erreurReseau;
+      throw erreur;
+    }
 
     if (reponse.status === 401 && !dejaReessaye) {
       return appeler(nom, methode, corps, true);
     }
 
-    const donnees = await reponse.json().catch(() => ({}));
+    const texteBrut = await reponse.text();
+    let donnees = {};
+    try {
+      donnees = texteBrut ? JSON.parse(texteBrut) : {};
+    } catch (erreurParsage) {
+      console.error("KADOSK_API réponse non-JSON depuis", nom, reponse.status, texteBrut.slice(0, 500));
+    }
 
     if (!reponse.ok) {
+      console.error("KADOSK_API réponse non-OK depuis", nom, reponse.status, donnees);
       const erreur = new Error(donnees.error || "ERREUR_SERVEUR");
       erreur.status = reponse.status;
       throw erreur;
