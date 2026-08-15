@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KADOSK Marchand — Paramètres de l'offre</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="kadosk-app">
+    <aside class="kadosk-sidebar" id="kadoskSidebar"></aside>
+
+    <main class="kadosk-main">
+      <div class="kadosk-entete">
+        <h1>Paramètres de votre carte cadeau</h1>
+        <span class="kadosk-lien-deconnexion" id="lienDeconnexion">Déconnexion</span>
+      </div>
+
+      <div class="kadosk-panneau-large" style="max-width:560px;">
+        <div class="kadosk-champ">
+          <label for="champNom">Nom de la carte cadeau</label>
+          <input type="text" id="champNom" />
+        </div>
+
+        <div class="kadosk-champ">
+          <label for="champDescription">Description</label>
+          <textarea id="champDescription" rows="3"></textarea>
+        </div>
+
+        <div class="kadosk-champ">
+          <label for="champLogoUrl">URL du logo</label>
+          <input type="text" id="champLogoUrl" placeholder="https://..." />
+        </div>
+
+        <div class="kadosk-champ">
+          <label for="champScope">Portée</label>
+          <select id="champScope">
+            <option value="MERCHANT_ONLY">Marchand uniquement</option>
+            <option value="UNIVERSAL">Universel</option>
+            <option value="DOMAIN">Domaine d'activité</option>
+          </select>
+        </div>
+
+        <div class="kadosk-champ" id="blocDomaine" style="display:none;">
+          <label for="champDomaine">Domaine d'activité</label>
+          <input type="text" id="champDomaine" />
+        </div>
+
+        <div class="kadosk-champ">
+          <label for="champMontants">Montants proposés (séparés par des virgules)</label>
+          <input type="text" id="champMontants" placeholder="100, 200, 500" />
+        </div>
+
+        <div class="kadosk-champ-checkbox">
+          <input type="checkbox" id="champMontantLibreActif" />
+          <label for="champMontantLibreActif" style="margin:0;">Autoriser un montant libre</label>
+        </div>
+
+        <div id="blocMontantLibre" style="display:none;">
+          <div class="kadosk-champ">
+            <label for="champMontantLibreMin">Montant libre minimum</label>
+            <input type="number" id="champMontantLibreMin" min="0" />
+          </div>
+          <div class="kadosk-champ">
+            <label for="champMontantLibreMax">Montant libre maximum</label>
+            <input type="number" id="champMontantLibreMax" min="0" />
+          </div>
+        </div>
+
+        <div class="kadosk-champ">
+          <label for="champExpiration">Durée de validité (mois, 0 = pas d'expiration)</label>
+          <input type="number" id="champExpiration" min="0" />
+        </div>
+
+        <div class="kadosk-ligne-boutons">
+          <button class="kadosk-bouton" id="boutonEnregistrer">Enregistrer</button>
+        </div>
+
+        <div class="kadosk-message-erreur" id="messageStatutParametres"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/nav.js"></script>
+  <script src="assets/settings.js"></script>
+</body>
+</html>

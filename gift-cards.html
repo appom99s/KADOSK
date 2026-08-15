@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KADOSK Marchand — Cartes cadeaux</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="kadosk-app">
+    <aside class="kadosk-sidebar" id="kadoskSidebar"></aside>
+
+    <main class="kadosk-main">
+      <div class="kadosk-entete">
+        <h1>Cartes cadeaux</h1>
+        <span class="kadosk-lien-deconnexion" id="lienDeconnexion">Déconnexion</span>
+      </div>
+
+      <div class="kadosk-placeholder">
+        <strong>Liste complète à venir</strong>
+        Lister toutes vos cartes (actives, épuisées, expirées) nécessite un nouvel endpoint backend — aucun webMethod existant ne renvoie cette liste globale aujourd'hui (seul le brouillon des commandes en attente est disponible, voir la page Commandes). Je n'ai pas voulu inventer cette logique côté backend sans validation. Dites-le-moi et je l'ajoute proprement, sans toucher au système de chiffrement/concurrence existant.
+        <br /><br />
+        En attendant, utilisez la page <a href="cashier.html" style="color:var(--kadosk-violet); font-weight:700;">Encaisser</a> ou <a href="transactions.html" style="color:var(--kadosk-violet); font-weight:700;">Transactions</a> pour consulter une carte précise via son code.
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/nav.js"></script>
+  <script src="assets/guard.js"></script>
+</body>
+</html>

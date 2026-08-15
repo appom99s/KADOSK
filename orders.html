@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KADOSK Marchand — Commandes</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="kadosk-app">
+    <aside class="kadosk-sidebar" id="kadoskSidebar"></aside>
+
+    <main class="kadosk-main">
+      <div class="kadosk-entete">
+        <h1>Commandes en attente</h1>
+        <span class="kadosk-lien-deconnexion" id="lienDeconnexion">Déconnexion</span>
+      </div>
+
+      <div class="kadosk-panneau-large" style="margin-bottom:20px;">
+        <table class="kadosk-table" id="tableCommandes">
+          <thead>
+            <tr>
+              <th>Montant</th>
+              <th>Portée</th>
+              <th>Client</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody id="corpsTableCommandes"></tbody>
+        </table>
+        <div class="kadosk-placeholder" id="aucuneCommande" style="display:none; margin-top:12px;">
+          <strong>Aucune commande en attente</strong>
+          Les nouvelles commandes de vos clients apparaîtront ici pour approbation.
+        </div>
+      </div>
+
+      <div class="kadosk-panneau" id="panneauValidation" style="display:none;">
+        <h2>Valider la commande sélectionnée</h2>
+
+        <div class="kadosk-champ">
+          <label for="champMessage">Message personnel pour le client</label>
+          <textarea id="champMessage" rows="3"></textarea>
+        </div>
+
+        <div class="kadosk-ligne-boutons">
+          <button class="kadosk-bouton" id="boutonValider">Valider le virement et envoyer la carte</button>
+        </div>
+
+        <div class="kadosk-message-erreur" id="messageStatutCommande"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/nav.js"></script>
+  <script src="assets/orders.js"></script>
+</body>
+</html>
