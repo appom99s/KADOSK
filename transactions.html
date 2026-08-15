@@ -13,42 +13,33 @@
     <main class="kadosk-main">
       <div class="kadosk-entete">
         <h1>Transactions</h1>
-        <span class="kadosk-lien-deconnexion" id="lienDeconnexion">Déconnexion</span>
+        <div id="kadoskEnteteDroite" class="kadosk-entete-droite"></div>
       </div>
 
-      <div class="kadosk-panneau-large" style="max-width:560px; margin-bottom:20px;">
-        <h2>Rechercher l'historique d'une carte</h2>
-
-        <div class="kadosk-champ">
-          <label for="champCode">Code de la carte</label>
-          <input type="text" id="champCode" placeholder="Saisir le code" />
-        </div>
-
-        <div class="kadosk-ligne-boutons">
-          <button class="kadosk-bouton kadosk-bouton-secondaire" id="boutonRechercher">Rechercher</button>
-        </div>
-
-        <div class="kadosk-message-erreur" id="messageErreurRecherche"></div>
+      <div class="kadosk-barre-recherche">
+        <input type="text" id="champRecherche" placeholder="Rechercher par code de carte (ex : KDSK-XXXX-XXXX-XXXX-XXXX)" />
       </div>
 
-      <div class="kadosk-panneau-large" id="panneauResultats" style="display:none;">
+      <div class="kadosk-filtres">
+        <span class="kadosk-filtre actif" data-filtre="ALL">Toutes</span>
+        <span class="kadosk-filtre" data-filtre="SUCCESS">Réussies</span>
+        <span class="kadosk-filtre" data-filtre="FAILED">Refusées</span>
+      </div>
+
+      <div class="kadosk-panneau-large">
         <table class="kadosk-table">
           <thead>
             <tr>
               <th>Date</th>
+              <th>Carte</th>
               <th>Action</th>
-              <th>Résultat</th>
               <th>Montant</th>
-              <th>Détail</th>
+              <th>Résultat</th>
             </tr>
           </thead>
           <tbody id="corpsTableTransactions"></tbody>
         </table>
-      </div>
-
-      <div class="kadosk-placeholder" style="margin-top:20px;">
-        <strong>Vue globale à venir</strong>
-        Un historique consolidé de toutes les transactions (toutes cartes confondues) nécessite un nouvel endpoint côté backend — non encore ajouté pour éviter de modifier votre système sans validation. Pour l'instant, recherchez une carte par son code.
+        <div class="kadosk-liste-vide" id="etatVideTransactions" style="display:none;">Aucune transaction trouvée.</div>
       </div>
     </main>
   </div>
@@ -57,6 +48,7 @@
   <script src="assets/auth.js"></script>
   <script src="assets/api.js"></script>
   <script src="assets/nav.js"></script>
+  <script src="assets/guard.js"></script>
   <script src="assets/transactions.js"></script>
 </body>
 </html>

@@ -13,14 +13,36 @@
     <main class="kadosk-main">
       <div class="kadosk-entete">
         <h1>Finances</h1>
-        <span class="kadosk-lien-deconnexion" id="lienDeconnexion">Déconnexion</span>
+        <div id="kadoskEnteteDroite" class="kadosk-entete-droite"></div>
       </div>
 
-      <div class="kadosk-placeholder">
-        <strong>Système de commission et de versements pas encore conçu</strong>
-        Cette page (chiffre d'affaires total, commission KADOSK, net marchand, montant déjà versé, historique des versements) dépend d'un système de commission/versement qui n'existe pas encore côté backend — il a été volontairement laissé de côté plus tôt dans le projet, en attendant qu'on le conçoive ensemble. Je n'ai rien inventé ici pour éviter d'ajouter des champs ou une logique financière sans ta validation.
-        <br /><br />
-        Le chiffre d'affaires du jour est déjà disponible sur le <a href="dashboard.html" style="color:var(--kadosk-violet); font-weight:700;">Tableau de bord</a>.
+      <div class="kadosk-grille-kpi" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="kadosk-carte-kpi">
+          <div class="kadosk-kpi-icone violet" id="iconeCA"></div>
+          <div class="kadosk-kpi-label">Chiffre d'affaires encaissé</div>
+          <div class="kadosk-kpi-valeur"><span id="valCA">—</span><span class="unite">DH</span></div>
+          <div class="kadosk-kpi-detail" id="valTransactions"></div>
+        </div>
+        <div class="kadosk-carte-kpi">
+          <div class="kadosk-kpi-icone bleu" id="iconeEncours"></div>
+          <div class="kadosk-kpi-label">Encours cartes actives</div>
+          <div class="kadosk-kpi-valeur"><span id="valEncours">—</span><span class="unite">DH</span></div>
+          <div class="kadosk-kpi-detail" id="valCartesActives"></div>
+        </div>
+        <div class="kadosk-carte-kpi">
+          <div class="kadosk-kpi-icone orange" id="iconeAttente"></div>
+          <div class="kadosk-kpi-label">Solde attendu des clients</div>
+          <div class="kadosk-kpi-valeur"><span id="valAttente">—</span><span class="unite">DH</span></div>
+          <div class="kadosk-kpi-detail" id="valCommandesAttente"></div>
+        </div>
+      </div>
+
+      <div class="kadosk-panneau-large" style="max-width:560px;">
+        <h2>Commissions &amp; versements KADOSK</h2>
+        <div class="kadosk-placeholder">
+          <strong>Pas encore configuré</strong>
+          Le taux de commission KADOSK et le système de versement n'ont pas encore été définis. Une fois le taux confirmé, cette section affichera automatiquement la commission prélevée, le net qui vous revient et l'historique de vos versements.
+        </div>
       </div>
     </main>
   </div>
@@ -30,5 +52,6 @@
   <script src="assets/api.js"></script>
   <script src="assets/nav.js"></script>
   <script src="assets/guard.js"></script>
+  <script src="assets/finance.js"></script>
 </body>
 </html>

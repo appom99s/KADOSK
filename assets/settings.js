@@ -5,6 +5,7 @@
   }
 
   KADOSK_NAV.rendreBarreLaterale("kadoskSidebar");
+  KADOSK_NAV.rendreEnteteDroite("kadoskEnteteDroite");
 
   const champNom = document.getElementById("champNom");
   const champDescription = document.getElementById("champDescription");

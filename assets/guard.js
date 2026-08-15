@@ -5,6 +5,7 @@
   }
 
   KADOSK_NAV.rendreBarreLaterale("kadoskSidebar");
+  KADOSK_NAV.rendreEnteteDroite("kadoskEnteteDroite");
 
   const lienDeconnexion = document.getElementById("lienDeconnexion");
   if (lienDeconnexion) {

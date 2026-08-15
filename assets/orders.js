@@ -5,6 +5,7 @@
   }
 
   KADOSK_NAV.rendreBarreLaterale("kadoskSidebar");
+  KADOSK_NAV.rendreEnteteDroite("kadoskEnteteDroite");
 
   let commandes = [];
   let commandeSelectionneeId = null;

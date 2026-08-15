@@ -13,14 +13,31 @@
     <main class="kadosk-main">
       <div class="kadosk-entete">
         <h1>Cartes cadeaux</h1>
-        <span class="kadosk-lien-deconnexion" id="lienDeconnexion">Déconnexion</span>
+        <div id="kadoskEnteteDroite" class="kadosk-entete-droite"></div>
       </div>
 
-      <div class="kadosk-placeholder">
-        <strong>Liste complète à venir</strong>
-        Lister toutes vos cartes (actives, épuisées, expirées) nécessite un nouvel endpoint backend — aucun webMethod existant ne renvoie cette liste globale aujourd'hui (seul le brouillon des commandes en attente est disponible, voir la page Commandes). Je n'ai pas voulu inventer cette logique côté backend sans validation. Dites-le-moi et je l'ajoute proprement, sans toucher au système de chiffrement/concurrence existant.
-        <br /><br />
-        En attendant, utilisez la page <a href="cashier.html" style="color:var(--kadosk-violet); font-weight:700;">Encaisser</a> ou <a href="transactions.html" style="color:var(--kadosk-violet); font-weight:700;">Transactions</a> pour consulter une carte précise via son code.
+      <div class="kadosk-filtres">
+        <span class="kadosk-filtre actif" data-filtre="ALL">Toutes</span>
+        <span class="kadosk-filtre" data-filtre="ACTIVE">Actives</span>
+        <span class="kadosk-filtre" data-filtre="USED">Utilisées</span>
+        <span class="kadosk-filtre" data-filtre="EXPIRED">Expirées</span>
+      </div>
+
+      <div class="kadosk-panneau-large">
+        <table class="kadosk-table">
+          <thead>
+            <tr>
+              <th>Carte</th>
+              <th>Client</th>
+              <th>Créée le</th>
+              <th>Solde initial</th>
+              <th>Solde restant</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody id="corpsTableCartes"></tbody>
+        </table>
+        <div class="kadosk-liste-vide" id="etatVideCartes" style="display:none;">Aucune carte pour ce filtre.</div>
       </div>
     </main>
   </div>
@@ -30,5 +47,6 @@
   <script src="assets/api.js"></script>
   <script src="assets/nav.js"></script>
   <script src="assets/guard.js"></script>
+  <script src="assets/gift-cards.js"></script>
 </body>
 </html>
