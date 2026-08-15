@@ -1,3 +1,4 @@
+///////////////////////1
 const KADOSK_AUTH = (function () {
   const OAUTH_TOKEN_URL = "https://www.wixapis.com/oauth2/token";
   const LOGIN_V2_URL = "https://www.wixapis.com/_api/iam/authentication/v2/login";
