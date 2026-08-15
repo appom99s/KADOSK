@@ -5,3 +5,4 @@ window.KADOSK_CONFIG = {
   loginCallbackPath: "/login-callback.html",
   logoutRedirectPath: "/login.html"
 };
+///
