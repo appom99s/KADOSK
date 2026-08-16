@@ -20,6 +20,8 @@
   const carteInfo = document.getElementById("carteInfo");
   const blocMontant = document.getElementById("blocMontant");
   const champMontant = document.getElementById("champMontant");
+  const paveNumerique = document.getElementById("paveNumerique");
+  const toucheEffacerPave = document.getElementById("toucheEffacerPave");
   const blocBoutonEncaisser = document.getElementById("blocBoutonEncaisser");
   const boutonEncaisser = document.getElementById("boutonEncaisser");
   const messageStatutEncaissement = document.getElementById("messageStatutEncaissement");
@@ -164,6 +166,70 @@
     }
   });
 
+  // --- Pavé numérique tactile (mobile uniquement) pour le montant à encaisser ---
+  // Sur mobile, le champ passe en lecture seule et ce pavé prend le relais du clavier du
+  // téléphone (plus rapide à utiliser à la caisse). Sur desktop, le champ reste éditable
+  // normalement et le pavé reste masqué.
+  const REQUETE_MOBILE_PAVE = window.matchMedia("(max-width: 520px)");
+  let saisieMontantDemarree = false;
+
+  function activerPaveNumeriqueSiMobile() {
+    if (!REQUETE_MOBILE_PAVE.matches) {
+      paveNumerique.style.display = "none";
+      champMontant.readOnly = false;
+      return;
+    }
+    paveNumerique.style.display = "grid";
+    champMontant.readOnly = true;
+    saisieMontantDemarree = false;
+  }
+
+  function desactiverPaveNumerique() {
+    paveNumerique.style.display = "none";
+    champMontant.readOnly = false;
+    saisieMontantDemarree = false;
+  }
+
+  // Si l'écran change de taille (rotation, redimensionnement) pendant qu'un montant est
+  // affiché, on réévalue si le pavé doit apparaître ou disparaître.
+  REQUETE_MOBILE_PAVE.addEventListener("change", () => {
+    if (blocMontant.style.display !== "none") {
+      activerPaveNumeriqueSiMobile();
+    }
+  });
+
+  function appuyerToucheMontant(touche) {
+    // La première frappe efface le montant pré-rempli (solde de la carte) pour repartir
+    // d'une saisie neuve, comme sur un terminal de caisse classique.
+    let valeurActuelle = saisieMontantDemarree ? champMontant.value : "";
+    saisieMontantDemarree = true;
+
+    if (touche === ",") {
+      if (valeurActuelle.includes(",")) return;
+      valeurActuelle = valeurActuelle === "" ? "0," : valeurActuelle + ",";
+    } else if (valeurActuelle === "0") {
+      // Évite les zéros non significatifs en tête ("00", "01"...).
+      valeurActuelle = touche;
+    } else {
+      valeurActuelle += touche;
+    }
+
+    champMontant.value = valeurActuelle;
+  }
+
+  function effacerToucheMontant() {
+    const valeurActuelle = saisieMontantDemarree ? champMontant.value : "";
+    champMontant.value = valeurActuelle.slice(0, -1);
+    saisieMontantDemarree = true;
+  }
+
+  paveNumerique.querySelectorAll(".kadosk-touche-pave[data-touche]").forEach((touche) => {
+    touche.addEventListener("click", () => appuyerToucheMontant(touche.dataset.touche));
+  });
+  if (toucheEffacerPave) {
+    toucheEffacerPave.addEventListener("click", effacerToucheMontant);
+  }
+
   // --- Recherche et encaissement (partagés entre scan et saisie manuelle) ---
 
   const LIBELLES_PORTEE = {
@@ -188,6 +254,10 @@
     );
   }
 
+  // Sécurité : le serveur (checkGiftCardStatus) ne renvoie plus jamais une réponse
+  // pour une carte qui n'appartient pas à ce marchand - il lève la même erreur que
+  // pour un code inexistant (voir le catch de rechercherCarte, "Carte introuvable.").
+  // afficherDetailsCarte n'est donc appelée que pour une carte autorisée.
   function afficherDetailsCarte(statut) {
     const libellePortee = statut.scope === "DOMAIN" && statut.domain
       ? LIBELLES_PORTEE.DOMAIN + " · " + statut.domain
@@ -204,13 +274,6 @@
     html += ligneInfo("Expiration", dateExpiration || "Sans date d'expiration");
     html += ligneInfo("Portée", libellePortee);
 
-    if (!statut.authorizedForThisMerchant) {
-      html +=
-        '<div style="margin-top:10px; padding:10px; border-radius:8px; background:var(--kadosk-danger-tint); color:var(--kadosk-danger); font-size:12px; font-weight:600;">' +
-        "Cette carte n'est pas valable chez ce marchand." +
-        "</div>";
-    }
-
     carteInfo.innerHTML = html;
   }
 
@@ -222,6 +285,7 @@
     blocBoutonEncaisser.style.display = "none";
     messageStatutEncaissement.textContent = "";
     codeCarteActuelle = null;
+    desactiverPaveNumerique();
   }
 
   async function rechercherCarte() {
@@ -255,16 +319,13 @@
 
       afficherDetailsCarte(statut);
 
-      if (statut.authorizedForThisMerchant) {
-        codeCarteActuelle = code;
-        champMontant.value = statut.remainingBalance;
-        blocMontant.style.display = "block";
-        blocBoutonEncaisser.style.display = "flex";
-        if (panneauManuel.style.display !== "none") {
-          champMontant.focus();
-        }
-      } else {
-        codeCarteActuelle = null;
+      codeCarteActuelle = code;
+      champMontant.value = String(statut.remainingBalance).replace(".", ",");
+      blocMontant.style.display = "block";
+      blocBoutonEncaisser.style.display = "flex";
+      activerPaveNumeriqueSiMobile();
+      if (panneauManuel.style.display !== "none" && !champMontant.readOnly) {
+        champMontant.focus();
       }
     } catch (erreur) {
       codeCarteActuelle = null;
@@ -280,7 +341,7 @@
       return;
     }
 
-    const montant = Number(champMontant.value);
+    const montant = Number(String(champMontant.value).replace(",", "."));
     if (!montant || montant <= 0) {
       messageStatutEncaissement.textContent = "Merci d'indiquer un montant valide.";
       return;
