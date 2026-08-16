@@ -135,13 +135,29 @@
     if (avatarEl) avatarEl.textContent = initiales(nom);
   }
 
+  function formaterDateNotif(valeur) {
+    if (!valeur) return "";
+    const date = new Date(valeur);
+    if (isNaN(date.getTime())) return "";
+    return date.toLocaleDateString("fr-FR") + " · " + date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function formaterMontantNotif(valeur) {
+    return Number(valeur || 0).toLocaleString("fr-FR", { maximumFractionDigits: 0 });
+  }
+
   function rendreEnteteDroite(conteneurId) {
     const conteneur = document.getElementById(conteneurId || "kadoskEnteteDroite");
     if (!conteneur) return;
 
     conteneur.innerHTML =
-      '<div class="kadosk-cloche">' + ICONES.cloche +
+      '<div class="kadosk-cloche" id="kadoskCloche">' + ICONES.cloche +
       '<span class="kadosk-cloche-badge" data-badge="pendingOrdersCount" style="display:none;"></span>' +
+      '<div class="kadosk-cloche-panneau" id="kadoskClochePanneau" style="display:none;">' +
+      '<div class="kadosk-cloche-entete">Commandes en attente</div>' +
+      '<div id="kadoskClocheListe"><div class="kadosk-liste-vide">Chargement…</div></div>' +
+      '<a href="orders.html" class="kadosk-cloche-voir-tout">Voir toutes les commandes</a>' +
+      "</div>" +
       "</div>" +
       '<div class="kadosk-utilisateur">' +
       '<div class="kadosk-utilisateur-nom">' +
@@ -150,6 +166,50 @@
       "</div>" +
       '<div class="kadosk-avatar" data-marchand-avatar>M</div>' +
       "</div>";
+
+    const cloche = document.getElementById("kadoskCloche");
+    const panneau = document.getElementById("kadoskClochePanneau");
+    const liste = document.getElementById("kadoskClocheListe");
+    let commandesChargees = false;
+
+    function chargerNotifications() {
+      if (commandesChargees || !window.KADOSK_API) return;
+      commandesChargees = true;
+      window.KADOSK_API.getDraftOrders()
+        .then((resultat) => {
+          const commandes = (resultat.items || []).slice(0, 5);
+          if (commandes.length === 0) {
+            liste.innerHTML = '<div class="kadosk-liste-vide">Aucune commande en attente</div>';
+            return;
+          }
+          liste.innerHTML = commandes
+            .map(
+              (commande) =>
+                '<a class="kadosk-cloche-item" href="orders.html">' +
+                '<div class="kadosk-cloche-item-titre">' + (commande.buyerName || commande.buyerEmail || "Client") + "</div>" +
+                '<div class="kadosk-cloche-item-detail">' + formaterMontantNotif(commande.initialBalance) + " DH · " + formaterDateNotif(commande.createdAt) + "</div>" +
+                "</a>"
+            )
+            .join("");
+        })
+        .catch(() => {
+          commandesChargees = false;
+          liste.innerHTML = '<div class="kadosk-liste-vide">Impossible de charger les commandes</div>';
+        });
+    }
+
+    if (cloche) {
+      cloche.addEventListener("click", (evenement) => {
+        evenement.stopPropagation();
+        const estOuvert = panneau.style.display !== "none";
+        panneau.style.display = estOuvert ? "none" : "block";
+        if (!estOuvert) chargerNotifications();
+      });
+      panneau.addEventListener("click", (evenement) => evenement.stopPropagation());
+      document.addEventListener("click", () => {
+        panneau.style.display = "none";
+      });
+    }
 
     if (window.KADOSK_API) {
       window.KADOSK_API.getDashboardStats()

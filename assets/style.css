@@ -301,6 +301,65 @@ a {
   justify-content: center;
   color: var(--kadosk-texte-clair);
   flex-shrink: 0;
+  cursor: pointer;
+}
+
+.kadosk-cloche-panneau {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  width: 300px;
+  background: var(--kadosk-blanc);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(20, 15, 40, 0.16);
+  padding: 10px 0;
+  z-index: 40;
+  cursor: default;
+  text-align: left;
+}
+
+.kadosk-cloche-entete {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--kadosk-texte);
+  padding: 4px 16px 10px;
+  border-bottom: 1px solid var(--kadosk-bordure);
+  margin-bottom: 4px;
+}
+
+.kadosk-cloche-item {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.kadosk-cloche-item:hover {
+  background: var(--kadosk-violet-tint);
+}
+
+.kadosk-cloche-item-titre {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--kadosk-texte);
+}
+
+.kadosk-cloche-item-detail {
+  font-size: 11px;
+  color: var(--kadosk-texte-clair);
+  margin-top: 2px;
+}
+
+.kadosk-cloche-voir-tout {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--kadosk-violet);
+  text-decoration: none;
+  padding: 10px 16px 2px;
+  border-top: 1px solid var(--kadosk-bordure);
+  margin-top: 6px;
 }
 
 .kadosk-cloche svg {

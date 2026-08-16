@@ -27,7 +27,7 @@
         </div>
 
         <div id="panneauScan">
-          <div class="kadosk-scan-conteneur" style="position:relative; border-radius:10px; overflow:hidden; background:#0d0b18; aspect-ratio:1/1; max-width:340px; margin:0 auto;">
+          <div class="kadosk-scan-conteneur" id="blocVideoScan" style="position:relative; border-radius:10px; overflow:hidden; background:#0d0b18; aspect-ratio:1/1; max-width:340px; margin:0 auto;">
             <video id="videoScan" playsinline muted style="width:100%; height:100%; object-fit:cover; display:block;"></video>
             <div style="position:absolute; inset:0; border:2px solid rgba(255,255,255,0.55); margin:14%; border-radius:14px; pointer-events:none;"></div>
           </div>
@@ -35,6 +35,7 @@
           <div id="messageStatutScan" style="text-align:center; font-size:13px; color:var(--kadosk-texte-clair); margin-top:12px;">Initialisation de la caméra…</div>
           <div class="kadosk-ligne-boutons" style="justify-content:center; margin-top:8px;">
             <button class="kadosk-bouton kadosk-bouton-secondaire" id="boutonArreterScan">Arrêter le scan</button>
+            <button class="kadosk-bouton" id="boutonRescanner" style="display:none;">Scanner une autre carte</button>
           </div>
         </div>
 

@@ -13,10 +13,12 @@
   const ongletManuel = document.getElementById("ongletManuel");
   const panneauScan = document.getElementById("panneauScan");
   const panneauManuel = document.getElementById("panneauManuel");
+  const blocVideoScan = document.getElementById("blocVideoScan");
   const videoScan = document.getElementById("videoScan");
   const canvasScan = document.getElementById("canvasScan");
   const messageStatutScan = document.getElementById("messageStatutScan");
   const boutonArreterScan = document.getElementById("boutonArreterScan");
+  const boutonRescanner = document.getElementById("boutonRescanner");
 
   const champCode = document.getElementById("champCode");
   const boutonRechercher = document.getElementById("boutonRechercher");
@@ -64,6 +66,8 @@
   }
 
   async function demarrerScan() {
+    afficherEtatCameraActive();
+
     if (!window.jsQR) {
       messageStatutScan.textContent = "Le scanner QR n'a pas pu se charger. Utilisez la saisie manuelle.";
       return;
@@ -102,6 +106,22 @@
     videoScan.srcObject = null;
   }
 
+  // La caméra reste allumée pendant la recherche du QR code, et se coupe dès
+  // qu'un code est détecté (pas de relance automatique : le marchand décide
+  // quand scanner la carte suivante via le bouton "Scanner une autre carte").
+  function afficherEtatCameraActive() {
+    blocVideoScan.style.display = "block";
+    boutonArreterScan.style.display = "inline-flex";
+    boutonRescanner.style.display = "none";
+  }
+
+  function afficherEtatCameraArretee() {
+    arreterScan();
+    blocVideoScan.style.display = "none";
+    boutonArreterScan.style.display = "none";
+    boutonRescanner.style.display = "inline-flex";
+  }
+
   function boucleScan() {
     if (!scanEnCours) return;
 
@@ -119,15 +139,10 @@
         if (resultat && resultat.data) {
           const codeDetecte = resultat.data.trim();
           if (codeDetecte) {
-            scanEnCours = false;
             messageStatutScan.textContent = "Code détecté, vérification en cours…";
-            arreterScan();
+            afficherEtatCameraArretee();
             champCode.value = codeDetecte;
-            rechercherCarte().finally(() => {
-              messageStatutScan.textContent = "Visez le QR code de la carte cadeau.";
-              scanEnCours = true;
-              demarrerScan();
-            });
+            rechercherCarte();
             return;
           }
         }
@@ -142,21 +157,75 @@
   ongletScan.addEventListener("click", afficherOngletScan);
   ongletManuel.addEventListener("click", afficherOngletManuel);
   boutonArreterScan.addEventListener("click", afficherOngletManuel);
+  boutonRescanner.addEventListener("click", () => {
+    reinitialiserFormulaire();
+    demarrerScan();
+  });
 
   window.addEventListener("beforeunload", arreterScan);
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
       arreterScan();
-    } else if (panneauScan.style.display !== "none") {
+    } else if (panneauScan.style.display !== "none" && boutonRescanner.style.display === "none") {
+      // On ne relance la caméra automatiquement que si elle était censée
+      // être active (pas si un code vient d'être trouvé et la caméra coupée volontairement).
       demarrerScan();
     }
   });
 
   // --- Recherche et encaissement (partagés entre scan et saisie manuelle) ---
 
+  const LIBELLES_PORTEE = {
+    UNIVERSAL: "Universelle · valable chez tous les marchands KADOSK",
+    DOMAIN: "Sectorielle",
+    MERCHANT_ONLY: "Réservée à un marchand spécifique"
+  };
+
+  function formaterDateCarte(valeur) {
+    if (!valeur) return null;
+    const date = new Date(valeur);
+    return isNaN(date.getTime()) ? null : date.toLocaleDateString("fr-FR");
+  }
+
+  function ligneInfo(label, valeur) {
+    return (
+      '<div style="display:flex; justify-content:space-between; gap:12px; padding:5px 0; font-size:13px;">' +
+      '<span style="color:var(--kadosk-texte-clair);">' + label + "</span>" +
+      '<span style="font-weight:600; text-align:right;">' + valeur + "</span>" +
+      "</div>"
+    );
+  }
+
+  function afficherDetailsCarte(statut) {
+    const libellePortee = statut.scope === "DOMAIN" && statut.domain
+      ? LIBELLES_PORTEE.DOMAIN + " · " + statut.domain
+      : (LIBELLES_PORTEE[statut.scope] || LIBELLES_PORTEE.MERCHANT_ONLY);
+
+    const dateExpiration = formaterDateCarte(statut.expirationDate);
+
+    let html = "";
+    html += ligneInfo("Solde disponible", statut.remainingBalance + " DH");
+    if (statut.initialBalance !== null && statut.initialBalance !== undefined) {
+      html += ligneInfo("Montant initial", statut.initialBalance + " DH");
+    }
+    html += ligneInfo("Titulaire", statut.buyerName || statut.buyerEmail || "Non renseigné");
+    html += ligneInfo("Expiration", dateExpiration || "Sans date d'expiration");
+    html += ligneInfo("Portée", libellePortee);
+
+    if (!statut.authorizedForThisMerchant) {
+      html +=
+        '<div style="margin-top:10px; padding:10px; border-radius:8px; background:var(--kadosk-danger-tint); color:var(--kadosk-danger); font-size:12px; font-weight:600;">' +
+        "Cette carte n'est pas valable chez ce marchand." +
+        "</div>";
+    }
+
+    carteInfo.innerHTML = html;
+  }
+
   function reinitialiserFormulaire() {
     champCode.value = "";
     carteInfo.style.display = "none";
+    carteInfo.innerHTML = "";
     blocMontant.style.display = "none";
     blocBoutonEncaisser.style.display = "none";
     messageStatutEncaissement.textContent = "";
@@ -192,13 +261,18 @@
         return;
       }
 
-      codeCarteActuelle = code;
-      carteInfo.textContent = "Solde disponible : " + statut.remainingBalance + " DH";
-      champMontant.value = statut.remainingBalance;
-      blocMontant.style.display = "block";
-      blocBoutonEncaisser.style.display = "flex";
-      if (panneauManuel.style.display !== "none") {
-        champMontant.focus();
+      afficherDetailsCarte(statut);
+
+      if (statut.authorizedForThisMerchant) {
+        codeCarteActuelle = code;
+        champMontant.value = statut.remainingBalance;
+        blocMontant.style.display = "block";
+        blocBoutonEncaisser.style.display = "flex";
+        if (panneauManuel.style.display !== "none") {
+          champMontant.focus();
+        }
+      } else {
+        codeCarteActuelle = null;
       }
     } catch (erreur) {
       codeCarteActuelle = null;
@@ -230,7 +304,11 @@
         ? "Encaissement de " + resultat.amountRedeemed + " DH validé. Carte entièrement utilisée."
         : "Encaissement de " + resultat.amountRedeemed + " DH validé. Solde restant : " + resultat.remainingBalance + " DH.";
 
+      const enModeScan = panneauScan.style.display !== "none";
       reinitialiserFormulaire();
+      if (enModeScan) {
+        boutonRescanner.style.display = "inline-flex";
+      }
     } catch (erreur) {
       messageStatutEncaissement.style.color = "";
       messageStatutEncaissement.textContent = "L'encaissement a échoué. Merci de réessayer.";
