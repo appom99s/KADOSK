@@ -364,7 +364,9 @@
       }
     } catch (erreur) {
       messageStatutEncaissement.style.color = "";
-      messageStatutEncaissement.textContent = "L'encaissement a échoué. Merci de réessayer.";
+      messageStatutEncaissement.textContent = erreur && erreur.message === "TROP_DE_TENTATIVES"
+        ? "Trop de tentatives. Merci de réessayer plus tard."
+        : "L'encaissement a échoué. Merci de réessayer.";
     } finally {
       boutonEncaisser.disabled = false;
     }
