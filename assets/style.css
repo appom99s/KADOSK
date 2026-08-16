@@ -1236,6 +1236,52 @@ a {
   }
 }
 
+/* Pavé numérique tactile (Encaisser) : masqué par défaut, affiché uniquement sur mobile
+   via le media query ci-dessous, pour saisir le montant sans le clavier du téléphone.
+   Regroupé dans un cadre visuel distinct (fond légèrement teinté + bordure) pour bien le
+   séparer du reste du formulaire, avec des touches carrées type terminal de caisse. */
+.kadosk-pave-numerique {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+  padding: 14px;
+  background: var(--kadosk-fond);
+  border: 1px solid var(--kadosk-bordure);
+  border-radius: 14px;
+}
+
+.kadosk-touche-pave {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--kadosk-texte);
+  background: var(--kadosk-blanc);
+  border: 1px solid var(--kadosk-bordure);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.05s ease, background 0.1s ease;
+}
+
+.kadosk-touche-pave:active {
+  background: var(--kadosk-bordure);
+  transform: scale(0.94);
+}
+
+.kadosk-touche-pave-effacer {
+  color: var(--kadosk-texte-clair);
+  font-size: 18px;
+  background: transparent;
+  box-shadow: none;
+  border-style: dashed;
+}
+
 @media (max-width: 520px) {
   .kadosk-grille-kpi {
     grid-template-columns: 1fr;
