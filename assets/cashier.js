@@ -2,6 +2,59 @@
   // L'authentification, la barre latérale, l'en-tête et la déconnexion sont
   // gérées par guard.js (chargé avant ce script).
 
+  // --- Sons de retour (succès / rejet) --------------------------------------
+  // Générés directement via l'API Web Audio (deux tonalités synthétisées), sans
+  // fichier audio externe à héberger. Les navigateurs exigent qu'un AudioContext
+  // soit créé/repris suite à un vrai geste utilisateur : on le prépare donc au
+  // premier clic sur la page (onglets, Rechercher, Encaisser) pour qu'il soit déjà
+  // prêt quand un son doit être joué automatiquement après un scan caméra.
+  let contexteAudio = null;
+  function prepareContexteAudio() {
+    if (!contexteAudio) {
+      const AudioContextClasse = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClasse) return null;
+      try {
+        contexteAudio = new AudioContextClasse();
+      } catch (erreur) {
+        return null;
+      }
+    }
+    if (contexteAudio.state === "suspended") {
+      contexteAudio.resume().catch(() => {});
+    }
+    return contexteAudio;
+  }
+
+  function jouerTon(frequences, dureeParTon, typeOnde) {
+    const ctx = prepareContexteAudio();
+    if (!ctx) return;
+    let tempsDepart = ctx.currentTime;
+    frequences.forEach((frequence) => {
+      const oscillateur = ctx.createOscillator();
+      const gain = ctx.createGain();
+      oscillateur.type = typeOnde || "sine";
+      oscillateur.frequency.setValueAtTime(frequence, tempsDepart);
+      gain.gain.setValueAtTime(0.0001, tempsDepart);
+      gain.gain.exponentialRampToValueAtTime(0.22, tempsDepart + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, tempsDepart + dureeParTon);
+      oscillateur.connect(gain);
+      gain.connect(ctx.destination);
+      oscillateur.start(tempsDepart);
+      oscillateur.stop(tempsDepart + dureeParTon + 0.02);
+      tempsDepart += dureeParTon;
+    });
+  }
+
+  // Deux notes montantes, comme un "ding" de caisse - carte valide et acceptée.
+  function jouerSonSucces() {
+    jouerTon([880, 1320], 0.09, "sine");
+  }
+
+  // Une note grave et courte, comme un buzz de refus - carte invalide/rejetée.
+  function jouerSonRejet() {
+    jouerTon([180], 0.18, "square");
+  }
+
   let codeCarteActuelle = null;
 
   const ongletScan = document.getElementById("ongletScan");
@@ -193,6 +246,12 @@
     idAnimationScan = requestAnimationFrame(boucleScan);
   }
 
+  // Prépare/débloque l'AudioContext dès le premier vrai geste utilisateur sur la
+  // page, pour que les sons déclenchés plus tard automatiquement (après un scan
+  // caméra détecté en dehors d'un clic direct) puissent bien être joués.
+  panneauScan.addEventListener("click", prepareContexteAudio, { once: true });
+  panneauManuel.addEventListener("click", prepareContexteAudio, { once: true });
+
   ongletScan.addEventListener("click", afficherOngletScan);
   ongletManuel.addEventListener("click", afficherOngletManuel);
   boutonArreterScan.addEventListener("click", afficherOngletManuel);
@@ -359,18 +418,22 @@
 
       if (statut.status === "DRAFT") {
         carteInfo.textContent = "Cette carte n'a pas encore été activée.";
+        jouerSonRejet();
         return;
       }
       if (statut.expired) {
         carteInfo.textContent = "Cette carte a expiré.";
+        jouerSonRejet();
         return;
       }
       if (statut.status !== "ACTIVE") {
         carteInfo.textContent = "Cette carte a déjà été entièrement utilisée.";
+        jouerSonRejet();
         return;
       }
 
       afficherDetailsCarte(statut);
+      jouerSonSucces();
 
       codeCarteActuelle = code;
       champMontant.value = String(statut.remainingBalance).replace(".", ",");
@@ -393,6 +456,7 @@
         carteInfo.textContent = "Session expirée. Merci de vous reconnecter.";
       } else {
         carteInfo.textContent = "Carte introuvable.";
+        jouerSonRejet();
       }
     }
   }
