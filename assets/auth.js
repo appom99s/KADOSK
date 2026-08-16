@@ -242,25 +242,16 @@ const KADOSK_AUTH = (function () {
     return !!lireTokens();
   }
 
+  // La déconnexion est gérée entièrement côté client : ce site n'a pas de session Wix
+  // basée sur des cookies à faire terminer côté serveur (l'authentification repose
+  // uniquement sur les jetons access/refresh stockés en local, via PKCE) - effacer ces
+  // jetons et revenir directement à la page de connexion suffit, et garantit qu'on y
+  // revient toujours (contrairement à l'ancienne version, qui passait par l'API Redirect
+  // Session de Wix avec une forme de requête "logout" non documentée/non confirmée, et qui
+  // pouvait donc ne pas respecter le postFlowUrl attendu).
   async function deconnecter() {
     effacerTokens();
-    try {
-      const tokenVisiteur = await obtenirTokenVisiteur();
-      const reponse = await appelJson(
-        REDIRECT_SESSION_URL,
-        {
-          origin: config().frontendBaseUrl,
-          logout: {
-            clientId: config().clientId,
-            postFlowUrl: config().frontendBaseUrl + config().logoutRedirectPath
-          }
-        },
-        { Authorization: tokenVisiteur }
-      );
-      window.location.href = reponse.redirectSession.fullUrl;
-    } catch (erreur) {
-      window.location.href = config().logoutRedirectPath;
-    }
+    window.location.href = config().logoutRedirectPath;
   }
 
   return {
