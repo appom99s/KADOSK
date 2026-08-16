@@ -220,6 +220,7 @@
   let saisieMontantDemarree = false;
 
   function activerPaveNumeriqueSiMobile() {
+    if (!paveNumerique) return;
     if (!REQUETE_MOBILE_PAVE.matches) {
       paveNumerique.style.display = "none";
       champMontant.readOnly = false;
@@ -231,6 +232,7 @@
   }
 
   function desactiverPaveNumerique() {
+    if (!paveNumerique) return;
     paveNumerique.style.display = "none";
     champMontant.readOnly = false;
     saisieMontantDemarree = false;
@@ -269,9 +271,14 @@
     saisieMontantDemarree = true;
   }
 
-  paveNumerique.querySelectorAll(".kadosk-touche-pave[data-touche]").forEach((touche) => {
-    touche.addEventListener("click", () => appuyerToucheMontant(touche.dataset.touche));
-  });
+  // Garde défensive : si cashier.html n'a pas (encore) le pavé numérique, ne pas
+  // planter tout le script pour autant - un getElementById manquant ici ne doit
+  // jamais empêcher les boutons "Rechercher"/"Encaisser" plus bas de fonctionner.
+  if (paveNumerique) {
+    paveNumerique.querySelectorAll(".kadosk-touche-pave[data-touche]").forEach((touche) => {
+      touche.addEventListener("click", () => appuyerToucheMontant(touche.dataset.touche));
+    });
+  }
   if (toucheEffacerPave) {
     toucheEffacerPave.addEventListener("click", effacerToucheMontant);
   }
