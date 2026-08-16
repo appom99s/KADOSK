@@ -37,6 +37,19 @@
   let fluxCamera = null;
   let idAnimationScan = null;
   let scanEnCours = false;
+  // Bug trouvé : demarrerScan() n'avait aucune protection contre les appels en double.
+  // Sur mobile, la fenêtre d'autorisation caméra du système fait passer la page en
+  // "cachée" puis "visible" (document.hidden bascule), ce qui déclenche le listener
+  // visibilitychange plus bas et relance demarrerScan() une seconde fois PENDANT que
+  // le premier appel attend encore la réponse de getUserMedia. Deux négociations
+  // caméra concurrentes sur le même appareil peuvent alors se sérialiser côté
+  // système et prendre jusqu'à ~30 secondes avant qu'un flux utilisable arrive -
+  // ce n'est donc pas le matériel qui est lent, c'est le site qui redemandait la
+  // caméra une deuxième fois sans s'en rendre compte. Ces deux drapeaux empêchent
+  // ce doublon et referment proprement un flux obtenu trop tard si entre-temps on a
+  // demandé l'arrêt du scan.
+  let demarrageEnCours = false;
+  let annulationDemandee = false;
   const contexteCanvas = canvasScan.getContext("2d", { willReadFrequently: true });
 
   function afficherOngletScan() {
@@ -59,23 +72,52 @@
   }
 
   async function demarrerScan() {
+    // Empêche deux négociations caméra simultanées (voir l'explication plus haut) :
+    // si un démarrage est déjà en cours, ou si la caméra tourne déjà, on ne fait rien.
+    if (demarrageEnCours || fluxCamera) {
+      return;
+    }
+    demarrageEnCours = true;
+    annulationDemandee = false;
+
     afficherEtatCameraActive();
 
     if (!window.jsQR) {
       messageStatutScan.textContent = "Le scanner QR n'a pas pu se charger. Utilisez la saisie manuelle.";
+      demarrageEnCours = false;
       return;
     }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       messageStatutScan.textContent = "La caméra n'est pas disponible sur cet appareil. Utilisez la saisie manuelle.";
+      demarrageEnCours = false;
       return;
     }
 
+    // Sur certains téléphones, l'activation peut malgré tout prendre quelques secondes
+    // (matériel qui se réveille) : on affiche juste un message pour que ça ne semble
+    // pas figé si ça prend du temps.
+    const avertissementLenteur = setTimeout(() => {
+      if (!scanEnCours) {
+        messageStatutScan.textContent = "Ça prend plus de temps que prévu… (vérifiez qu'aucune autre application n'utilise la caméra)";
+      }
+    }, 6000);
+
     try {
       messageStatutScan.textContent = "Initialisation de la caméra…";
-      fluxCamera = await navigator.mediaDevices.getUserMedia({
+      const flux = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: "environment" } },
         audio: false
       });
+
+      if (annulationDemandee) {
+        // Le scan a été arrêté (page cachée, changement d'onglet...) pendant qu'on
+        // attendait la caméra : on referme ce flux tout de suite au lieu de s'en
+        // servir, pour ne jamais laisser deux flux caméra ouverts en même temps.
+        flux.getTracks().forEach((piste) => piste.stop());
+        return;
+      }
+
+      fluxCamera = flux;
       videoScan.srcObject = fluxCamera;
       await videoScan.play();
       messageStatutScan.textContent = "Visez le QR code de la carte cadeau.";
@@ -83,10 +125,14 @@
       idAnimationScan = requestAnimationFrame(boucleScan);
     } catch (erreur) {
       messageStatutScan.textContent = "Accès à la caméra refusé ou indisponible. Utilisez la saisie manuelle.";
+    } finally {
+      clearTimeout(avertissementLenteur);
+      demarrageEnCours = false;
     }
   }
 
   function arreterScan() {
+    annulationDemandee = true;
     scanEnCours = false;
     if (idAnimationScan) {
       cancelAnimationFrame(idAnimationScan);
@@ -330,9 +376,17 @@
     } catch (erreur) {
       codeCarteActuelle = null;
       const codeErreur = erreur && erreur.message;
-      carteInfo.textContent = codeErreur === "TROP_DE_TENTATIVES"
-        ? "Trop de tentatives de vérification. Merci de réessayer plus tard."
-        : "Carte introuvable.";
+      // On distingue les erreurs qui n'ont rien à voir avec "ce code n'existe pas" -
+      // les confondre a déjà causé une recherche qui semblait cassée sans raison visible.
+      if (codeErreur === "TROP_DE_TENTATIVES") {
+        carteInfo.textContent = "Trop de tentatives de vérification. Merci de réessayer plus tard.";
+      } else if (codeErreur === "MERCHANT_PLAN_NOT_ACTIVE") {
+        carteInfo.textContent = "Votre abonnement KADOSK n'est pas actif. Vérifiez la section Abonnement dans Mon entreprise.";
+      } else if (codeErreur === "NOT_AUTHENTICATED" || codeErreur === "MERCHANT_NOT_FOUND" || codeErreur === "MERCHANT_ROLE_NOT_ASSIGNED") {
+        carteInfo.textContent = "Session expirée. Merci de vous reconnecter.";
+      } else {
+        carteInfo.textContent = "Carte introuvable.";
+      }
     }
   }
 
