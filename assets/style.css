@@ -90,7 +90,9 @@ a {
   padding: 11px 14px;
   border: 1px solid var(--kadosk-bordure);
   border-radius: 8px;
-  font-size: 14px;
+  /* 16px minimum : en dessous, Safari iOS zoome automatiquement sur le champ au
+     focus (comportement natif du navigateur, pas un bug côté page). */
+  font-size: 16px;
   font-family: inherit;
 }
 
@@ -287,6 +289,41 @@ a {
   display: flex;
   align-items: center;
   gap: 18px;
+}
+
+/* Bouton hamburger + overlay du tiroir mobile (nav.js les insère lui-même,
+   ils ne sont donc pas dans le HTML statique des pages). Masqués par défaut,
+   activés seulement sous le point de rupture mobile. */
+.kadosk-bouton-menu-mobile {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  background: var(--kadosk-blanc);
+  box-shadow: var(--kadosk-ombre);
+  color: var(--kadosk-texte);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.kadosk-bouton-menu-mobile svg {
+  width: 20px;
+  height: 20px;
+}
+
+.kadosk-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 15, 40, 0.45);
+  z-index: 105;
+}
+
+.kadosk-sidebar-overlay.visible {
+  display: block;
 }
 
 .kadosk-cloche {
@@ -676,7 +713,7 @@ a {
   padding: 11px 14px;
   border: 1px solid var(--kadosk-bordure);
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-family: inherit;
 }
 
@@ -1068,29 +1105,105 @@ a {
   }
 }
 
-@media (max-width: 720px) {
-  .kadosk-app {
-    flex-direction: column;
+@media (max-width: 860px) {
+  /* La sidebar quitte le flux normal pour devenir un tiroir plein écran en
+     hauteur, ouvert/fermé par le bouton hamburger (nav.js gère la classe
+     "ouverte"). Sur mobile, .kadosk-main récupère automatiquement toute la
+     largeur puisque la sidebar est en position fixed. */
+  .kadosk-bouton-menu-mobile {
+    display: flex;
   }
+
   .kadosk-sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--kadosk-sombre-bordure);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    max-width: 82vw;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 110;
+    box-shadow: 0 0 28px rgba(10, 8, 20, 0.35);
   }
-  .kadosk-grille-kpi {
-    grid-template-columns: 1fr;
+
+  .kadosk-sidebar.ouverte {
+    transform: translateX(0);
   }
+
   .kadosk-main {
-    padding: 20px;
+    padding: 16px 16px 40px;
+    max-width: 100%;
   }
-  .kadosk-table {
-    display: block;
-    overflow-x: auto;
+
+  .kadosk-entete {
+    gap: 10px;
   }
+
+  .kadosk-entete h1 {
+    font-size: 18px;
+  }
+
   .kadosk-entete-droite {
     gap: 10px;
   }
+
   .kadosk-utilisateur-nom {
     display: none;
+  }
+
+  .kadosk-grille-kpi {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kadosk-panneau-large,
+  .kadosk-panneau {
+    padding: 18px;
+  }
+
+  .kadosk-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .kadosk-carte-connexion {
+    padding: 28px 22px;
+  }
+}
+
+@media (max-width: 520px) {
+  .kadosk-grille-kpi {
+    grid-template-columns: 1fr;
+  }
+
+  .kadosk-ligne-boutons {
+    flex-wrap: wrap;
+  }
+
+  .kadosk-choix-couleur {
+    flex-wrap: wrap;
+  }
+
+  .kadosk-finance-ligne {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .kadosk-cloche-panneau {
+    width: min(300px, calc(100vw - 32px));
+    right: -8px;
+  }
+
+  .kadosk-page-connexion {
+    padding: 16px;
+  }
+
+  .kadosk-carte-connexion {
+    padding: 24px 18px;
+  }
+
+  .kadosk-scan-conteneur {
+    max-width: 100% !important;
   }
 }
