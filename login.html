@@ -24,11 +24,16 @@
       <button class="kadosk-bouton" id="boutonConnexion" style="width:100%;">Se connecter</button>
 
       <div class="kadosk-message-erreur" id="messageErreur"></div>
+
+      <p style="text-align:center; margin-top:14px;">
+        <a href="forgot-password.html" style="color:var(--kadosk-violet); font-weight:700; font-size:13px;">Mot de passe oublié ?</a>
+      </p>
     </div>
   </div>
 
   <script src="assets/config.js"></script>
   <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
   <script>
     const boutonConnexion = document.getElementById("boutonConnexion");
     const champEmail = document.getElementById("champEmail");
@@ -53,12 +58,26 @@
       boutonConnexion.textContent = "Connexion en cours...";
 
       try {
+        try {
+          const limite = await KADOSK_API.checkLoginLimit(email);
+          if (limite && limite.allowed === false) {
+            messageErreur.textContent =
+              "Trop de tentatives échouées. Réessayez dans " + (limite.minutesRestantes || 15) + " minute(s).";
+            return;
+          }
+        } catch (erreurLimite) {
+          console.error("Vérification limite de connexion indisponible :", erreurLimite);
+        }
+
         const resultat = await KADOSK_AUTH.loginMembre(email, motDePasse);
 
         if (resultat.state === "SUCCESS") {
+          KADOSK_API.recordLoginResult(email, true).catch(() => {});
           await KADOSK_AUTH.demarrerAutorisationMembre(resultat.sessionToken);
           return;
         }
+
+        KADOSK_API.recordLoginResult(email, false).catch(() => {});
 
         if (resultat.state === "REQUIRE_OWNER_APPROVAL") {
           messageErreur.textContent = "Votre compte marchand est en attente d'approbation.";
@@ -69,6 +88,7 @@
         }
       } catch (erreur) {
         console.error("Erreur connexion KADOSK :", erreur);
+        KADOSK_API.recordLoginResult(email, false).catch(() => {});
         if (erreur.message === "ERREUR_RESEAU") {
           messageErreur.textContent = "Impossible de contacter Wix (réseau/CORS). Voir la console.";
         } else {

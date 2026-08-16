@@ -63,6 +63,8 @@
       document.getElementById("apercuCartesActives").textContent = stats.activeCardsCount;
       document.getElementById("apercuEncours").textContent = formaterMontant(stats.activeCardsBalance) + " DH";
       document.getElementById("apercuCommandes").textContent = stats.pendingOrdersCount;
+      document.getElementById("apercuUtilisees").textContent = stats.usedCardsCount || 0;
+      document.getElementById("apercuExpirees").textContent = stats.expiredCardsCount || 0;
 
       renderAlertes(stats);
     } catch (erreur) {
@@ -161,7 +163,7 @@
 
       conteneur.innerHTML = transactions
         .map((entree) => {
-          const codeMasque = "****" + (entree.giftCardId || "").slice(-4).toUpperCase();
+          const codeMasque = window.KADOSK_MASQUER_ID ? window.KADOSK_MASQUER_ID(entree.giftCardId) : "00***";
           const badge = entree.success
             ? '<span class="kadosk-badge kadosk-badge-actif">Réussie</span>'
             : '<span class="kadosk-badge" style="background:var(--kadosk-danger-tint); color:var(--kadosk-danger);">Refusée</span>';

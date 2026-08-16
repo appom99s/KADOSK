@@ -17,15 +17,36 @@
       </div>
 
       <div class="kadosk-panneau-large" style="max-width:520px;">
-        <h2>Carte cadeau</h2>
-
-        <div class="kadosk-champ">
-          <label for="champCode">Code de la carte</label>
-          <input type="text" id="champCode" placeholder="Saisir ou scanner le code" autofocus />
+        <div style="display:flex; gap:10px; margin-bottom:18px;">
+          <button type="button" id="ongletScan" class="kadosk-bouton-onglet" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600;">
+            <span id="iconeOngletScan"></span> Scanner QR
+          </button>
+          <button type="button" id="ongletManuel" class="kadosk-bouton-onglet" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600;">
+            <span id="iconeOngletManuel"></span> Saisir un code
+          </button>
         </div>
 
-        <div class="kadosk-ligne-boutons">
-          <button class="kadosk-bouton kadosk-bouton-secondaire" id="boutonRechercher">Rechercher</button>
+        <div id="panneauScan">
+          <div class="kadosk-scan-conteneur" style="position:relative; border-radius:10px; overflow:hidden; background:#0d0b18; aspect-ratio:1/1; max-width:340px; margin:0 auto;">
+            <video id="videoScan" playsinline muted style="width:100%; height:100%; object-fit:cover; display:block;"></video>
+            <div style="position:absolute; inset:0; border:2px solid rgba(255,255,255,0.55); margin:14%; border-radius:14px; pointer-events:none;"></div>
+          </div>
+          <canvas id="canvasScan" style="display:none;"></canvas>
+          <div id="messageStatutScan" style="text-align:center; font-size:13px; color:var(--kadosk-texte-clair); margin-top:12px;">Initialisation de la caméra…</div>
+          <div class="kadosk-ligne-boutons" style="justify-content:center; margin-top:8px;">
+            <button class="kadosk-bouton kadosk-bouton-secondaire" id="boutonArreterScan">Arrêter le scan</button>
+          </div>
+        </div>
+
+        <div id="panneauManuel" style="display:none;">
+          <div class="kadosk-champ">
+            <label for="champCode">Code de la carte</label>
+            <input type="text" id="champCode" placeholder="Saisir le code" />
+          </div>
+
+          <div class="kadosk-ligne-boutons">
+            <button class="kadosk-bouton kadosk-bouton-secondaire" id="boutonRechercher">Rechercher</button>
+          </div>
         </div>
 
         <div class="kadosk-carte-info" id="carteInfo" style="display:none;"></div>
@@ -44,6 +65,7 @@
     </main>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
   <script src="assets/config.js"></script>
   <script src="assets/auth.js"></script>
   <script src="assets/api.js"></script>

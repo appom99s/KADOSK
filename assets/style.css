@@ -658,6 +658,18 @@ a {
   max-width: 480px;
 }
 
+.kadosk-bouton-onglet {
+  background: var(--kadosk-blanc);
+  border: 1px solid var(--kadosk-bordure);
+  color: var(--kadosk-texte-clair);
+}
+
+.kadosk-bouton-onglet.actif {
+  background: var(--kadosk-violet-tint);
+  border-color: var(--kadosk-violet);
+  color: var(--kadosk-violet);
+}
+
 .kadosk-panneau-large {
   background: var(--kadosk-blanc);
   border-radius: var(--kadosk-rayon);

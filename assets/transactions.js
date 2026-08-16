@@ -21,7 +21,7 @@
   }
 
   function codeMasque(giftCardId) {
-    return "****" + (giftCardId || "").slice(-4).toUpperCase();
+    return window.KADOSK_MASQUER_ID ? window.KADOSK_MASQUER_ID(giftCardId) : "00***";
   }
 
   function appliquerFiltreEtAfficher() {

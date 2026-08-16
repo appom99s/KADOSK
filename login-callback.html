@@ -9,19 +9,33 @@
 <body>
   <div class="kadosk-page-connexion">
     <div class="kadosk-carte-connexion" style="text-align:center;">
-      <div class="kadosk-logo">KADOSK</div>
+      <img src="assets/logo.png" alt="KADOSK" style="height:30px; display:block; margin:0 auto 18px;" />
       <div class="kadosk-message-info" id="messageStatut">Connexion en cours...</div>
     </div>
   </div>
 
   <script src="assets/config.js"></script>
   <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
   <script>
     const messageStatut = document.getElementById("messageStatut");
+    const CLE_CODE_REINIT = "kadosk_reset_code_en_attente";
 
     (async function () {
       try {
         await KADOSK_AUTH.traiterRetourAutorisation();
+
+        const codeReinitialisation = sessionStorage.getItem(CLE_CODE_REINIT);
+        if (codeReinitialisation) {
+          sessionStorage.removeItem(CLE_CODE_REINIT);
+          messageStatut.textContent = "Mise à jour du mot de passe...";
+          try {
+            await KADOSK_API.confirmPasswordChange(codeReinitialisation);
+          } catch (erreurMdp) {
+            console.error("Echec finalisation réinitialisation mot de passe :", erreurMdp);
+          }
+        }
+
         window.location.href = "dashboard.html";
       } catch (erreur) {
         console.error("Erreur callback KADOSK :", erreur);

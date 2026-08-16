@@ -165,6 +165,14 @@
     }
   }
 
+  // Identifiant réduit affiché au marchand à la place du vrai code de la carte
+  // (jamais renvoyé par le backend) : ex. "KDSK-A1B2-..." -> "A1***".
+  function masquerIdentifiantCarte(giftCardId) {
+    const brut = (giftCardId || "").replace(/-/g, "");
+    return (brut.slice(0, 2).toUpperCase() || "00") + "***";
+  }
+
   window.KADOSK_ICONES = ICONES;
+  window.KADOSK_MASQUER_ID = masquerIdentifiantCarte;
   window.KADOSK_NAV = { rendreBarreLaterale, rendreEnteteDroite };
 })();

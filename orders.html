@@ -12,8 +12,14 @@
 
     <main class="kadosk-main">
       <div class="kadosk-entete">
-        <h1>Commandes en attente</h1>
+        <h1>Commandes</h1>
         <div id="kadoskEnteteDroite" class="kadosk-entete-droite"></div>
+      </div>
+
+      <div class="kadosk-filtres">
+        <span class="kadosk-filtre actif" data-filtre="DRAFT">En attente</span>
+        <span class="kadosk-filtre" data-filtre="ACTIVE">Acceptées</span>
+        <span class="kadosk-filtre" data-filtre="REFUSED">Refusées</span>
       </div>
 
       <div class="kadosk-panneau-large" style="margin-bottom:20px;">
@@ -23,27 +29,34 @@
               <th>Montant</th>
               <th>Portée</th>
               <th>Client</th>
+              <th>Date</th>
               <th>Statut</th>
             </tr>
           </thead>
           <tbody id="corpsTableCommandes"></tbody>
         </table>
         <div class="kadosk-placeholder" id="aucuneCommande" style="display:none; margin-top:12px;">
-          <strong>Aucune commande en attente</strong>
-          Les nouvelles commandes de vos clients apparaîtront ici pour approbation.
+          <strong>Aucune commande</strong>
+          <span id="texteAucuneCommande">Les nouvelles commandes de vos clients apparaîtront ici pour approbation.</span>
         </div>
       </div>
 
       <div class="kadosk-panneau" id="panneauValidation" style="display:none;">
-        <h2>Valider la commande sélectionnée</h2>
+        <h2>Commande sélectionnée</h2>
 
         <div class="kadosk-champ">
-          <label for="champMessage">Message personnel pour le client</label>
-          <textarea id="champMessage" rows="3"></textarea>
+          <label for="champMessage">Message personnel pour le client (si acceptée)</label>
+          <textarea id="champMessage" rows="2"></textarea>
+        </div>
+
+        <div class="kadosk-champ">
+          <label for="champRaisonRefus">Motif du refus (si refusée)</label>
+          <input type="text" id="champRaisonRefus" placeholder="Optionnel" />
         </div>
 
         <div class="kadosk-ligne-boutons">
-          <button class="kadosk-bouton" id="boutonValider">Valider le virement et envoyer la carte</button>
+          <button class="kadosk-bouton" id="boutonValider">Accepter et envoyer la carte</button>
+          <button class="kadosk-bouton" id="boutonRefuser" style="background:var(--kadosk-danger);">Refuser</button>
         </div>
 
         <div class="kadosk-message-erreur" id="messageStatutCommande"></div>

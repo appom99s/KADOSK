@@ -237,6 +237,7 @@ const KADOSK_AUTH = (function () {
     demarrerAutorisationMembre,
     traiterRetourAutorisation,
     obtenirAccessTokenValide,
+    obtenirTokenVisiteur,
     estConnecte,
     deconnecter
   };

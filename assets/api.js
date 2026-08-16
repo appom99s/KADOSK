@@ -9,9 +9,7 @@ const KADOSK_API = (function () {
     return "https://www.wixapis.com/velo/v1/http/invoke/" + nom;
   }
 
-  async function appeler(nom, methode, corps, dejaReessaye) {
-    const accessToken = await KADOSK_AUTH.obtenirAccessTokenValide();
-
+  async function executerAppel(nom, methode, corps, accessToken, dejaReessaye, estPublic) {
     const options = {
       method: methode,
       headers: {
@@ -34,7 +32,7 @@ const KADOSK_API = (function () {
       throw erreur;
     }
 
-    if (reponse.status === 401 && !dejaReessaye) {
+    if (reponse.status === 401 && !dejaReessaye && !estPublic) {
       return appeler(nom, methode, corps, true);
     }
 
@@ -54,6 +52,18 @@ const KADOSK_API = (function () {
     }
 
     return donnees;
+  }
+
+  async function appeler(nom, methode, corps, dejaReessaye) {
+    const accessToken = await KADOSK_AUTH.obtenirAccessTokenValide();
+    return executerAppel(nom, methode, corps, accessToken, dejaReessaye, false);
+  }
+
+  // Pour les appels avant connexion (mot de passe oublié, limite de connexion) :
+  // utilise un token visiteur, pas de session membre requise.
+  async function appelerPublic(nom, methode, corps) {
+    const tokenVisiteur = await KADOSK_AUTH.obtenirTokenVisiteur();
+    return executerAppel(nom, methode, corps, tokenVisiteur, true, true);
   }
 
   return {
@@ -76,6 +86,20 @@ const KADOSK_API = (function () {
     getRevenueChart: () => appeler("revenueChart", "GET"),
     getAllGiftCards: (status) =>
       appeler("allGiftCards" + (status ? "?status=" + encodeURIComponent(status) : ""), "GET"),
-    getFinanceSummary: () => appeler("financeSummary", "GET")
+    getFinanceSummary: () => appeler("financeSummary", "GET"),
+    getMerchantProfile: () => appeler("merchantProfile", "GET"),
+    refuseOrder: (giftCardId, reason) => appeler("refuseOrder", "POST", { giftCardId, reason }),
+
+    // Mot de passe (connecté) : demande de code puis confirmation.
+    requestPasswordChange: (newPassword) => appeler("requestPasswordChange", "POST", { newPassword }),
+    confirmPasswordChange: (code) => appeler("confirmPasswordChange", "POST", { code }),
+
+    // Mot de passe oublié (déconnecté) : appels publics avec token visiteur.
+    forgotPassword: (email, newPassword) => appelerPublic("forgotPassword", "POST", { email, newPassword }),
+    confirmForgotPassword: (email, code) => appelerPublic("confirmForgotPassword", "POST", { email, code }),
+
+    // Anti brute-force sur la connexion : appels publics avec token visiteur.
+    checkLoginLimit: (email) => appelerPublic("checkLoginLimit", "POST", { email }),
+    recordLoginResult: (email, success) => appelerPublic("recordLoginResult", "POST", { email, success })
   };
 })();
