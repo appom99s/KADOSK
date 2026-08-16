@@ -31,6 +31,19 @@
       document.getElementById("valAttente").textContent = formaterMontant(resume.pendingOrdersTotal);
       document.getElementById("valCommandesAttente").textContent =
         resume.pendingOrdersCount + (resume.pendingOrdersCount > 1 ? " commandes en attente" : " commande en attente");
+
+      const blocConfiguree = document.getElementById("blocCommissionConfiguree");
+      const blocNonConfiguree = document.getElementById("blocCommissionNonConfiguree");
+      if (resume.commissionSystemConfigured) {
+        blocConfiguree.style.display = "block";
+        blocNonConfiguree.style.display = "none";
+        document.getElementById("valTauxCommission").textContent = resume.commissionRate + " %";
+        document.getElementById("valCommission").textContent = formaterMontant(resume.commissionAmount) + " DH";
+        document.getElementById("valNet").textContent = formaterMontant(resume.netAmount) + " DH";
+      } else {
+        blocConfiguree.style.display = "none";
+        blocNonConfiguree.style.display = "block";
+      }
     } catch (erreur) {
       console.error("Erreur chargement résumé financier :", erreur);
     }

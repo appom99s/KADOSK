@@ -39,9 +39,14 @@
 
       <div class="kadosk-panneau-large" style="max-width:560px;">
         <h2>Commissions &amp; versements KADOSK</h2>
-        <div class="kadosk-placeholder">
+        <div id="blocCommissionConfiguree">
+          <div class="kadosk-finance-ligne"><span class="label">Taux de commission (abonnement)</span><span class="valeur" id="valTauxCommission">—</span></div>
+          <div class="kadosk-finance-ligne"><span class="label">Commission prélevée</span><span class="valeur" id="valCommission">—</span></div>
+          <div class="kadosk-finance-ligne"><span class="label">Net qui vous revient</span><span class="valeur vert" id="valNet">—</span></div>
+        </div>
+        <div class="kadosk-placeholder" id="blocCommissionNonConfiguree" style="display:none;">
           <strong>Pas encore configuré</strong>
-          Le taux de commission KADOSK et le système de versement n'ont pas encore été définis. Une fois le taux confirmé, cette section affichera automatiquement la commission prélevée, le net qui vous revient et l'historique de vos versements.
+          Le taux de commission KADOSK n'a pas encore pu être déterminé (aucun abonnement actif détecté). Une fois votre abonnement actif, cette section affichera automatiquement la commission prélevée et le net qui vous revient.
         </div>
       </div>
     </main>

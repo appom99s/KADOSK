@@ -88,6 +88,7 @@ const KADOSK_API = (function () {
       appeler("allGiftCards" + (status ? "?status=" + encodeURIComponent(status) : ""), "GET"),
     getFinanceSummary: () => appeler("financeSummary", "GET"),
     getMerchantProfile: () => appeler("merchantProfile", "GET"),
+    getSubscriptionInfo: () => appeler("subscriptionInfo", "GET"),
     refuseOrder: (giftCardId, reason) => appeler("refuseOrder", "POST", { giftCardId, reason }),
 
     // Mot de passe (connecté) : demande de code puis confirmation.

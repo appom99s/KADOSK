@@ -825,6 +825,155 @@ a {
   margin-bottom: 6px;
 }
 
+.kadosk-carte-apercu {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 3 / 2;
+  margin: 0 auto;
+  background: #fbfbf8;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--kadosk-ombre);
+  border: 1px solid var(--kadosk-bordure);
+}
+
+.kadosk-carte-apercu-logo-marchand {
+  position: absolute;
+  top: 8%;
+  left: 7%;
+  width: 34%;
+  height: 17%;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(20, 39, 35, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.kadosk-carte-apercu-logo-marchand img {
+  max-width: 82%;
+  max-height: 70%;
+  object-fit: contain;
+}
+
+.kadosk-carte-apercu-logo-marchand::before {
+  content: "";
+  display: block;
+  width: 50%;
+  height: 50%;
+  border-radius: 6px;
+  background: var(--kadosk-bordure);
+}
+
+.kadosk-carte-apercu-logo-marchand.a-un-logo::before {
+  display: none;
+}
+
+.kadosk-carte-apercu-titre {
+  position: absolute;
+  top: 28%;
+  left: 7%;
+  width: 56%;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--kadosk-texte);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.kadosk-carte-apercu-cadeau {
+  position: absolute;
+  top: 6%;
+  right: 6%;
+  width: 22%;
+  height: auto;
+  opacity: 0.22;
+}
+
+.kadosk-carte-apercu-montant-bloc {
+  position: absolute;
+  top: 46%;
+  right: 6%;
+  text-align: right;
+}
+
+.kadosk-carte-apercu-montant-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--kadosk-teal-fonce);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.kadosk-carte-apercu-montant-label .trait {
+  display: inline-block;
+  width: 16px;
+  height: 1px;
+  background: var(--kadosk-teal);
+}
+
+.kadosk-carte-apercu-montant-valeur {
+  margin-top: 6px;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--kadosk-sombre);
+  white-space: nowrap;
+}
+
+.kadosk-carte-apercu-montant-valeur .devise {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.kadosk-carte-apercu-vague {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  bottom: 0;
+  height: 30%;
+  background: var(--kadosk-teal);
+  opacity: 0.32;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+
+.kadosk-carte-apercu-logo-kadosk {
+  position: absolute;
+  left: 5%;
+  bottom: 8%;
+  width: 36%;
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  box-shadow: 0 2px 8px rgba(20, 39, 35, 0.1);
+}
+
+.kadosk-carte-apercu-logo-kadosk img {
+  height: 20px;
+  width: auto;
+  object-fit: contain;
+}
+
+.kadosk-carte-apercu-logo-kadosk span {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--kadosk-texte-clair);
+}
+
 @media (max-width: 1080px) {
   .kadosk-grille-kpi {
     grid-template-columns: repeat(2, 1fr);

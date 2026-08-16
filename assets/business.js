@@ -4,6 +4,13 @@
     if (el) el.textContent = valeur || "—";
   }
 
+  const LIBELLES_STATUT_RIB = {
+    NOT_SUBMITTED: "Non renseigné",
+    PENDING_VERIFICATION: "En attente de vérification",
+    CHANGE_PENDING: "Modification en attente de vérification",
+    VERIFIED: "Vérifié"
+  };
+
   async function chargerProfil() {
     try {
       const profil = await KADOSK_API.getMerchantProfile();
@@ -27,8 +34,63 @@
       texte("pAddress", profil.address);
       texte("pCity", [profil.city, profil.region].filter(Boolean).join(", "));
       texte("pWebsite", profil.website);
+
+      texte("pBankName", profil.bankName);
+      texte("pRib", profil.rib);
+      texte("pRibHolder", profil.ribHolderName);
+      texte("pRibStatus", LIBELLES_STATUT_RIB[profil.ribStatus] || profil.ribStatus || "Non renseigné");
     } catch (erreur) {
       console.error("Erreur chargement profil marchand :", erreur);
+    }
+  }
+
+  const LIBELLES_PALIER = { BRONZE: "Bronze", SILVER: "Silver", GOLD: "Gold" };
+  const COULEURS_PALIER = { BRONZE: "#a5652d", SILVER: "#6b7280", GOLD: "#b8860b" };
+
+  function formaterDateAbonnement(valeur) {
+    if (!valeur) return null;
+    const date = new Date(valeur);
+    return isNaN(date.getTime()) ? null : date.toLocaleDateString("fr-FR");
+  }
+
+  async function chargerAbonnement() {
+    const lienChanger = document.getElementById("lienChangerAbonnement");
+    try {
+      const infos = await KADOSK_API.getSubscriptionInfo();
+
+      const elTier = document.getElementById("pPlanTier");
+      if (infos.tier && LIBELLES_PALIER[infos.tier]) {
+        elTier.textContent = LIBELLES_PALIER[infos.tier] + (infos.planName ? " (" + infos.planName + ")" : "");
+        elTier.style.color = COULEURS_PALIER[infos.tier];
+        elTier.style.fontWeight = "800";
+      } else {
+        elTier.textContent = infos.active ? (infos.planName || "Abonnement actif") : "Aucun abonnement actif";
+      }
+
+      texte(
+        "pPlanCommission",
+        infos.commissionRate !== null && infos.commissionRate !== undefined
+          ? infos.commissionRate + " %"
+          : "Non défini"
+      );
+
+      const dateExpiration = formaterDateAbonnement(infos.expirationDate);
+      texte("pPlanExpiration", infos.recurring && !dateExpiration ? "Tant que non résilié" : dateExpiration);
+
+      if (!infos.active) {
+        texte("pPlanRenewal", "—");
+      } else if (infos.recurring) {
+        texte("pPlanRenewal", infos.autoRenew ? "Renouvellement automatique" : "Ne se renouvelle pas (résilié)");
+      } else {
+        texte("pPlanRenewal", "Paiement unique");
+      }
+
+      if (lienChanger && infos.changePlanUrl) {
+        lienChanger.href = infos.changePlanUrl;
+      }
+    } catch (erreur) {
+      console.error("Erreur chargement abonnement :", erreur);
+      texte("pPlanTier", "Indisponible");
     }
   }
 
@@ -109,4 +171,5 @@
   boutonConfirmerMdp.addEventListener("click", confirmerCode);
 
   chargerProfil();
+  chargerAbonnement();
 })();
