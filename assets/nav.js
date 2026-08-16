@@ -132,6 +132,63 @@
         })
         .catch(() => {});
     }
+
+    initialiserMenuMobile(conteneur);
+  }
+
+  // ---------------------------------------------------------------------
+  // Menu mobile : la sidebar (toujours présente dans le HTML de chaque page)
+  // devient un tiroir hors écran sous ~860px. On ajoute un bouton hamburger
+  // dans l'entête et un overlay pour fermer au clic en dehors, sans avoir à
+  // toucher chaque page HTML (elles appellent déjà rendreBarreLaterale).
+  // ---------------------------------------------------------------------
+  function initialiserMenuMobile(sidebar) {
+    if (document.getElementById("kadoskBoutonMenu")) return;
+
+    const entete = document.querySelector(".kadosk-entete");
+    if (!entete) return;
+
+    const bouton = document.createElement("button");
+    bouton.type = "button";
+    bouton.id = "kadoskBoutonMenu";
+    bouton.className = "kadosk-bouton-menu-mobile";
+    bouton.setAttribute("aria-label", "Ouvrir le menu");
+    bouton.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
+    entete.insertBefore(bouton, entete.firstChild);
+
+    const overlay = document.createElement("div");
+    overlay.id = "kadoskSidebarOverlay";
+    overlay.className = "kadosk-sidebar-overlay";
+    document.body.appendChild(overlay);
+
+    function ouvrirMenu() {
+      sidebar.classList.add("ouverte");
+      overlay.classList.add("visible");
+    }
+
+    function fermerMenu() {
+      sidebar.classList.remove("ouverte");
+      overlay.classList.remove("visible");
+    }
+
+    bouton.addEventListener("click", () => {
+      if (sidebar.classList.contains("ouverte")) {
+        fermerMenu();
+      } else {
+        ouvrirMenu();
+      }
+    });
+
+    overlay.addEventListener("click", fermerMenu);
+
+    sidebar.querySelectorAll("a.kadosk-nav-item").forEach((lien) => {
+      lien.addEventListener("click", fermerMenu);
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 860) fermerMenu();
+    });
   }
 
   function initiales(nom) {
