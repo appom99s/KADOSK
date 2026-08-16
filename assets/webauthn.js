@@ -27,13 +27,34 @@ const KADOSK_WEBAUTHN = (function () {
   // Windows Hello) sur cet appareil. Ne garantit pas que le marchand l'a
   // activé côté KADOSK, seulement que l'appareil pourrait le supporter.
   async function biometrieDisponibleSurCetAppareil() {
+    const diagnostic = await diagnostiquerBiometrieSurCetAppareil();
+    return diagnostic.disponible;
+  }
+
+  // Version diagnostique (DIAGNOSTIC TEMPORAIRE) : renvoie aussi la raison précise d'une
+  // indisponibilité, pour l'afficher directement à l'écran sans avoir besoin d'outils de
+  // développement (utile notamment sur mobile). Utilisée par le bouton d'activation dans
+  // business.js.
+  async function diagnostiquerBiometrieSurCetAppareil() {
+    if (!window.isSecureContext) {
+      return { disponible: false, raison: "Le site n'est pas en contexte sécurisé (HTTPS)." };
+    }
+    if (!window.PublicKeyCredential) {
+      return { disponible: false, raison: "PublicKeyCredential indisponible sur ce navigateur." };
+    }
+    if (!PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
+      return { disponible: false, raison: "isUserVerifyingPlatformAuthenticatorAvailable indisponible sur ce navigateur." };
+    }
     try {
-      if (!window.PublicKeyCredential || !PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-        return false;
-      }
-      return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      const disponible = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      return {
+        disponible,
+        raison: disponible
+          ? "OK"
+          : "Le navigateur indique qu'aucun authentificateur biométrique de plateforme (empreinte/visage) n'est configuré sur cet appareil."
+      };
     } catch (erreur) {
-      return false;
+      return { disponible: false, raison: "Erreur lors de la vérification : " + (erreur && erreur.message) };
     }
   }
 
@@ -109,6 +130,7 @@ const KADOSK_WEBAUTHN = (function () {
     bufferVersBase64Url,
     base64UrlVersBuffer,
     biometrieDisponibleSurCetAppareil,
+    diagnostiquerBiometrieSurCetAppareil,
     creerCredentialEnregistrement,
     obtenirAssertionConnexion
   };
