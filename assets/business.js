@@ -211,9 +211,11 @@
       return;
     }
 
-    const disponible = await KADOSK_WEBAUTHN.biometrieDisponibleSurCetAppareil();
-    if (!disponible) {
-      messageStatutBiometrie.textContent = "Aucune biométrie (Face ID / Touch ID / Windows Hello) détectée sur cet appareil.";
+    // DIAGNOSTIC TEMPORAIRE : on affiche la raison précise (pas seulement oui/non) pour
+    // pouvoir diagnostiquer directement depuis un mobile, sans outils de développement.
+    const diagnostic = await KADOSK_WEBAUTHN.diagnostiquerBiometrieSurCetAppareil();
+    if (!diagnostic.disponible) {
+      messageStatutBiometrie.textContent = "Biométrie indisponible : " + diagnostic.raison;
       return;
     }
 
