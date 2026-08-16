@@ -1,4 +1,17 @@
 (function () {
+  // Echappement HTML pour toute donnée saisie par un tiers non authentifié (nom/email
+  // acheteur venant des commandes publiques, etc.) avant insertion via innerHTML.
+  // Ne jamais concaténer une valeur non fiable dans du HTML sans passer par cette fonction.
+  function echapperHtml(texte) {
+    return String(texte === null || texte === undefined ? "" : texte)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+  window.KADOSK_ECHAPPER_HTML = echapperHtml;
+
   // Icônes SVG minimalistes (trait, currentColor) réutilisées dans la sidebar,
   // les cartes KPI et les alertes pour rester cohérent visuellement.
   const ICONES = {
@@ -186,7 +199,7 @@
             .map(
               (commande) =>
                 '<a class="kadosk-cloche-item" href="orders.html">' +
-                '<div class="kadosk-cloche-item-titre">' + (commande.buyerName || commande.buyerEmail || "Client") + "</div>" +
+                '<div class="kadosk-cloche-item-titre">' + echapperHtml(commande.buyerName || commande.buyerEmail || "Client") + "</div>" +
                 '<div class="kadosk-cloche-item-detail">' + formaterMontantNotif(commande.initialBalance) + " DH · " + formaterDateNotif(commande.createdAt) + "</div>" +
                 "</a>"
             )

@@ -974,6 +974,90 @@ a {
   color: var(--kadosk-texte-clair);
 }
 
+/* Couleur d'accent de la carte cadeau : ne modifie que la vague de fond et le
+   cadre du montant (--kadosk-teal / --kadosk-teal-fonce), pas le reste de la
+   charte (fond, logos, typographie), qui reste fixe. */
+.kadosk-carte-apercu[data-accent="violet"] {
+  --kadosk-teal: var(--kadosk-violet);
+  --kadosk-teal-fonce: var(--kadosk-violet-fonce);
+}
+.kadosk-carte-apercu[data-accent="orange"] {
+  --kadosk-teal: var(--kadosk-orange);
+  --kadosk-teal-fonce: #b06b00;
+}
+.kadosk-carte-apercu[data-accent="bleu"] {
+  --kadosk-teal: var(--kadosk-bleu);
+  --kadosk-teal-fonce: #1f5fc0;
+}
+.kadosk-carte-apercu[data-accent="rose"] {
+  --kadosk-teal: #e0629c;
+  --kadosk-teal-fonce: #a83f74;
+}
+
+.kadosk-choix-couleur {
+  display: flex;
+  gap: 10px;
+}
+
+.kadosk-pastille-couleur {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.kadosk-pastille-couleur.selectionnee {
+  border-color: var(--kadosk-texte);
+  box-shadow: 0 0 0 2px var(--kadosk-blanc), 0 0 0 4px var(--kadosk-texte);
+}
+
+/* Interrupteur (toggle) réutilisé pour les préférences réseau KADOSK. */
+.kadosk-interrupteur {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.kadosk-interrupteur input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.kadosk-interrupteur-curseur {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--kadosk-bordure);
+  border-radius: 999px;
+  transition: background 0.15s;
+}
+
+.kadosk-interrupteur-curseur::before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  top: 3px;
+  background: var(--kadosk-blanc);
+  border-radius: 50%;
+  transition: transform 0.15s;
+  box-shadow: 0 1px 3px rgba(20, 15, 40, 0.25);
+}
+
+.kadosk-interrupteur input:checked + .kadosk-interrupteur-curseur {
+  background: var(--kadosk-violet);
+}
+
+.kadosk-interrupteur input:checked + .kadosk-interrupteur-curseur::before {
+  transform: translateX(18px);
+}
+
 @media (max-width: 1080px) {
   .kadosk-grille-kpi {
     grid-template-columns: repeat(2, 1fr);

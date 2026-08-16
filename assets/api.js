@@ -101,6 +101,17 @@ const KADOSK_API = (function () {
 
     // Anti brute-force sur la connexion : appels publics avec token visiteur.
     checkLoginLimit: (email) => appelerPublic("checkLoginLimit", "POST", { email }),
-    recordLoginResult: (email, success) => appelerPublic("recordLoginResult", "POST", { email, success })
+    recordLoginResult: (email, success) => appelerPublic("recordLoginResult", "POST", { email, success }),
+
+    // Réseau KADOSK : acceptation des cartes universelles / par domaine (à la caisse).
+    saveNetworkPreferences: (acceptsUniversalCards, acceptsDomainCards) =>
+      appeler("networkPreferences", "POST", { acceptsUniversalCards, acceptsDomainCards }),
+
+    // Double authentification (2FA) par application TOTP (Google Authenticator, etc.).
+    start2FA: () => appeler("start2FA", "POST"),
+    confirm2FA: (code) => appeler("confirm2FA", "POST", { code }),
+    disable2FA: (code) => appeler("disable2FA", "POST", { code }),
+    need2FA: () => appeler("need2FA", "GET"),
+    verify2FA: (code) => appeler("verify2FA", "POST", { code })
   };
 })();

@@ -39,10 +39,149 @@
       texte("pRib", profil.rib);
       texte("pRibHolder", profil.ribHolderName);
       texte("pRibStatus", LIBELLES_STATUT_RIB[profil.ribStatus] || profil.ribStatus || "Non renseigné");
+
+      texte("pSubCategoryReseau", profil.activitySubCategory);
+      const toggleAcceptUniversal = document.getElementById("toggleAcceptUniversal");
+      const toggleAcceptDomain = document.getElementById("toggleAcceptDomain");
+      if (toggleAcceptUniversal) toggleAcceptUniversal.checked = !!profil.acceptsUniversalCards;
+      if (toggleAcceptDomain) toggleAcceptDomain.checked = !!profil.acceptsDomainCards;
     } catch (erreur) {
       console.error("Erreur chargement profil marchand :", erreur);
     }
   }
+
+  // -------------------------------------------------------------------
+  // Réseau KADOSK : acceptation des cartes universelles / par domaine.
+  // -------------------------------------------------------------------
+  const toggleAcceptUniversal = document.getElementById("toggleAcceptUniversal");
+  const toggleAcceptDomain = document.getElementById("toggleAcceptDomain");
+  const messageStatutReseau = document.getElementById("messageStatutReseau");
+
+  async function enregistrerPreferencesReseau() {
+    messageStatutReseau.style.color = "";
+    messageStatutReseau.textContent = "";
+    try {
+      await KADOSK_API.saveNetworkPreferences(toggleAcceptUniversal.checked, toggleAcceptDomain.checked);
+      messageStatutReseau.style.color = "#1faa6c";
+      messageStatutReseau.textContent = "Préférences enregistrées.";
+    } catch (erreur) {
+      console.error("Erreur enregistrement préférences réseau :", erreur);
+      messageStatutReseau.textContent = "Échec de l'enregistrement. Merci de réessayer.";
+      // On restaure l'état précédent en rechargeant le profil réel.
+      chargerProfil();
+    }
+  }
+
+  if (toggleAcceptUniversal) toggleAcceptUniversal.addEventListener("change", enregistrerPreferencesReseau);
+  if (toggleAcceptDomain) toggleAcceptDomain.addEventListener("change", enregistrerPreferencesReseau);
+
+  // -------------------------------------------------------------------
+  // Double authentification (2FA) par application TOTP.
+  // -------------------------------------------------------------------
+  const totpEtatDesactive = document.getElementById("totpEtatDesactive");
+  const totpEtatEnrolement = document.getElementById("totpEtatEnrolement");
+  const totpEtatActif = document.getElementById("totpEtatActif");
+  const totpQrCode = document.getElementById("totpQrCode");
+  const totpSecretTexte = document.getElementById("totpSecretTexte");
+  const champCode2FAConfirmation = document.getElementById("champCode2FAConfirmation");
+  const champCode2FADesactivation = document.getElementById("champCode2FADesactivation");
+  const bouton2FAActiver = document.getElementById("bouton2FAActiver");
+  const bouton2FAConfirmer = document.getElementById("bouton2FAConfirmer");
+  const bouton2FAAnnuler = document.getElementById("bouton2FAAnnuler");
+  const bouton2FADesactiver = document.getElementById("bouton2FADesactiver");
+  const messageStatut2FA = document.getElementById("messageStatut2FA");
+
+  function afficherEtat2FA(etat) {
+    if (!totpEtatDesactive) return;
+    totpEtatDesactive.style.display = etat === "desactive" ? "block" : "none";
+    totpEtatEnrolement.style.display = etat === "enrolement" ? "block" : "none";
+    totpEtatActif.style.display = etat === "actif" ? "block" : "none";
+  }
+
+  async function chargerEtat2FA() {
+    if (!totpEtatDesactive) return;
+    try {
+      const etat = await KADOSK_API.need2FA();
+      afficherEtat2FA(etat && etat.enabled ? "actif" : "desactive");
+    } catch (erreur) {
+      console.error("Erreur chargement état 2FA :", erreur);
+    }
+  }
+
+  async function activer2FA() {
+    messageStatut2FA.style.color = "";
+    messageStatut2FA.textContent = "";
+    bouton2FAActiver.disabled = true;
+    try {
+      const resultat = await KADOSK_API.start2FA();
+      totpSecretTexte.value = resultat.secretBase32 || "";
+      totpQrCode.innerHTML = "";
+      if (window.QRCode && resultat.otpauthUrl) {
+        new QRCode(totpQrCode, { text: resultat.otpauthUrl, width: 180, height: 180 });
+      }
+      champCode2FAConfirmation.value = "";
+      afficherEtat2FA("enrolement");
+    } catch (erreur) {
+      console.error("Erreur démarrage activation 2FA :", erreur);
+      messageStatut2FA.textContent = "Impossible de démarrer l'activation. Réessayez.";
+    } finally {
+      bouton2FAActiver.disabled = false;
+    }
+  }
+
+  async function confirmer2FA() {
+    messageStatut2FA.style.color = "";
+    messageStatut2FA.textContent = "";
+    const code = champCode2FAConfirmation.value.trim();
+    if (!/^\d{6}$/.test(code)) {
+      messageStatut2FA.textContent = "Merci de saisir les 6 chiffres du code.";
+      return;
+    }
+    bouton2FAConfirmer.disabled = true;
+    try {
+      await KADOSK_API.confirm2FA(code);
+      messageStatut2FA.style.color = "#1faa6c";
+      messageStatut2FA.textContent = "Double authentification activée.";
+      afficherEtat2FA("actif");
+    } catch (erreur) {
+      console.error("Erreur confirmation 2FA :", erreur);
+      messageStatut2FA.textContent = "Code invalide. Merci de réessayer.";
+    } finally {
+      bouton2FAConfirmer.disabled = false;
+    }
+  }
+
+  async function desactiver2FA() {
+    messageStatut2FA.style.color = "";
+    messageStatut2FA.textContent = "";
+    const code = champCode2FADesactivation.value.trim();
+    if (!/^\d{6}$/.test(code)) {
+      messageStatut2FA.textContent = "Merci de saisir les 6 chiffres du code.";
+      return;
+    }
+    bouton2FADesactiver.disabled = true;
+    try {
+      await KADOSK_API.disable2FA(code);
+      champCode2FADesactivation.value = "";
+      messageStatut2FA.style.color = "#1faa6c";
+      messageStatut2FA.textContent = "Double authentification désactivée.";
+      afficherEtat2FA("desactive");
+    } catch (erreur) {
+      console.error("Erreur désactivation 2FA :", erreur);
+      if (erreur.message === "TROP_DE_TENTATIVES") {
+        messageStatut2FA.textContent = "Trop de tentatives échouées. Réessayez dans 15 minutes.";
+      } else {
+        messageStatut2FA.textContent = "Code invalide. Merci de réessayer.";
+      }
+    } finally {
+      bouton2FADesactiver.disabled = false;
+    }
+  }
+
+  if (bouton2FAActiver) bouton2FAActiver.addEventListener("click", activer2FA);
+  if (bouton2FAConfirmer) bouton2FAConfirmer.addEventListener("click", confirmer2FA);
+  if (bouton2FAAnnuler) bouton2FAAnnuler.addEventListener("click", () => afficherEtat2FA("desactive"));
+  if (bouton2FADesactiver) bouton2FADesactiver.addEventListener("click", desactiver2FA);
 
   const LIBELLES_PALIER = { BRONZE: "Bronze", SILVER: "Silver", GOLD: "Gold" };
   const COULEURS_PALIER = { BRONZE: "#a5652d", SILVER: "#6b7280", GOLD: "#b8860b" };
@@ -172,4 +311,5 @@
 
   chargerProfil();
   chargerAbonnement();
+  chargerEtat2FA();
 })();

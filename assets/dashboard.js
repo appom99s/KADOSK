@@ -126,12 +126,13 @@
 
       conteneur.innerHTML = commandes
         .map((commande) => {
-          const initiale = (commande.buyerName || commande.buyerEmail || "?").trim().charAt(0).toUpperCase();
+          const echapper = window.KADOSK_ECHAPPER_HTML || ((v) => v);
+          const initiale = echapper((commande.buyerName || commande.buyerEmail || "?").trim().charAt(0).toUpperCase());
           return (
             '<div class="kadosk-liste-item">' +
             '<div class="kadosk-liste-icone">' + initiale + "</div>" +
             '<div class="kadosk-liste-corps">' +
-            '<div class="kadosk-liste-titre">' + (commande.buyerName || commande.buyerEmail || "Client") + "</div>" +
+            '<div class="kadosk-liste-titre">' + echapper(commande.buyerName || commande.buyerEmail || "Client") + "</div>" +
             '<div class="kadosk-liste-sous-titre">' + formaterDateHeure(commande.createdAt) + "</div>" +
             "</div>" +
             '<div class="kadosk-liste-droite">' +

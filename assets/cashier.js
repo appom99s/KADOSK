@@ -1,11 +1,6 @@
 (function () {
-  if (!KADOSK_AUTH.estConnecte()) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  KADOSK_NAV.rendreBarreLaterale("kadoskSidebar");
-  KADOSK_NAV.rendreEnteteDroite("kadoskEnteteDroite");
+  // L'authentification, la barre latérale, l'en-tête et la déconnexion sont
+  // gérées par guard.js (chargé avant ce script).
 
   let codeCarteActuelle = null;
 
@@ -28,10 +23,6 @@
   const blocBoutonEncaisser = document.getElementById("blocBoutonEncaisser");
   const boutonEncaisser = document.getElementById("boutonEncaisser");
   const messageStatutEncaissement = document.getElementById("messageStatutEncaissement");
-
-  document.getElementById("lienDeconnexion").addEventListener("click", () => {
-    KADOSK_AUTH.deconnecter();
-  });
 
   if (window.KADOSK_ICONES) {
     const iconeOngletScan = document.getElementById("iconeOngletScan");
@@ -188,10 +179,11 @@
   }
 
   function ligneInfo(label, valeur) {
+    const echapper = window.KADOSK_ECHAPPER_HTML || ((v) => v);
     return (
       '<div style="display:flex; justify-content:space-between; gap:12px; padding:5px 0; font-size:13px;">' +
-      '<span style="color:var(--kadosk-texte-clair);">' + label + "</span>" +
-      '<span style="font-weight:600; text-align:right;">' + valeur + "</span>" +
+      '<span style="color:var(--kadosk-texte-clair);">' + echapper(label) + "</span>" +
+      '<span style="font-weight:600; text-align:right;">' + echapper(valeur) + "</span>" +
       "</div>"
     );
   }

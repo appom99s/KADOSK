@@ -75,7 +75,76 @@
 
       <div class="kadosk-placeholder" style="margin-bottom:20px;">
         <strong>Informations figées</strong>
-        Ces informations ont été saisies lors de votre inscription et ne sont pas modifiables ici. Pour toute correction, contactez le support KADOSK. Seul votre mot de passe peut être changé ci-dessous.
+        Ces informations ont été saisies lors de votre inscription et ne sont pas modifiables ici. Pour toute correction, contactez le support KADOSK. Votre mot de passe, vos préférences réseau et votre sécurité peuvent être modifiés ci-dessous.
+      </div>
+
+      <div class="kadosk-grille-tableau-bord">
+        <div class="kadosk-panneau-large">
+          <h2>Réseau KADOSK</h2>
+          <p style="font-size:13px; color:var(--kadosk-texte-clair); margin:0 0 16px;">
+            Les cartes cadeaux que vous créez restent toujours propres à votre commerce. En rejoignant le réseau KADOSK, vous acceptez en plus, à la caisse, les cartes cadeaux émises par KADOSK valables sur tout le réseau, ou celles valables uniquement dans votre sous-catégorie d'activité (<strong id="pSubCategoryReseau">—</strong>).
+          </p>
+
+          <div class="kadosk-finance-ligne">
+            <span class="label">Accepter les cartes universelles KADOSK</span>
+            <label class="kadosk-interrupteur">
+              <input type="checkbox" id="toggleAcceptUniversal" />
+              <span class="kadosk-interrupteur-curseur"></span>
+            </label>
+          </div>
+          <div class="kadosk-finance-ligne">
+            <span class="label">Accepter les cartes par domaine (Sous-catégorie)</span>
+            <label class="kadosk-interrupteur">
+              <input type="checkbox" id="toggleAcceptDomain" />
+              <span class="kadosk-interrupteur-curseur"></span>
+            </label>
+          </div>
+
+          <div class="kadosk-message-erreur" id="messageStatutReseau"></div>
+        </div>
+
+        <div class="kadosk-panneau-large">
+          <h2>Sécurité — double authentification</h2>
+          <p style="font-size:13px; color:var(--kadosk-texte-clair); margin:0 0 16px;">
+            Protégez votre compte avec un code généré par une application comme Google Authenticator, en plus de votre mot de passe. Un nouveau code sera demandé tous les 15 jours.
+          </p>
+
+          <div id="totpEtatDesactive">
+            <div class="kadosk-finance-ligne"><span class="label">Statut</span><span class="valeur">Désactivée</span></div>
+            <div class="kadosk-ligne-boutons" style="margin-top:10px;">
+              <button class="kadosk-bouton" id="bouton2FAActiver">Activer la 2FA</button>
+            </div>
+          </div>
+
+          <div id="totpEtatEnrolement" style="display:none;">
+            <div id="totpQrCode" style="margin:12px 0; display:flex; justify-content:center;"></div>
+            <div class="kadosk-champ">
+              <label>Clé secrète (si vous ne pouvez pas scanner le QR code)</label>
+              <input type="text" id="totpSecretTexte" readonly style="font-family:monospace; letter-spacing:1px;" />
+            </div>
+            <div class="kadosk-champ">
+              <label for="champCode2FAConfirmation">Code affiché par votre application</label>
+              <input type="text" id="champCode2FAConfirmation" inputmode="numeric" maxlength="6" placeholder="000000" />
+            </div>
+            <div class="kadosk-ligne-boutons">
+              <button class="kadosk-bouton" id="bouton2FAConfirmer">Confirmer l'activation</button>
+              <button class="kadosk-bouton kadosk-bouton-secondaire" id="bouton2FAAnnuler">Annuler</button>
+            </div>
+          </div>
+
+          <div id="totpEtatActif" style="display:none;">
+            <div class="kadosk-finance-ligne"><span class="label">Statut</span><span class="valeur" style="color:#1faa6c;">Activée</span></div>
+            <div class="kadosk-champ" style="margin-top:12px;">
+              <label for="champCode2FADesactivation">Code pour désactiver</label>
+              <input type="text" id="champCode2FADesactivation" inputmode="numeric" maxlength="6" placeholder="000000" />
+            </div>
+            <div class="kadosk-ligne-boutons">
+              <button class="kadosk-bouton kadosk-bouton-secondaire" id="bouton2FADesactiver">Désactiver la 2FA</button>
+            </div>
+          </div>
+
+          <div class="kadosk-message-erreur" id="messageStatut2FA"></div>
+        </div>
       </div>
 
       <div class="kadosk-panneau-large" style="max-width:480px;">
@@ -110,6 +179,7 @@
     </main>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="assets/config.js"></script>
   <script src="assets/auth.js"></script>
   <script src="assets/api.js"></script>

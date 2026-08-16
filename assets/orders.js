@@ -1,11 +1,6 @@
 (function () {
-  if (!KADOSK_AUTH.estConnecte()) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  KADOSK_NAV.rendreBarreLaterale("kadoskSidebar");
-  KADOSK_NAV.rendreEnteteDroite("kadoskEnteteDroite");
+  // L'authentification, la barre latérale, l'en-tête et la déconnexion sont
+  // gérées par guard.js (chargé avant ce script).
 
   let commandes = [];
   let commandeSelectionneeId = null;
@@ -22,10 +17,6 @@
   const boutonRefuser = document.getElementById("boutonRefuser");
   const messageStatutCommande = document.getElementById("messageStatutCommande");
   const filtres = document.querySelectorAll(".kadosk-filtre");
-
-  document.getElementById("lienDeconnexion").addEventListener("click", () => {
-    KADOSK_AUTH.deconnecter();
-  });
 
   function libellePortee(commande) {
     if (commande.scope === "UNIVERSAL") return "Universel";

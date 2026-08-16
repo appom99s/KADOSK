@@ -1,18 +1,13 @@
 (function () {
-  if (!KADOSK_AUTH.estConnecte()) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  KADOSK_NAV.rendreBarreLaterale("kadoskSidebar");
-  KADOSK_NAV.rendreEnteteDroite("kadoskEnteteDroite");
+  // L'authentification, la barre latérale, l'en-tête et la déconnexion sont
+  // gérées par guard.js (chargé avant ce script).
 
   const champNom = document.getElementById("champNom");
   const champDescription = document.getElementById("champDescription");
   const champLogoUrl = document.getElementById("champLogoUrl");
-  const champScope = document.getElementById("champScope");
-  const blocDomaine = document.getElementById("blocDomaine");
-  const champDomaine = document.getElementById("champDomaine");
+  const choixCouleurAccent = document.getElementById("choixCouleurAccent");
+  const pastillesCouleur = choixCouleurAccent ? Array.from(choixCouleurAccent.querySelectorAll(".kadosk-pastille-couleur")) : [];
+  let accentColorSelectionnee = "teal";
   const champMontants = document.getElementById("champMontants");
   const champMontantLibreActif = document.getElementById("champMontantLibreActif");
   const blocMontantLibre = document.getElementById("blocMontantLibre");
@@ -30,12 +25,23 @@
 
   let logoEntrepriseParDefaut = "";
 
-  document.getElementById("lienDeconnexion").addEventListener("click", () => {
-    KADOSK_AUTH.deconnecter();
+  const carteApercu = document.getElementById("carteApercu");
+
+  function selectionnerCouleurAccent(couleur) {
+    accentColorSelectionnee = couleur;
+    pastillesCouleur.forEach((pastille) => {
+      pastille.classList.toggle("selectionnee", pastille.dataset.couleur === couleur);
+    });
+    if (carteApercu) {
+      carteApercu.dataset.accent = couleur;
+    }
+  }
+
+  pastillesCouleur.forEach((pastille) => {
+    pastille.addEventListener("click", () => selectionnerCouleurAccent(pastille.dataset.couleur));
   });
 
   function actualiserVisibilite() {
-    blocDomaine.style.display = champScope.value === "DOMAIN" ? "block" : "none";
     blocMontantLibre.style.display = champMontantLibreActif.checked ? "block" : "none";
   }
 
@@ -70,8 +76,7 @@
       champNom.value = parametres.name || "";
       champDescription.value = parametres.description || "";
       champLogoUrl.value = parametres.logoUrl || "";
-      champScope.value = parametres.scope || "MERCHANT_ONLY";
-      champDomaine.value = parametres.domain || "";
+      selectionnerCouleurAccent(parametres.accentColor || "teal");
       champMontants.value = parametres.presetAmounts || "";
       champMontantLibreActif.checked = !!parametres.freeAmountEnabled;
       champMontantLibreMin.value = parametres.freeAmountMin || "";
@@ -102,8 +107,7 @@
         name: champNom.value.trim(),
         description: champDescription.value.trim(),
         logoUrl: champLogoUrl.value.trim(),
-        scope: champScope.value,
-        domain: champDomaine.value.trim(),
+        accentColor: accentColorSelectionnee,
         presetAmounts: champMontants.value.trim(),
         freeAmountEnabled: champMontantLibreActif.checked,
         freeAmountMin: champMontantLibreMin.value ? Number(champMontantLibreMin.value) : null,
@@ -122,7 +126,6 @@
     }
   }
 
-  champScope.addEventListener("change", actualiserVisibilite);
   champMontantLibreActif.addEventListener("change", actualiserVisibilite);
   boutonEnregistrer.addEventListener("click", enregistrerParametres);
 
