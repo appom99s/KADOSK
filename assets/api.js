@@ -112,6 +112,25 @@ const KADOSK_API = (function () {
     confirm2FA: (code) => appeler("confirm2FA", "POST", { code }),
     disable2FA: (code) => appeler("disable2FA", "POST", { code }),
     need2FA: () => appeler("need2FA", "GET"),
-    verify2FA: (code) => appeler("verify2FA", "POST", { code })
+    verify2FA: (code) => appeler("verify2FA", "POST", { code }),
+
+    // Upload de logo : le backend ne fait que générer l'URL signée (nécessite des
+    // permissions élevées) ; l'upload du fichier lui-même se fait en PUT direct sur
+    // cette URL, sans repasser par la gateway Wix (voir settings.js).
+    getMediaUploadUrl: (fileName, mimeType, sizeInBytes) =>
+      appeler("mediaUploadUrl", "POST", { fileName, mimeType, sizeInBytes }),
+
+    // Suivi de paiement KADOSK : commission mensuelle + détail par carte.
+    getCommissionMonthly: () => appeler("commissionMonthly", "GET"),
+    getCommissionDetail: (month) => appeler("commissionDetail?month=" + encodeURIComponent(month), "GET"),
+
+    // Biométrie (WebAuthn : Face ID / Touch ID / Windows Hello) en alternative au TOTP.
+    startBiometricEnrollment: () => appeler("startBiometricEnrollment", "POST"),
+    confirmBiometricEnrollment: (credentialId, publicKeySpkiBase64, algorithm, clientDataJSON, deviceLabel) =>
+      appeler("confirmBiometricEnrollment", "POST", { credentialId, publicKeySpkiBase64, algorithm, clientDataJSON, deviceLabel }),
+    disableBiometric: (code) => appeler("disableBiometric", "POST", { code }),
+    startBiometricLogin: () => appeler("startBiometricLogin", "POST"),
+    verifyBiometricLogin: (clientDataJSON, authenticatorData, signature) =>
+      appeler("verifyBiometricLogin", "POST", { clientDataJSON, authenticatorData, signature })
   };
 })();

@@ -67,6 +67,7 @@
           <div class="kadosk-finance-ligne"><span class="label">Commission KADOSK</span><span class="valeur" id="pPlanCommission">—</span></div>
           <div class="kadosk-finance-ligne"><span class="label">Expiration</span><span class="valeur" id="pPlanExpiration">—</span></div>
           <div class="kadosk-finance-ligne"><span class="label">Renouvellement</span><span class="valeur" id="pPlanRenewal">—</span></div>
+          <div class="kadosk-finance-ligne"><span class="label">Dernier paiement</span><span class="valeur" id="pPlanPaiement">—</span></div>
           <div class="kadosk-ligne-boutons" style="margin-top:10px;">
             <a id="lienChangerAbonnement" href="#" target="_blank" class="kadosk-bouton kadosk-bouton-secondaire" style="text-decoration:none; text-align:center;">Changer d'abonnement</a>
           </div>
@@ -106,7 +107,7 @@
         <div class="kadosk-panneau-large">
           <h2>Sécurité — double authentification</h2>
           <p style="font-size:13px; color:var(--kadosk-texte-clair); margin:0 0 16px;">
-            Protégez votre compte avec un code généré par une application comme Google Authenticator, en plus de votre mot de passe. Un nouveau code sera demandé tous les 15 jours.
+            Protégez votre compte avec un code généré par une application comme Google Authenticator, en plus de votre mot de passe. Ce code sera demandé à chaque connexion.
           </p>
 
           <div id="totpEtatDesactive">
@@ -140,6 +141,32 @@
             </div>
             <div class="kadosk-ligne-boutons">
               <button class="kadosk-bouton kadosk-bouton-secondaire" id="bouton2FADesactiver">Désactiver la 2FA</button>
+            </div>
+
+            <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--kadosk-bordure);">
+              <h3 style="margin:0 0 6px; font-size:13px;">Face ID / Touch ID</h3>
+              <p style="font-size:12px; color:var(--kadosk-texte-clair); margin:0 0 12px;">
+                Une fois activée sur cet appareil, vous n'aurez plus besoin de saisir le code à chaque connexion depuis celui-ci.
+              </p>
+
+              <div id="biometrieEtatDesactive">
+                <div class="kadosk-ligne-boutons">
+                  <button class="kadosk-bouton kadosk-bouton-secondaire" id="boutonBiometrieActiver">Activer sur cet appareil</button>
+                </div>
+              </div>
+
+              <div id="biometrieEtatActive" style="display:none;">
+                <div class="kadosk-finance-ligne"><span class="label">Statut</span><span class="valeur" id="valBiometrieLabel" style="color:#1faa6c;">Activée</span></div>
+                <div class="kadosk-champ" style="margin-top:10px;">
+                  <label for="champCode2FADesactivationBiometrie">Code pour désactiver la biométrie</label>
+                  <input type="text" id="champCode2FADesactivationBiometrie" inputmode="numeric" maxlength="6" placeholder="000000" />
+                </div>
+                <div class="kadosk-ligne-boutons">
+                  <button class="kadosk-bouton kadosk-bouton-secondaire" id="boutonBiometrieDesactiver">Désactiver la biométrie</button>
+                </div>
+              </div>
+
+              <div class="kadosk-message-erreur" id="messageStatutBiometrie"></div>
             </div>
           </div>
 
@@ -185,6 +212,7 @@
   <script src="assets/api.js"></script>
   <script src="assets/nav.js"></script>
   <script src="assets/guard.js"></script>
+  <script src="assets/webauthn.js"></script>
   <script src="assets/business.js"></script>
 </body>
 </html>

@@ -51,22 +51,31 @@
   }, 30000);
 
   // ---------------------------------------------------------------------
-  // Double authentification (2FA) : si activée et qu'aucun code n'a été
-  // resaisi depuis 15 jours, on redirige vers la page de vérification avant
-  // de laisser continuer sur le dashboard.
+  // Double authentification (2FA) : exigée à CHAQUE nouvelle connexion (sauf
+  // biométrie déjà validée au moment du login). Une fois vérifiée pour cette
+  // session (marqueur sessionStorage posé par login-callback.html ou
+  // two-factor.html), on ne rappelle plus le serveur à chaque changement de
+  // page — seul le tout premier chargement de page après une connexion fait
+  // l'appel réseau.
   // ---------------------------------------------------------------------
   const PAGES_SANS_VERIF_2FA = ["two-factor.html", "login.html", "login-callback.html"];
   const pageActuelle = window.location.pathname.split("/").pop() || "dashboard.html";
 
   if (!PAGES_SANS_VERIF_2FA.includes(pageActuelle) && window.KADOSK_API) {
-    KADOSK_API.need2FA()
-      .then((etat) => {
-        if (etat && etat.enabled && etat.required) {
-          window.location.href = "two-factor.html?retour=" + encodeURIComponent(pageActuelle);
-        }
-      })
-      .catch((erreur) => {
-        console.error("Vérification 2FA indisponible :", erreur);
-      });
+    if (!KADOSK_AUTH.verification2FAEffectuee()) {
+      KADOSK_API.need2FA()
+        .then((etat) => {
+          if (etat && etat.enabled && etat.required) {
+            window.location.href = "two-factor.html?retour=" + encodeURIComponent(pageActuelle);
+          } else {
+            // 2FA non exigée : on marque la session comme vérifiée pour éviter
+            // de rappeler le serveur à chaque page tant que la session dure.
+            KADOSK_AUTH.marquerVerification2FA();
+          }
+        })
+        .catch((erreur) => {
+          console.error("Vérification 2FA indisponible :", erreur);
+        });
+    }
   }
 })();

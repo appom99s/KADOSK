@@ -8,6 +8,37 @@ const KADOSK_AUTH = (function () {
   const PKCE_STORAGE_KEY = "kadosk_pkce_verifier";
   const STATE_STORAGE_KEY = "kadosk_oauth_state";
 
+  // Marqueur (sessionStorage, donc effacé à la fermeture de l'onglet/navigateur)
+  // indiquant que la double authentification (TOTP ou biométrie) a déjà été
+  // vérifiée pour CETTE session de connexion. Politique : la 2FA est exigée à
+  // chaque nouvelle connexion, mais on évite de la redemander à chaque
+  // changement de page ou de rappeler le serveur en boucle une fois vérifiée.
+  const VERIF_2FA_STORAGE_KEY = "kadosk_2fa_verifiee_session";
+
+  function marquerVerification2FA() {
+    try {
+      sessionStorage.setItem(VERIF_2FA_STORAGE_KEY, "1");
+    } catch (erreur) {
+      // Stockage indisponible : on continue sans persistance (redemandera la 2FA).
+    }
+  }
+
+  function verification2FAEffectuee() {
+    try {
+      return sessionStorage.getItem(VERIF_2FA_STORAGE_KEY) === "1";
+    } catch (erreur) {
+      return false;
+    }
+  }
+
+  function effacerVerification2FA() {
+    try {
+      sessionStorage.removeItem(VERIF_2FA_STORAGE_KEY);
+    } catch (erreur) {
+      // Rien à faire.
+    }
+  }
+
   function config() {
     return window.KADOSK_CONFIG;
   }
@@ -58,6 +89,7 @@ const KADOSK_AUTH = (function () {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(PKCE_STORAGE_KEY);
     localStorage.removeItem(STATE_STORAGE_KEY);
+    effacerVerification2FA();
   }
 
   async function appelJson(url, corps, headersSupplementaires) {
@@ -239,6 +271,9 @@ const KADOSK_AUTH = (function () {
     obtenirAccessTokenValide,
     obtenirTokenVisiteur,
     estConnecte,
-    deconnecter
+    deconnecter,
+    marquerVerification2FA,
+    verification2FAEffectuee,
+    effacerVerification2FA
   };
 })();

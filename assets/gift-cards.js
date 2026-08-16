@@ -63,10 +63,11 @@
       tdCree.textContent = formaterDate(carte.activatedAt || carte.createdAt);
 
       const tdInitial = document.createElement("td");
-      tdInitial.textContent = formaterMontant(carte.initialBalance);
+      tdInitial.textContent = carte.donneesIllisibles ? "Données illisibles" : formaterMontant(carte.initialBalance);
+      if (carte.donneesIllisibles) tdInitial.style.color = "var(--kadosk-danger)";
 
       const tdRestant = document.createElement("td");
-      tdRestant.textContent = formaterMontant(carte.remainingBalance);
+      tdRestant.textContent = carte.donneesIllisibles ? "—" : formaterMontant(carte.remainingBalance);
 
       const tdStatut = document.createElement("td");
       tdStatut.innerHTML = badgePourStatut(statutAffiche);

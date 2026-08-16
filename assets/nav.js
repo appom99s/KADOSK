@@ -94,7 +94,17 @@
     const actuelle = pageActuelle();
 
     let html =
-      '<div class="kadosk-sidebar-logo"><img src="assets/logo.png" alt="KADOSK" /></div>';
+      '<div class="kadosk-sidebar-logo"><img src="assets/logo.png" alt="KADOSK" /></div>' +
+      '<div class="kadosk-sidebar-marchand">' +
+      '<div class="kadosk-sidebar-marchand-logo" data-marchand-logo-conteneur>' +
+      '<img data-marchand-logo src="" alt="" style="display:none;" />' +
+      '<span data-marchand-logo-initiale>M</span>' +
+      "</div>" +
+      '<div class="kadosk-sidebar-marchand-info">' +
+      '<div class="kadosk-sidebar-marchand-nom" data-marchand-nom>Marchand KADOSK</div>' +
+      '<span class="kadosk-badge-palier" data-marchand-palier style="display:none;"></span>' +
+      "</div>" +
+      "</div>";
 
     GROUPES.forEach((groupe) => {
       html += '<div class="kadosk-nav-groupe">';
@@ -197,12 +207,45 @@
     return mots.map((mot) => mot[0].toUpperCase()).join("") || "M";
   }
 
+  const LIBELLES_PALIER = { BRONZE: "Bronze", SILVER: "Silver", GOLD: "Gold" };
+  const COULEURS_PALIER = { BRONZE: "#a5652d", SILVER: "#8a95a5", GOLD: "#e0b23c" };
+
   function rendreInfosMarchand(stats) {
-    const nomEl = document.querySelector("[data-marchand-nom]");
-    const avatarEl = document.querySelector("[data-marchand-avatar]");
     const nom = (stats && stats.merchantName) || "Marchand KADOSK";
-    if (nomEl) nomEl.textContent = nom;
-    if (avatarEl) avatarEl.textContent = initiales(nom);
+    const initialesNom = initiales(nom);
+
+    document.querySelectorAll("[data-marchand-nom]").forEach((el) => {
+      el.textContent = nom;
+    });
+    document.querySelectorAll("[data-marchand-avatar]").forEach((el) => {
+      el.textContent = initialesNom;
+    });
+
+    const logoUrl = stats && stats.merchantLogoUrl;
+    document.querySelectorAll("[data-marchand-logo]").forEach((img) => {
+      if (logoUrl) {
+        img.src = logoUrl;
+        img.style.display = "block";
+      } else {
+        img.style.display = "none";
+      }
+    });
+    document.querySelectorAll("[data-marchand-logo-initiale]").forEach((span) => {
+      span.textContent = initialesNom;
+      span.style.display = logoUrl ? "none" : "flex";
+    });
+
+    const palier = stats && stats.subscriptionTier;
+    document.querySelectorAll("[data-marchand-palier]").forEach((badge) => {
+      if (palier && LIBELLES_PALIER[palier]) {
+        badge.textContent = LIBELLES_PALIER[palier];
+        badge.style.background = COULEURS_PALIER[palier] + "26";
+        badge.style.color = COULEURS_PALIER[palier];
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+    });
   }
 
   function formaterDateNotif(valeur) {

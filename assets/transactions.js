@@ -8,7 +8,30 @@
   let filtreActif = "ALL";
   let minuteurRecherche = null;
 
-  const LIBELLES_ACTION = { REDEEMED: "Encaissement", REDEEM_FAILED: "Encaissement échoué", ACTIVATED: "Activation" };
+  const LIBELLES_ACTION = {
+    REDEEMED: "Encaissement",
+    REDEEM_FAILED: "Encaissement échoué",
+    CHECK_FAILED: "Vérification échouée",
+    ACTIVATED: "Activation"
+  };
+
+  const LIBELLES_RAISON = {
+    GIFT_CARD_NOT_FOUND: "Code introuvable",
+    CODE_INTROUVABLE: "Code introuvable",
+    MERCHANT_NOT_AUTHORIZED: "Carte non acceptée par ce commerce",
+    CARTE_EXPIREE: "Carte expirée",
+    EXPIRED_GIFT_CARD: "Carte expirée",
+    INSUFFICIENT_BALANCE: "Solde insuffisant",
+    GIFT_CARD_NOT_ACTIVE: "Carte non active",
+    TROP_DE_TENTATIVES: "Trop de tentatives, compte temporairement bloqué",
+    RACHAT_PARTIEL: "Rachat partiel (solde restant)",
+    SOLDE_EPUISE: "Solde épuisé"
+  };
+
+  function libelleRaison(raison) {
+    if (!raison) return "—";
+    return LIBELLES_RAISON[raison] || raison;
+  }
 
   function formaterDate(valeur) {
     if (!valeur) return "";
@@ -57,14 +80,20 @@
       const tdResultat = document.createElement("td");
       const badge = document.createElement("span");
       badge.className = "kadosk-badge " + (entree.success ? "kadosk-badge-actif" : "kadosk-badge-neutre");
+      if (!entree.success) badge.style.cssText = "background:var(--kadosk-danger-tint); color:var(--kadosk-danger);";
       badge.textContent = entree.success ? "Réussie" : "Refusée";
       tdResultat.appendChild(badge);
+
+      const tdRaison = document.createElement("td");
+      tdRaison.textContent = entree.success ? "—" : libelleRaison(entree.reason);
+      if (!entree.success && entree.reason) tdRaison.style.color = "var(--kadosk-danger)";
 
       ligne.appendChild(tdDate);
       ligne.appendChild(tdCarte);
       ligne.appendChild(tdAction);
       ligne.appendChild(tdMontant);
       ligne.appendChild(tdResultat);
+      ligne.appendChild(tdRaison);
 
       corpsTable.appendChild(ligne);
     });

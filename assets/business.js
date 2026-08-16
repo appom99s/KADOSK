@@ -103,6 +103,7 @@
     try {
       const etat = await KADOSK_API.need2FA();
       afficherEtat2FA(etat && etat.enabled ? "actif" : "desactive");
+      afficherEtatBiometrie(!!(etat && etat.biometricEnabled));
     } catch (erreur) {
       console.error("Erreur chargement état 2FA :", erreur);
     }
@@ -183,8 +184,111 @@
   if (bouton2FAAnnuler) bouton2FAAnnuler.addEventListener("click", () => afficherEtat2FA("desactive"));
   if (bouton2FADesactiver) bouton2FADesactiver.addEventListener("click", desactiver2FA);
 
+  // -------------------------------------------------------------------
+  // Biométrie (Face ID / Touch ID / Windows Hello) : alternative à la
+  // saisie du code TOTP, activable une fois la 2FA elle-même activée.
+  // -------------------------------------------------------------------
+  const biometrieEtatDesactive = document.getElementById("biometrieEtatDesactive");
+  const biometrieEtatActive = document.getElementById("biometrieEtatActive");
+  const champCode2FADesactivationBiometrie = document.getElementById("champCode2FADesactivationBiometrie");
+  const boutonBiometrieActiver = document.getElementById("boutonBiometrieActiver");
+  const boutonBiometrieDesactiver = document.getElementById("boutonBiometrieDesactiver");
+  const messageStatutBiometrie = document.getElementById("messageStatutBiometrie");
+
+  function afficherEtatBiometrie(activee) {
+    if (!biometrieEtatDesactive) return;
+    biometrieEtatDesactive.style.display = activee ? "none" : "block";
+    biometrieEtatActive.style.display = activee ? "block" : "none";
+  }
+
+  async function activerBiometrie() {
+    if (!messageStatutBiometrie) return;
+    messageStatutBiometrie.style.color = "";
+    messageStatutBiometrie.textContent = "";
+
+    if (!window.KADOSK_WEBAUTHN || !window.PublicKeyCredential) {
+      messageStatutBiometrie.textContent = "Cet appareil ou ce navigateur ne prend pas en charge la biométrie.";
+      return;
+    }
+
+    const disponible = await KADOSK_WEBAUTHN.biometrieDisponibleSurCetAppareil();
+    if (!disponible) {
+      messageStatutBiometrie.textContent = "Aucune biométrie (Face ID / Touch ID / Windows Hello) détectée sur cet appareil.";
+      return;
+    }
+
+    boutonBiometrieActiver.disabled = true;
+    boutonBiometrieActiver.textContent = "Activation...";
+
+    try {
+      const depart = await KADOSK_API.startBiometricEnrollment();
+      const enregistrement = await KADOSK_WEBAUTHN.creerCredentialEnregistrement(depart);
+      const libelleAppareil =
+        (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "Cet appareil";
+
+      await KADOSK_API.confirmBiometricEnrollment(
+        enregistrement.credentialId,
+        enregistrement.publicKeySpkiBase64,
+        enregistrement.algorithm,
+        enregistrement.clientDataJSON,
+        libelleAppareil
+      );
+
+      messageStatutBiometrie.style.color = "#1faa6c";
+      messageStatutBiometrie.textContent = "Biométrie activée sur cet appareil.";
+      afficherEtatBiometrie(true);
+    } catch (erreur) {
+      console.error("Erreur activation biométrique :", erreur);
+      messageStatutBiometrie.textContent = "Activation annulée ou impossible. Merci de réessayer.";
+    } finally {
+      boutonBiometrieActiver.disabled = false;
+      boutonBiometrieActiver.textContent = "Activer sur cet appareil";
+    }
+  }
+
+  async function desactiverBiometrieCourante() {
+    if (!messageStatutBiometrie) return;
+    messageStatutBiometrie.style.color = "";
+    messageStatutBiometrie.textContent = "";
+
+    const code = champCode2FADesactivationBiometrie.value.trim();
+    if (!/^\d{6}$/.test(code)) {
+      messageStatutBiometrie.textContent = "Merci de saisir les 6 chiffres du code de votre application d'authentification.";
+      return;
+    }
+
+    boutonBiometrieDesactiver.disabled = true;
+    try {
+      await KADOSK_API.disableBiometric(code);
+      champCode2FADesactivationBiometrie.value = "";
+      messageStatutBiometrie.style.color = "#1faa6c";
+      messageStatutBiometrie.textContent = "Biométrie désactivée.";
+      afficherEtatBiometrie(false);
+    } catch (erreur) {
+      console.error("Erreur désactivation biométrique :", erreur);
+      if (erreur.message === "TROP_DE_TENTATIVES") {
+        messageStatutBiometrie.textContent = "Trop de tentatives échouées. Réessayez dans 15 minutes.";
+      } else {
+        messageStatutBiometrie.textContent = "Code invalide. Merci de réessayer.";
+      }
+    } finally {
+      boutonBiometrieDesactiver.disabled = false;
+    }
+  }
+
+  if (boutonBiometrieActiver) boutonBiometrieActiver.addEventListener("click", activerBiometrie);
+  if (boutonBiometrieDesactiver) boutonBiometrieDesactiver.addEventListener("click", desactiverBiometrieCourante);
+
   const LIBELLES_PALIER = { BRONZE: "Bronze", SILVER: "Silver", GOLD: "Gold" };
   const COULEURS_PALIER = { BRONZE: "#a5652d", SILVER: "#6b7280", GOLD: "#b8860b" };
+
+  const LIBELLES_STATUT_PAIEMENT = {
+    PAID: "Encaissé",
+    REFUNDED: "Remboursé",
+    FAILED: "Échec du paiement",
+    UNPAID: "Non payé",
+    PENDING: "En attente"
+  };
 
   function formaterDateAbonnement(valeur) {
     if (!valeur) return null;
@@ -222,6 +326,20 @@
         texte("pPlanRenewal", infos.autoRenew ? "Renouvellement automatique" : "Ne se renouvelle pas (résilié)");
       } else {
         texte("pPlanRenewal", "Paiement unique");
+      }
+
+      const elPaiement = document.getElementById("pPlanPaiement");
+      if (elPaiement) {
+        if (!infos.active) {
+          elPaiement.textContent = "—";
+          elPaiement.style.color = "";
+        } else if (infos.paymentCollected) {
+          elPaiement.textContent = "Encaissé";
+          elPaiement.style.color = "#1faa6c";
+        } else {
+          elPaiement.textContent = LIBELLES_STATUT_PAIEMENT[infos.paymentStatus] || "Non encaissé";
+          elPaiement.style.color = "var(--kadosk-danger)";
+        }
       }
 
       if (lienChanger && infos.changePlanUrl) {

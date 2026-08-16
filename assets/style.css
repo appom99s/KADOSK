@@ -185,6 +185,66 @@ a {
   color: var(--kadosk-sombre-texte-vif);
 }
 
+.kadosk-sidebar-marchand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 0 0 16px;
+  border-radius: 10px;
+  background: var(--kadosk-sombre-clair);
+}
+
+.kadosk-sidebar-marchand-logo {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kadosk-sidebar-marchand-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.kadosk-sidebar-marchand-logo span {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--kadosk-violet-fonce);
+  display: flex;
+}
+
+.kadosk-sidebar-marchand-info {
+  min-width: 0;
+}
+
+.kadosk-sidebar-marchand-nom {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--kadosk-sombre-texte-vif);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.kadosk-badge-palier {
+  display: none;
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
 .kadosk-nav-groupe {
   margin-bottom: 14px;
 }
@@ -820,6 +880,10 @@ a {
 
 .kadosk-table tr.kadosk-ligne-selectionnee {
   background: rgba(108, 76, 224, 0.06);
+}
+
+.kadosk-table tr.kadosk-ligne-cliquable:hover {
+  background: var(--kadosk-violet-tint);
 }
 
 .kadosk-badge {

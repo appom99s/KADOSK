@@ -29,12 +29,22 @@
           </div>
 
           <div class="kadosk-champ">
-            <label for="champLogoUrl">Logo affiché sur la carte</label>
-            <input type="text" id="champLogoUrl" placeholder="https://..." />
-            <div style="font-size:11px; color:var(--kadosk-texte-clair); margin-top:4px;">
-              Récupéré automatiquement depuis le logo de votre entreprise. Collez une autre URL ici pour le remplacer.
+            <label>Logo affiché sur la carte</label>
+            <input type="hidden" id="champLogoUrl" />
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div id="apercuLogoActuel" style="width:52px; height:52px; border-radius:8px; border:1px solid var(--kadosk-bordure); background:#fff; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
+                <img id="apercuLogoActuelImg" src="" alt="" style="max-width:80%; max-height:80%; object-fit:contain; display:none;" />
+              </div>
+              <div>
+                <button type="button" class="kadosk-bouton kadosk-bouton-secondaire" id="boutonUploaderLogo" style="padding:8px 14px; font-size:13px;">Choisir une image…</button>
+                <input type="file" id="champFichierLogo" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none;" />
+              </div>
+            </div>
+            <div style="font-size:11px; color:var(--kadosk-texte-clair); margin-top:6px;">
+              Récupéré automatiquement depuis le logo de votre entreprise. Envoyez une image (PNG/JPEG/WEBP, 5 Mo max) pour le remplacer.
               <a href="#" id="lienReinitialiserLogo" style="color:var(--kadosk-violet); font-weight:600;">Réinitialiser</a>
             </div>
+            <div class="kadosk-message-erreur" id="messageStatutLogo" style="margin-top:6px;"></div>
           </div>
 
           <div class="kadosk-champ">

@@ -17,6 +17,13 @@
   const boutonEnregistrer = document.getElementById("boutonEnregistrer");
   const messageStatutParametres = document.getElementById("messageStatutParametres");
   const lienReinitialiserLogo = document.getElementById("lienReinitialiserLogo");
+  const boutonUploaderLogo = document.getElementById("boutonUploaderLogo");
+  const champFichierLogo = document.getElementById("champFichierLogo");
+  const apercuLogoActuelImg = document.getElementById("apercuLogoActuelImg");
+  const messageStatutLogo = document.getElementById("messageStatutLogo");
+
+  const TYPES_LOGO_ACCEPTES = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
+  const TAILLE_LOGO_MAX_OCTETS = 5 * 1024 * 1024;
 
   const apercuLogoMarchand = document.getElementById("apercuLogoMarchand");
   const blocLogoMarchand = apercuLogoMarchand ? apercuLogoMarchand.parentElement : null;
@@ -43,6 +50,69 @@
 
   function actualiserVisibilite() {
     blocMontantLibre.style.display = champMontantLibreActif.checked ? "block" : "none";
+  }
+
+  function mettreAJourApercuLogoActuel() {
+    if (!apercuLogoActuelImg) return;
+    const url = champLogoUrl.value.trim();
+    if (url) {
+      apercuLogoActuelImg.src = url;
+      apercuLogoActuelImg.style.display = "block";
+    } else {
+      apercuLogoActuelImg.style.display = "none";
+    }
+  }
+
+  async function televerserLogo(fichier) {
+    messageStatutLogo.style.color = "";
+    messageStatutLogo.textContent = "";
+
+    if (!fichier) return;
+
+    if (!TYPES_LOGO_ACCEPTES.includes(fichier.type)) {
+      messageStatutLogo.textContent = "Format non supporté (PNG, JPEG, WEBP ou SVG uniquement).";
+      return;
+    }
+    if (fichier.size > TAILLE_LOGO_MAX_OCTETS) {
+      messageStatutLogo.textContent = "Fichier trop volumineux (5 Mo maximum).";
+      return;
+    }
+
+    boutonUploaderLogo.disabled = true;
+    boutonUploaderLogo.textContent = "Envoi en cours…";
+
+    try {
+      const { uploadUrl } = await KADOSK_API.getMediaUploadUrl(fichier.name, fichier.type, fichier.size);
+
+      const reponse = await fetch(uploadUrl + "?filename=" + encodeURIComponent(fichier.name), {
+        method: "PUT",
+        headers: { "Content-Type": fichier.type },
+        body: fichier
+      });
+
+      if (!reponse.ok) {
+        throw new Error("ECHEC_UPLOAD");
+      }
+
+      const resultat = await reponse.json();
+      const urlFinale = resultat && resultat.file && resultat.file.url;
+      if (!urlFinale) {
+        throw new Error("REPONSE_UPLOAD_INATTENDUE");
+      }
+
+      champLogoUrl.value = urlFinale;
+      mettreAJourApercuLogoActuel();
+      actualiserApercu();
+      messageStatutLogo.style.color = "#1faa6c";
+      messageStatutLogo.textContent = "Logo envoyé. Pensez à Enregistrer pour appliquer.";
+    } catch (erreur) {
+      console.error("Erreur upload logo :", erreur);
+      messageStatutLogo.textContent = "Échec de l'envoi du logo. Merci de réessayer.";
+    } finally {
+      boutonUploaderLogo.disabled = false;
+      boutonUploaderLogo.textContent = "Choisir une image…";
+      champFichierLogo.value = "";
+    }
   }
 
   function actualiserApercu() {
@@ -86,6 +156,7 @@
 
       actualiserVisibilite();
       actualiserApercu();
+      mettreAJourApercuLogoActuel();
     } catch (erreur) {
       console.error("Erreur chargement paramètres offre :", erreur);
       messageStatutParametres.textContent = "Impossible de charger vos paramètres actuels.";
@@ -129,14 +200,20 @@
   champMontantLibreActif.addEventListener("change", actualiserVisibilite);
   boutonEnregistrer.addEventListener("click", enregistrerParametres);
 
-  [champNom, champLogoUrl, champMontants, champMontantLibreMin].forEach((champ) => {
+  [champNom, champMontants, champMontantLibreMin].forEach((champ) => {
     champ.addEventListener("input", actualiserApercu);
   });
+
+  if (boutonUploaderLogo && champFichierLogo) {
+    boutonUploaderLogo.addEventListener("click", () => champFichierLogo.click());
+    champFichierLogo.addEventListener("change", () => televerserLogo(champFichierLogo.files[0]));
+  }
 
   if (lienReinitialiserLogo) {
     lienReinitialiserLogo.addEventListener("click", (evenement) => {
       evenement.preventDefault();
       champLogoUrl.value = logoEntrepriseParDefaut;
+      mettreAJourApercuLogoActuel();
       actualiserApercu();
     });
   }
