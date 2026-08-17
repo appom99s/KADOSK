@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Étape 3 · Récapitulatif &amp; paiement — KADOSK</title>
+<link rel="stylesheet" href="assets/kadosk2.css" />
+</head>
+<body class="k2-body">
+  <div class="k2-topbar">
+    <a href="accueil.html" class="k2-logo">
+      <img src="assets/logo.png" alt="KADOSK" />
+    </a>
+  </div>
+
+  <main class="k2-main" style="max-width:640px;">
+    <p class="k2-titre">ÉTAPE 3</p>
+    <h1 class="k2-sous-titre">Récapitulatif &amp; paiement</h1>
+
+    <div class="k2-stepper">
+      <div class="k2-step k2-step-done"><span class="k2-step-numero">1</span><span>Choix</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step k2-step-done"><span class="k2-step-numero">2</span><span>Montant</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step k2-step-active"><span class="k2-step-numero">3</span><span>Récapitulatif</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step"><span class="k2-step-numero">4</span><span>Destinataire &amp; Message</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step"><span class="k2-step-numero">5</span><span>Confirmation</span></div>
+    </div>
+
+    <div class="k2-carte">
+      <div class="k2-champ" style="margin-bottom:4px;">
+        <label>Récapitulatif de votre commande</label>
+        <p style="font-size:12.5px;color:var(--k2-texte-clair);margin:0 0 14px;">Veuillez effectuer un virement pour chaque marchand.</p>
+      </div>
+
+      <div id="etatVide" class="k2-etat" style="display:none">
+        Votre sélection est vide. <a href="boutique.html" style="color:var(--k2-primary);font-weight:700;">Choisir des cartes</a>
+      </div>
+      <div id="etatChargement" class="k2-etat">Chargement des coordonnées de paiement...</div>
+      <div id="etatErreur" class="k2-etat k2-etat-erreur" style="display:none"></div>
+
+      <div id="listeRib"></div>
+
+      <div class="k2-total-bloc" id="blocTotal" style="display:none">
+        <span>Total de la commande</span>
+        <span class="valeur" id="texteTotal">0,00 DH</span>
+      </div>
+
+      <div class="k2-ligne-boutons-nav">
+        <button type="button" class="k2-btn k2-btn-secondaire" id="btnRetour">
+          <span id="k2IconeRetour"></span> Retour
+        </button>
+        <button type="button" class="k2-btn k2-btn-primaire" id="btnContinuer">
+          Continuer <span id="k2IconeContinuer"></span>
+        </button>
+      </div>
+
+      <div class="k2-securite">
+        <span id="k2IconeSecurite"></span>
+        <span>Paiement 100% sécurisé — vos données sont protégées et cryptées.</span>
+      </div>
+    </div>
+  </main>
+
+  <div id="k2NavBas" class="k2-bottom-nav"></div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/icons.js"></script>
+  <script src="assets/nav2.js"></script>
+  <script src="assets/panier2.js"></script>
+  <script src="assets/etape3.js"></script>
+</body>
+</html>

@@ -1,0 +1,876 @@
+/* ---------------------------------------------------------------------------
+   Design system "KADOSK2" : nouvelle identité marketplace (palette imposée),
+   utilisée par le parcours public en 5 étapes, l'accueil, les favoris et
+   "mes commandes". Feuille de style autonome (ne dépend pas de style.css) pour
+   ne prendre aucun risque de régression sur le tableau de bord marchand
+   existant, qui continue d'utiliser ses propres classes .kadosk-*.
+   Style : premium, sobre, beaucoup de blanc, coins arrondis, ombres légères.
+--------------------------------------------------------------------------- */
+
+:root {
+  --k2-primary: #1f3a34;
+  --k2-secondary: #7fb5ab;
+  --k2-light: #b7d6cf;
+  --k2-bg: #f7faf9;
+  --k2-neutral: #edeae2;
+  --k2-blanc: #ffffff;
+  --k2-texte: #1f3a34;
+  --k2-texte-clair: #5f7972;
+  --k2-bordure: #e3e6e1;
+  --k2-danger: #c0453d;
+  --k2-danger-tint: rgba(192, 69, 61, 0.1);
+  --k2-succes-tint: rgba(127, 181, 171, 0.16);
+  --k2-rayon: 14px;
+  --k2-rayon-sm: 10px;
+  --k2-ombre: 0 2px 14px rgba(31, 58, 52, 0.07);
+  --k2-ombre-hover: 0 8px 24px rgba(31, 58, 52, 0.12);
+}
+
+.k2-body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--k2-bg);
+  color: var(--k2-texte);
+  font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  padding-bottom: 76px; /* place pour la barre de navigation mobile fixe */
+}
+
+.k2-body * {
+  box-sizing: border-box;
+}
+
+.k2-body a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- Barre supérieure légère (logo + retour), sans menu complet --- */
+.k2-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 6px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.k2-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.k2-logo img {
+  height: 30px;
+  width: auto;
+  display: block;
+}
+
+.k2-retour {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--k2-texte-clair);
+}
+
+.k2-retour svg {
+  width: 15px;
+  height: 15px;
+}
+
+.k2-main {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 8px 20px 40px;
+}
+
+.k2-titre {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--k2-texte-clair);
+  text-align: center;
+  margin: 10px 0 2px;
+}
+
+.k2-sous-titre {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 22px;
+}
+
+/* --- Stepper (1 à 5) --- */
+.k2-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 0 26px;
+  flex-wrap: wrap;
+}
+
+.k2-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--k2-texte-clair);
+  min-width: 64px;
+}
+
+.k2-step-numero {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--k2-bordure);
+  background: var(--k2-blanc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--k2-texte-clair);
+}
+
+.k2-step-active .k2-step-numero {
+  background: var(--k2-primary);
+  border-color: var(--k2-primary);
+  color: var(--k2-blanc);
+}
+
+.k2-step-active {
+  color: var(--k2-primary);
+}
+
+.k2-step-done .k2-step-numero {
+  background: var(--k2-secondary);
+  border-color: var(--k2-secondary);
+  color: var(--k2-blanc);
+}
+
+.k2-step-trait {
+  width: 30px;
+  height: 1px;
+  background: var(--k2-bordure);
+  margin-top: -18px;
+}
+
+/* --- Cartes / panneaux génériques --- */
+.k2-carte {
+  background: var(--k2-blanc);
+  border: 1px solid var(--k2-bordure);
+  border-radius: var(--k2-rayon);
+  box-shadow: var(--k2-ombre);
+  padding: 20px;
+}
+
+.k2-grille-2col {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 22px;
+  align-items: start;
+}
+
+/* --- Recherche + filtre catégorie (étape 1) --- */
+.k2-recherche-bloc {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.k2-recherche-champ {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--k2-blanc);
+  border: 1px solid var(--k2-bordure);
+  border-radius: var(--k2-rayon-sm);
+  padding: 11px 14px;
+}
+
+.k2-recherche-champ svg {
+  width: 17px;
+  height: 17px;
+  color: var(--k2-texte-clair);
+  flex-shrink: 0;
+}
+
+.k2-recherche-champ input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+  font-family: inherit;
+  background: transparent;
+}
+
+.k2-select-categorie {
+  border: 1px solid var(--k2-bordure);
+  border-radius: var(--k2-rayon-sm);
+  padding: 11px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--k2-blanc);
+  color: var(--k2-texte);
+}
+
+/* --- Grille de cartes marchand sélectionnables (étape 1) --- */
+.k2-grille-cartes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.k2-carte-select {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  background: var(--k2-blanc);
+  border: 1.5px solid var(--k2-bordure);
+  border-radius: var(--k2-rayon);
+  padding: 16px 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.k2-carte-select:hover {
+  box-shadow: var(--k2-ombre-hover);
+}
+
+.k2-carte-select.selectionnee {
+  border-color: var(--k2-secondary);
+  box-shadow: 0 0 0 3px var(--k2-succes-tint);
+}
+
+.k2-carte-select-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--k2-bordure);
+  background: var(--k2-blanc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--k2-blanc);
+}
+
+.k2-carte-select-check svg {
+  width: 13px;
+  height: 13px;
+  display: none;
+}
+
+.k2-carte-select.selectionnee .k2-carte-select-check {
+  background: var(--k2-secondary);
+  border-color: var(--k2-secondary);
+}
+
+.k2-carte-select.selectionnee .k2-carte-select-check svg {
+  display: block;
+}
+
+.k2-carte-select-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  background: var(--k2-neutral);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-weight: 800;
+  color: var(--k2-primary);
+}
+
+.k2-carte-select-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.k2-carte-select-nom {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.k2-carte-select-cat {
+  font-size: 11.5px;
+  color: var(--k2-texte-clair);
+}
+
+.k2-voir-plus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--k2-bg);
+  border: 1.5px dashed var(--k2-bordure);
+  border-radius: var(--k2-rayon);
+  padding: 16px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--k2-texte-clair);
+  cursor: pointer;
+}
+
+.k2-voir-plus svg {
+  width: 20px;
+  height: 20px;
+}
+
+.k2-selection-recap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 12px 4px;
+  border-top: 1px solid var(--k2-bordure);
+  margin-top: 4px;
+}
+
+.k2-selection-recap a {
+  font-weight: 700;
+  color: var(--k2-primary);
+  text-decoration: underline;
+}
+
+/* --- Ligne "carte + montant/quantité" (étape 2, panier) --- */
+.k2-ligne-carte {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+}
+
+.k2-ligne-carte + .k2-ligne-carte {
+  border-top: 1px solid var(--k2-bordure);
+}
+
+.k2-ligne-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 9px;
+  background: var(--k2-neutral);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  font-weight: 800;
+  color: var(--k2-primary);
+}
+
+.k2-ligne-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.k2-ligne-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.k2-ligne-nom {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.k2-ligne-cat {
+  font-size: 12px;
+  color: var(--k2-texte-clair);
+}
+
+.k2-ligne-montant-bloc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.k2-montant-input {
+  width: 74px;
+  padding: 8px;
+  text-align: center;
+  border: 1px solid var(--k2-bordure);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+}
+
+.k2-btn-rond {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--k2-bordure);
+  background: var(--k2-blanc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--k2-texte);
+  flex-shrink: 0;
+}
+
+.k2-btn-rond svg {
+  width: 14px;
+  height: 14px;
+}
+
+.k2-btn-rond:hover {
+  background: var(--k2-neutral);
+}
+
+.k2-btn-supprimer {
+  border: none;
+  background: none;
+  color: var(--k2-texte-clair);
+  cursor: pointer;
+  padding: 6px;
+  flex-shrink: 0;
+}
+
+.k2-btn-supprimer svg {
+  width: 17px;
+  height: 17px;
+}
+
+.k2-btn-supprimer:hover {
+  color: var(--k2-danger);
+}
+
+/* --- Total --- */
+.k2-total-bloc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 4px;
+  margin-top: 6px;
+  border-top: 1px solid var(--k2-bordure);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.k2-total-bloc .valeur {
+  font-size: 19px;
+  color: var(--k2-primary);
+}
+
+/* --- Boutons principaux --- */
+.k2-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+.k2-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.k2-btn-primaire {
+  background: var(--k2-primary);
+  color: var(--k2-blanc);
+  width: 100%;
+}
+
+.k2-btn-primaire:hover {
+  background: #16302b;
+}
+
+.k2-btn-primaire:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.k2-btn-secondaire {
+  background: var(--k2-blanc);
+  color: var(--k2-texte);
+  border: 1px solid var(--k2-bordure);
+}
+
+.k2-btn-secondaire:hover {
+  background: var(--k2-neutral);
+}
+
+.k2-ligne-boutons-nav {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.k2-ligne-boutons-nav .k2-btn-secondaire {
+  flex: 0 0 auto;
+}
+
+.k2-ligne-boutons-nav .k2-btn-primaire {
+  flex: 1;
+}
+
+/* --- Sécurité (bandeau) --- */
+.k2-securite {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--k2-texte-clair);
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.k2-securite svg {
+  width: 15px;
+  height: 15px;
+  color: var(--k2-secondary);
+}
+
+/* --- Bloc RIB par marchand (étape 3) --- */
+.k2-rib-bloc {
+  border: 1px solid var(--k2-bordure);
+  border-radius: var(--k2-rayon);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.k2-rib-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.k2-rib-marchand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.k2-rib-marchand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: var(--k2-neutral);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-weight: 800;
+  font-size: 12px;
+  color: var(--k2-primary);
+}
+
+.k2-rib-marchand-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.k2-rib-montant {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--k2-primary);
+}
+
+.k2-rib-table {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 6px 14px;
+  align-items: center;
+  background: var(--k2-bg);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.k2-rib-label {
+  font-size: 12px;
+  color: var(--k2-texte-clair);
+  font-weight: 600;
+}
+
+.k2-rib-valeur {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  word-break: break-all;
+}
+
+.k2-btn-copier {
+  border: none;
+  background: var(--k2-blanc);
+  border: 1px solid var(--k2-bordure);
+  border-radius: 7px;
+  padding: 5px 9px;
+  cursor: pointer;
+  color: var(--k2-texte-clair);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.k2-btn-copier svg {
+  width: 12px;
+  height: 12px;
+}
+
+.k2-btn-copier:hover {
+  color: var(--k2-primary);
+  border-color: var(--k2-primary);
+}
+
+/* --- Champs de formulaire --- */
+.k2-champ {
+  margin-bottom: 16px;
+}
+
+.k2-champ label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.k2-champ-input-icone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--k2-bordure);
+  border-radius: 9px;
+  padding: 11px 13px;
+  background: var(--k2-blanc);
+}
+
+.k2-champ-input-icone svg {
+  width: 16px;
+  height: 16px;
+  color: var(--k2-texte-clair);
+  flex-shrink: 0;
+}
+
+.k2-champ-input-icone input,
+.k2-champ-input-icone textarea {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 14.5px;
+  font-family: inherit;
+  background: transparent;
+  resize: vertical;
+}
+
+.k2-compteur {
+  text-align: right;
+  font-size: 11px;
+  color: var(--k2-texte-clair);
+  margin-top: 4px;
+}
+
+/* --- Étape 5 : confirmation --- */
+.k2-confirmation {
+  text-align: center;
+  max-width: 480px;
+  margin: 20px auto 0;
+}
+
+.k2-confirmation-icone {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: var(--k2-succes-tint);
+  color: var(--k2-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.k2-confirmation-icone svg {
+  width: 34px;
+  height: 34px;
+}
+
+.k2-confirmation-numero {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--k2-primary);
+  background: var(--k2-neutral);
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin: 6px 0 22px;
+}
+
+.k2-confirmation-ligne {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--k2-bordure);
+  text-align: left;
+}
+
+.k2-confirmation-note {
+  font-size: 12.5px;
+  color: var(--k2-texte-clair);
+  margin-top: 18px;
+  line-height: 1.5;
+}
+
+/* --- Badges de statut (mes commandes) --- */
+.k2-badge {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.k2-badge-draft { background: var(--k2-neutral); color: var(--k2-texte-clair); }
+.k2-badge-active { background: var(--k2-succes-tint); color: #2f6a5c; }
+.k2-badge-partial { background: rgba(196, 155, 58, 0.16); color: #8a6a1f; }
+.k2-badge-refused { background: var(--k2-danger-tint); color: var(--k2-danger); }
+.k2-badge-expired { background: var(--k2-neutral); color: var(--k2-texte-clair); }
+
+/* --- Favoris : coeur sur une carte --- */
+.k2-favori-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--k2-texte-clair);
+  box-shadow: 0 1px 4px rgba(31, 58, 52, 0.15);
+}
+
+.k2-favori-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.k2-favori-btn.actif {
+  color: var(--k2-danger);
+}
+
+.k2-favori-btn.actif svg {
+  fill: var(--k2-danger);
+}
+
+/* --- États vides / chargement / erreur --- */
+.k2-etat {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--k2-texte-clair);
+  font-size: 14px;
+}
+
+.k2-etat svg {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 10px;
+  color: var(--k2-secondary);
+}
+
+.k2-etat-erreur {
+  color: var(--k2-danger);
+}
+
+/* --- Barre de navigation mobile persistante (Accueil / Mes commandes / Favoris / Mon compte) --- */
+.k2-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  background: var(--k2-blanc);
+  border-top: 1px solid var(--k2-bordure);
+  box-shadow: 0 -2px 10px rgba(31, 58, 52, 0.06);
+}
+
+.k2-bottom-nav a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 9px 4px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #97a39d;
+}
+
+.k2-bottom-nav a svg {
+  width: 21px;
+  height: 21px;
+}
+
+.k2-bottom-nav a.actif {
+  color: var(--k2-primary);
+}
+
+@media (min-width: 860px) {
+  .k2-bottom-nav {
+    display: none;
+  }
+  .k2-body {
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .k2-grille-2col {
+    grid-template-columns: 1fr;
+  }
+  .k2-grille-cartes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .k2-grille-cartes {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 9px;
+  }
+  .k2-rib-table {
+    grid-template-columns: auto 1fr;
+  }
+  .k2-btn-copier {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}

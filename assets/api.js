@@ -143,6 +143,17 @@ const KADOSK_API = (function () {
     getActiveMerchants: () => appelerPublic("activeMerchants", "GET"),
     getGiftCardOffer: (merchantId) => appelerPublic("giftCardOffer?merchantId=" + encodeURIComponent(merchantId), "GET"),
     placeOrder: (merchantId, montant, buyerEmail, buyerName, quantite, message) =>
-      appelerPublic("placeOrder", "POST", { merchantId, montant, buyerEmail, buyerName, quantite, message })
+      appelerPublic("placeOrder", "POST", { merchantId, montant, buyerEmail, buyerName, quantite, message }),
+
+    // Parcours en 5 étapes (panier multi-marchands) : création de commande (tout est
+    // revalidé côté serveur), relecture de confirmation, "Mes commandes" par email.
+    createOrder: (items, buyerEmail, recipientName, recipientEmail, message) =>
+      appelerPublic("createOrder", "POST", { items, buyerEmail, recipientName, recipientEmail, message }),
+    getOrderByNumber: (orderNumber, buyerEmail) =>
+      appelerPublic(
+        "orderByNumber?orderNumber=" + encodeURIComponent(orderNumber) + "&buyerEmail=" + encodeURIComponent(buyerEmail),
+        "GET"
+      ),
+    getOrdersByEmail: (buyerEmail) => appelerPublic("ordersByEmail?buyerEmail=" + encodeURIComponent(buyerEmail), "GET")
   };
 })();

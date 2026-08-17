@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mon compte — KADOSK</title>
+<link rel="stylesheet" href="assets/kadosk2.css" />
+</head>
+<body class="k2-body">
+  <div class="k2-topbar">
+    <a href="accueil.html" class="k2-logo">
+      <img src="assets/logo.png" alt="KADOSK" />
+    </a>
+  </div>
+
+  <main class="k2-main" style="max-width:560px;">
+    <h1 class="k2-sous-titre" style="text-align:left;">Mon compte</h1>
+
+    <!-- KADOSK n'a pas de compte acheteur avec mot de passe (achat 100% invité, suivi
+         par e-mail uniquement - voir doc d'architecture). Cette page reflète cela
+         honnêtement plutôt que de simuler une sécurité/des notifications qui
+         n'existent pas : c'est un point d'accès unique vers vos commandes/favoris. -->
+    <div class="k2-carte" style="margin-bottom:14px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+        <div class="k2-carte-select-logo" style="width:48px;height:48px;" id="avatarInitiale">
+          <span id="k2IconeUser"></span>
+        </div>
+        <div>
+          <div style="font-weight:800; font-size:15px;" id="texteEmailCompte">Non identifié</div>
+          <div style="font-size:12px; color:var(--k2-texte-clair);">Identifié par e-mail (pas de mot de passe chez KADOSK)</div>
+        </div>
+      </div>
+
+      <div class="k2-champ" style="margin-bottom:8px;">
+        <div class="k2-champ-input-icone">
+          <span id="k2IconeMail"></span>
+          <input type="email" id="inputEmail" placeholder="votre-email@exemple.com" />
+        </div>
+      </div>
+      <button type="button" class="k2-btn k2-btn-primaire" id="btnEnregistrer" style="width:100%;">S'identifier</button>
+    </div>
+
+    <a href="mes-commandes.html" class="k2-carte" style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+      <span id="k2IconeCommandes"></span>
+      <div style="flex:1;">
+        <div style="font-weight:700; font-size:14px;">Mes commandes</div>
+        <div style="font-size:12px; color:var(--k2-texte-clair);">Historique et suivi de vos commandes</div>
+      </div>
+      <span id="k2IconeFleche1"></span>
+    </a>
+
+    <a href="favoris.html" class="k2-carte" style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+      <span id="k2IconeCoeur"></span>
+      <div style="flex:1;">
+        <div style="font-weight:700; font-size:14px;">Mes favoris</div>
+        <div style="font-size:12px; color:var(--k2-texte-clair);">Enseignes enregistrées sur cet appareil</div>
+      </div>
+      <span id="k2IconeFleche2"></span>
+    </a>
+
+    <button type="button" class="k2-btn k2-btn-secondaire" id="btnOublier" style="width:100%;">
+      <span id="k2IconeDeconnexion"></span> Oublier mon e-mail sur cet appareil
+    </button>
+  </main>
+
+  <div id="k2NavBas" class="k2-bottom-nav"></div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/icons.js"></script>
+  <script src="assets/nav2.js"></script>
+  <script src="assets/panier2.js"></script>
+  <script src="assets/mon-compte.js"></script>
+</body>
+</html>

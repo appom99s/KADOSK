@@ -3,36 +3,81 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Boutique KADOSK — Cartes cadeaux</title>
-<link rel="stylesheet" href="assets/style.css" />
+<title>Étape 1 · Choix des cartes — KADOSK</title>
+<link rel="stylesheet" href="assets/kadosk2.css" />
 </head>
-<body class="kadosk-public-body">
-  <header class="kadosk-public-header">
-    <a href="boutique.html" class="kadosk-public-logo">
+<body class="k2-body">
+  <div class="k2-topbar">
+    <a href="accueil.html" class="k2-logo">
       <img src="assets/logo.png" alt="KADOSK" />
-      <span>KADOSK</span>
     </a>
-    <a href="panier.html" class="kadosk-public-panier-lien">
-      🛒 Panier
-      <span class="kadosk-public-badge" data-panier-badge style="display:none">0</span>
-    </a>
-  </header>
+  </div>
 
-  <main class="kadosk-public-main">
-    <h1 class="kadosk-public-titre">Offrez une carte cadeau</h1>
-    <p class="kadosk-public-soustitre">Choisissez un commerce du réseau KADOSK et composez votre carte cadeau.</p>
+  <main class="k2-main" style="max-width:640px;">
+    <p class="k2-titre">ÉTAPE 1</p>
+    <h1 class="k2-sous-titre">Choix des cartes</h1>
 
-    <div id="etatChargement" class="kadosk-message-info">Chargement des commerces...</div>
-    <div id="etatVide" class="kadosk-message-info" style="display:none">Aucun commerce disponible pour le moment.</div>
-    <div id="etatErreur" class="kadosk-message-erreur" style="display:none"></div>
+    <div class="k2-stepper">
+      <div class="k2-step k2-step-active">
+        <span class="k2-step-numero">1</span><span>Choix</span>
+      </div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step"><span class="k2-step-numero">2</span><span>Montant</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step"><span class="k2-step-numero">3</span><span>Récapitulatif</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step"><span class="k2-step-numero">4</span><span>Destinataire &amp; Message</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step"><span class="k2-step-numero">5</span><span>Confirmation</span></div>
+    </div>
 
-    <div id="grilleMarchands" class="kadosk-grille-boutique"></div>
+    <div class="k2-carte">
+      <div class="k2-champ" style="margin-bottom:4px;">
+        <label>Choisissez une ou plusieurs cartes cadeaux</label>
+        <p style="font-size:12.5px;color:var(--k2-texte-clair);margin:0 0 14px;">Sélectionnez les cartes que vous souhaitez offrir.</p>
+      </div>
+
+      <div class="k2-recherche-bloc">
+        <div class="k2-recherche-champ">
+          <span id="k2IconeRecherche"></span>
+          <input type="text" id="inputRecherche" placeholder="Rechercher un marchand, une catégorie..." />
+        </div>
+        <select id="selectCategorie" class="k2-select-categorie">
+          <option value="">Toutes les catégories</option>
+        </select>
+      </div>
+
+      <div id="etatChargement" class="k2-etat"><span id="k2IconeChargement"></span><br />Chargement des enseignes...</div>
+      <div id="etatErreur" class="k2-etat k2-etat-erreur" style="display:none"></div>
+      <div id="etatVide" class="k2-etat" style="display:none">Aucun marchand ne correspond à votre recherche.</div>
+
+      <div id="grilleMarchands" class="k2-grille-cartes"></div>
+
+      <div id="blocSelection" class="k2-selection-recap" style="display:none">
+        <span id="texteSelection">0 carte(s) sélectionnée(s)</span>
+        <a href="#" id="lienVoirSelection">Voir la sélection</a>
+      </div>
+      <div id="listeSelectionDetail" style="display:none; font-size:13px; color:var(--k2-texte-clair); margin-top:-4px; margin-bottom:10px;"></div>
+
+      <button type="button" class="k2-btn k2-btn-primaire" id="btnContinuer" disabled style="margin-top:6px;">
+        Continuer <span id="k2IconeContinuer"></span>
+      </button>
+
+      <div class="k2-securite">
+        <span id="k2IconeSecurite"></span>
+        <span>Paiement 100% sécurisé — vos données sont protégées et cryptées.</span>
+      </div>
+    </div>
   </main>
+
+  <div id="k2NavBas" class="k2-bottom-nav"></div>
 
   <script src="assets/config.js"></script>
   <script src="assets/auth.js"></script>
   <script src="assets/api.js"></script>
-  <script src="assets/panier.js"></script>
-  <script src="assets/boutique.js"></script>
+  <script src="assets/icons.js"></script>
+  <script src="assets/nav2.js"></script>
+  <script src="assets/panier2.js"></script>
+  <script src="assets/etape1.js"></script>
 </body>
 </html>

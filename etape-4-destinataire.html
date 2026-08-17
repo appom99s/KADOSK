@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Étape 4 · Destinataire &amp; message — KADOSK</title>
+<link rel="stylesheet" href="assets/kadosk2.css" />
+</head>
+<body class="k2-body">
+  <div class="k2-topbar">
+    <a href="accueil.html" class="k2-logo">
+      <img src="assets/logo.png" alt="KADOSK" />
+    </a>
+  </div>
+
+  <main class="k2-main" style="max-width:640px;">
+    <p class="k2-titre">ÉTAPE 4</p>
+    <h1 class="k2-sous-titre">Destinataire &amp; message</h1>
+
+    <div class="k2-stepper">
+      <div class="k2-step k2-step-done"><span class="k2-step-numero">1</span><span>Choix</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step k2-step-done"><span class="k2-step-numero">2</span><span>Montant</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step k2-step-done"><span class="k2-step-numero">3</span><span>Récapitulatif</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step k2-step-active"><span class="k2-step-numero">4</span><span>Destinataire &amp; Message</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step"><span class="k2-step-numero">5</span><span>Confirmation</span></div>
+    </div>
+
+    <div class="k2-carte">
+      <div class="k2-champ" style="margin-bottom:4px;">
+        <label>Qui recevra ce cadeau ?</label>
+        <p style="font-size:12.5px;color:var(--k2-texte-clair);margin:0 0 16px;">Les cartes cadeaux et le message seront envoyés par e-mail.</p>
+      </div>
+
+      <div class="k2-champ">
+        <label>Destinataire — Nom complet</label>
+        <div class="k2-champ-input-icone">
+          <span id="k2IconeUser"></span>
+          <input type="text" id="inputNomDestinataire" placeholder="Nom complet" />
+        </div>
+      </div>
+
+      <div class="k2-champ">
+        <label>E-mail du destinataire</label>
+        <div class="k2-champ-input-icone">
+          <span id="k2IconeMailDest"></span>
+          <input type="email" id="inputEmailDestinataire" placeholder="exemple@email.com" />
+        </div>
+      </div>
+
+      <div class="k2-champ">
+        <label>Message personnalisé (optionnel)</label>
+        <div class="k2-champ-input-icone" style="align-items:flex-start;">
+          <span id="k2IconeMessage" style="margin-top:2px;"></span>
+          <textarea id="inputMessage" maxlength="250" rows="3" placeholder="Ajoutez un message personnalisé..."></textarea>
+        </div>
+        <div class="k2-compteur"><span id="compteurMessage">0</span>/250</div>
+      </div>
+
+      <!-- Champ ajouté par rapport à la maquette : nécessaire pour retrouver la commande
+           dans "Mes commandes" (aucun compte acheteur dans KADOSK - voir doc d'architecture),
+           et pour envoyer la confirmation de commande à l'acheteur (qui n'est pas toujours
+           le destinataire, puisqu'il s'agit d'un cadeau). -->
+      <div class="k2-champ">
+        <label>Votre e-mail (pour suivre votre commande et recevoir la confirmation)</label>
+        <div class="k2-champ-input-icone">
+          <span id="k2IconeMailAcheteur"></span>
+          <input type="email" id="inputEmailAcheteur" placeholder="votre-email@exemple.com" />
+        </div>
+      </div>
+
+      <div class="k2-champ" style="margin-top:22px;">
+        <label>Récapitulatif</label>
+      </div>
+      <div id="listeRecap"></div>
+      <div class="k2-total-bloc">
+        <span>Total</span>
+        <span class="valeur" id="texteTotal">0,00 DH</span>
+      </div>
+
+      <p id="messageErreur" class="k2-etat-erreur" style="font-size:13px;margin:10px 0 0;display:none;"></p>
+
+      <div class="k2-ligne-boutons-nav">
+        <button type="button" class="k2-btn k2-btn-secondaire" id="btnRetour">
+          <span id="k2IconeRetour"></span> Retour
+        </button>
+        <button type="button" class="k2-btn k2-btn-primaire" id="btnValider">
+          <span id="k2IconeCadenas"></span> Valider et envoyer
+        </button>
+      </div>
+
+      <div class="k2-securite">
+        <span id="k2IconeSecurite"></span>
+        <span>Paiement 100% sécurisé — vos données sont protégées et cryptées.</span>
+      </div>
+    </div>
+  </main>
+
+  <div id="k2NavBas" class="k2-bottom-nav"></div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/icons.js"></script>
+  <script src="assets/nav2.js"></script>
+  <script src="assets/panier2.js"></script>
+  <script src="assets/etape4.js"></script>
+</body>
+</html>

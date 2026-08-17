@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mes commandes — KADOSK</title>
+<link rel="stylesheet" href="assets/kadosk2.css" />
+</head>
+<body class="k2-body">
+  <div class="k2-topbar">
+    <a href="accueil.html" class="k2-logo">
+      <img src="assets/logo.png" alt="KADOSK" />
+    </a>
+  </div>
+
+  <main class="k2-main" style="max-width:640px;">
+    <h1 class="k2-sous-titre" style="text-align:left;">Mes commandes</h1>
+    <p style="font-size:13px;color:var(--k2-texte-clair);margin:-14px 0 20px;">
+      KADOSK ne demande pas de mot de passe : entrez l'e-mail utilisé lors de votre commande pour la retrouver.
+    </p>
+
+    <div class="k2-carte" id="carteRecherche">
+      <div class="k2-champ" style="margin-bottom:6px;">
+        <label>Votre e-mail</label>
+        <div class="k2-champ-input-icone">
+          <span id="k2IconeMail"></span>
+          <input type="email" id="inputEmail" placeholder="exemple@email.com" />
+        </div>
+      </div>
+      <button type="button" class="k2-btn k2-btn-primaire" id="btnRechercher" style="width:100%;">
+        <span id="k2IconeRecherche"></span> Retrouver mes commandes
+      </button>
+      <p id="messageErreur" class="k2-etat-erreur" style="font-size:13px;margin:10px 0 0;display:none;"></p>
+    </div>
+
+    <div id="etatChargement" class="k2-etat" style="display:none">Recherche...</div>
+    <div id="etatVide" class="k2-etat" style="display:none">Aucune commande trouvée pour cet e-mail.</div>
+
+    <div id="listeCommandes" style="margin-top:16px;"></div>
+  </main>
+
+  <div id="k2NavBas" class="k2-bottom-nav"></div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/icons.js"></script>
+  <script src="assets/nav2.js"></script>
+  <script src="assets/panier2.js"></script>
+  <script src="assets/mes-commandes.js"></script>
+</body>
+</html>

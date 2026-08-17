@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KADOSK — Le cadeau, simplement</title>
+<link rel="stylesheet" href="assets/kadosk2.css" />
+<style>
+  .k2-hero {
+    text-align: center;
+    padding: 34px 20px 26px;
+  }
+  .k2-hero h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0 0 12px;
+    line-height: 1.2;
+  }
+  .k2-hero p {
+    font-size: 15px;
+    color: var(--k2-texte-clair);
+    max-width: 480px;
+    margin: 0 auto 22px;
+    line-height: 1.5;
+  }
+  .k2-hero-boutons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .k2-hero-boutons .k2-btn { width: auto; padding: 13px 26px; }
+  .k2-section { padding: 30px 20px; max-width: 1080px; margin: 0 auto; }
+  .k2-section-titre { font-size: 20px; font-weight: 800; margin: 0 0 4px; }
+  .k2-section-sous { font-size: 13px; color: var(--k2-texte-clair); margin: 0 0 18px; }
+  .k2-vision {
+    background: var(--k2-primary);
+    color: var(--k2-blanc);
+    border-radius: var(--k2-rayon);
+    padding: 30px 24px;
+    text-align: center;
+    max-width: 1080px;
+    margin: 0 auto 30px;
+  }
+  .k2-vision p { font-size: 15px; line-height: 1.6; max-width: 640px; margin: 0 auto; opacity: 0.92; }
+  .k2-grille-categories {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  .k2-categorie-tuile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: var(--k2-blanc);
+    border: 1px solid var(--k2-bordure);
+    border-radius: var(--k2-rayon);
+    padding: 18px 10px;
+    text-align: center;
+    font-size: 12.5px;
+    font-weight: 700;
+    box-shadow: var(--k2-ombre);
+  }
+  .k2-categorie-tuile:hover { box-shadow: var(--k2-ombre-hover); }
+  .k2-categorie-tuile .k2-icone-cat {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--k2-succes-tint);
+    color: var(--k2-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .k2-categorie-tuile .k2-icone-cat svg { width: 20px; height: 20px; }
+  .k2-grille-populaires { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .k2-badge-nouveau {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--k2-primary);
+    color: var(--k2-blanc);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .k2-idees-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+  .k2-idee-chip {
+    background: var(--k2-neutral);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .k2-composez {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: var(--k2-light);
+    border-radius: var(--k2-rayon);
+    padding: 26px;
+  }
+  .k2-etapes-grille { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .k2-etape-comment { text-align: center; }
+  .k2-etape-comment .k2-icone-cat { margin: 0 auto 10px; }
+  .k2-logos-partenaires { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; justify-content: center; }
+  .k2-logo-partenaire {
+    width: 56px; height: 56px; border-radius: 10px; background: var(--k2-neutral);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+    font-weight: 800; color: var(--k2-primary);
+  }
+  .k2-logo-partenaire img { width: 100%; height: 100%; object-fit: contain; }
+  .k2-pourquoi-grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .k2-pourquoi-carte { text-align: center; padding: 6px; }
+  .k2-footer {
+    background: var(--k2-primary);
+    color: rgba(255,255,255,0.75);
+    padding: 30px 20px 90px;
+    text-align: center;
+    font-size: 12.5px;
+    margin-top: 20px;
+  }
+  .k2-footer strong { color: #fff; }
+  @media (max-width: 860px) {
+    .k2-grille-categories, .k2-grille-populaires { grid-template-columns: repeat(3, 1fr); }
+    .k2-etapes-grille, .k2-pourquoi-grille { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .k2-grille-categories, .k2-grille-populaires { grid-template-columns: repeat(2, 1fr); }
+    .k2-etapes-grille, .k2-pourquoi-grille { grid-template-columns: 1fr; }
+    .k2-hero h1 { font-size: 25px; }
+  }
+</style>
+</head>
+<body class="k2-body">
+  <div class="k2-topbar">
+    <a href="accueil.html" class="k2-logo">
+      <img src="assets/logo.png" alt="KADOSK" />
+    </a>
+    <a href="boutique.html" class="k2-retour">Voir toutes les cartes →</a>
+  </div>
+
+  <section class="k2-hero">
+    <h1>Offrez le choix,<br />simplement.</h1>
+    <p>Découvrez vos enseignes préférées et composez un cadeau qui correspond vraiment à la personne que vous souhaitez gâter.</p>
+
+    <div class="k2-recherche-champ" style="max-width:480px; margin:0 auto 20px;">
+      <span id="k2IconeRechercheHero"></span>
+      <input type="text" id="inputRechercheHero" placeholder="Rechercher un marchand, une catégorie..." />
+    </div>
+
+    <div class="k2-hero-boutons">
+      <a href="boutique.html" class="k2-btn k2-btn-primaire">Découvrir les cartes</a>
+      <a href="boutique.html" class="k2-btn k2-btn-secondaire">Composer mon cadeau</a>
+    </div>
+  </section>
+
+  <div class="k2-vision">
+    <p>Une seule marketplace pour offrir vos enseignes préférées : shopping, restaurants, beauté, gaming, voyage... Composez un cadeau multi-enseignes en une seule commande, et chaque marchand reçoit son virement séparément.</p>
+  </div>
+
+  <section class="k2-section">
+    <h2 class="k2-section-titre">Explorer par domaine</h2>
+    <p class="k2-section-sous">Choisissez une catégorie pour affiner le catalogue.</p>
+    <div class="k2-grille-categories" id="grilleCategories"></div>
+  </section>
+
+  <section class="k2-section" id="sectionPopulaires">
+    <h2 class="k2-section-titre">Cartes populaires</h2>
+    <p class="k2-section-sous">Les enseignes disponibles sur KADOSK en ce moment.</p>
+    <div id="etatChargementPopulaires" class="k2-etat">Chargement...</div>
+    <div class="k2-grille-populaires" id="grillePopulaires"></div>
+  </section>
+
+  <section class="k2-section" id="sectionNouveautes" style="display:none">
+    <h2 class="k2-section-titre">Nouveautés</h2>
+    <p class="k2-section-sous">Les dernières enseignes arrivées sur KADOSK.</p>
+    <div class="k2-grille-populaires" id="grilleNouveautes"></div>
+  </section>
+
+  <section class="k2-section" id="sectionPourVous" style="display:none">
+    <h2 class="k2-section-titre">Pour vous</h2>
+    <p class="k2-section-sous">Basé sur vos favoris enregistrés sur cet appareil.</p>
+    <div class="k2-grille-populaires" id="grillePourVous"></div>
+  </section>
+
+  <section class="k2-section">
+    <h2 class="k2-section-titre">Idées cadeaux</h2>
+    <p class="k2-section-sous">Une occasion en tête ? Parcourez le catalogue complet à partir de là.</p>
+    <div class="k2-idees-chips">
+      <a href="boutique.html?q=anniversaire" class="k2-idee-chip">🎂 Anniversaire</a>
+      <a href="boutique.html?q=mariage" class="k2-idee-chip">💍 Mariage</a>
+      <a href="boutique.html?q=naissance" class="k2-idee-chip">👶 Naissance</a>
+      <a href="boutique.html?q=remerciement" class="k2-idee-chip">🙏 Remerciement</a>
+      <a href="boutique.html?q=fete" class="k2-idee-chip">🎉 Fête</a>
+    </div>
+  </section>
+
+  <section class="k2-section">
+    <div class="k2-composez">
+      <div>
+        <h2 class="k2-section-titre" style="margin-bottom:6px;">Composez votre cadeau</h2>
+        <p style="font-size:13.5px; color:var(--k2-texte); max-width:420px; margin:0;">Combinez plusieurs enseignes dans une seule commande : un cadeau vraiment sur-mesure.</p>
+      </div>
+      <a href="boutique.html" class="k2-btn k2-btn-primaire" style="width:auto;">Commencer</a>
+    </div>
+  </section>
+
+  <section class="k2-section">
+    <h2 class="k2-section-titre">Comment ça marche</h2>
+    <div class="k2-etapes-grille">
+      <div class="k2-etape-comment">
+        <div class="k2-icone-cat" id="iconeComment1"></div>
+        <div style="font-weight:700; font-size:13.5px;">1. Choisissez vos cartes</div>
+      </div>
+      <div class="k2-etape-comment">
+        <div class="k2-icone-cat" id="iconeComment2"></div>
+        <div style="font-weight:700; font-size:13.5px;">2. Payez par virement</div>
+      </div>
+      <div class="k2-etape-comment">
+        <div class="k2-icone-cat" id="iconeComment3"></div>
+        <div style="font-weight:700; font-size:13.5px;">3. Le marchand active la carte</div>
+      </div>
+      <div class="k2-etape-comment">
+        <div class="k2-icone-cat" id="iconeComment4"></div>
+        <div style="font-weight:700; font-size:13.5px;">4. Le destinataire reçoit son cadeau</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k2-section">
+    <h2 class="k2-section-titre">Marchands partenaires</h2>
+    <div class="k2-logos-partenaires" id="logosPartenaires"></div>
+  </section>
+
+  <section class="k2-section">
+    <h2 class="k2-section-titre">Pourquoi KADOSK</h2>
+    <div class="k2-pourquoi-grille">
+      <div class="k2-pourquoi-carte">
+        <div class="k2-icone-cat" style="margin:0 auto 10px;" id="iconePourquoi1"></div>
+        <div style="font-weight:700; font-size:13.5px; margin-bottom:4px;">Paiement sécurisé</div>
+        <div style="font-size:12.5px; color:var(--k2-texte-clair);">Virement direct au RIB propre à chaque marchand.</div>
+      </div>
+      <div class="k2-pourquoi-carte">
+        <div class="k2-icone-cat" style="margin:0 auto 10px;" id="iconePourquoi2"></div>
+        <div style="font-weight:700; font-size:13.5px; margin-bottom:4px;">Sans compte</div>
+        <div style="font-size:12.5px; color:var(--k2-texte-clair);">Aucune inscription requise pour commander.</div>
+      </div>
+      <div class="k2-pourquoi-carte">
+        <div class="k2-icone-cat" style="margin:0 auto 10px;" id="iconePourquoi3"></div>
+        <div style="font-weight:700; font-size:13.5px; margin-bottom:4px;">Multi-enseignes</div>
+        <div style="font-size:12.5px; color:var(--k2-texte-clair);">Un seul cadeau, plusieurs marques.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="k2-footer">
+    <strong>KADOSK</strong> — Le cadeau, simplement.<br />
+    <a href="boutique.html" style="color:inherit; margin:0 8px;">Cartes cadeaux</a> ·
+    <a href="mes-commandes.html" style="color:inherit; margin:0 8px;">Mes commandes</a> ·
+    <a href="favoris.html" style="color:inherit; margin:0 8px;">Favoris</a>
+  </footer>
+
+  <div id="k2NavBas" class="k2-bottom-nav"></div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/icons.js"></script>
+  <script src="assets/nav2.js"></script>
+  <script src="assets/panier2.js"></script>
+  <script src="assets/favoris-data.js"></script>
+  <script src="assets/accueil.js"></script>
+</body>
+</html>

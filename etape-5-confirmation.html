@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Étape 5 · Confirmation — KADOSK</title>
+<link rel="stylesheet" href="assets/kadosk2.css" />
+</head>
+<body class="k2-body">
+  <div class="k2-topbar">
+    <a href="accueil.html" class="k2-logo">
+      <img src="assets/logo.png" alt="KADOSK" />
+    </a>
+  </div>
+
+  <main class="k2-main" style="max-width:640px;">
+    <p class="k2-titre">ÉTAPE 5</p>
+    <h1 class="k2-sous-titre">Confirmation</h1>
+
+    <div class="k2-stepper">
+      <div class="k2-step k2-step-done"><span class="k2-step-numero">1</span><span>Choix</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step k2-step-done"><span class="k2-step-numero">2</span><span>Montant</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step k2-step-done"><span class="k2-step-numero">3</span><span>Récapitulatif</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step k2-step-done"><span class="k2-step-numero">4</span><span>Destinataire &amp; Message</span></div>
+      <div class="k2-step-trait"></div>
+      <div class="k2-step k2-step-active"><span class="k2-step-numero">5</span><span>Confirmation</span></div>
+    </div>
+
+    <div class="k2-carte">
+      <div id="blocConfirmation" class="k2-confirmation" style="display:none">
+        <div class="k2-confirmation-icone" id="k2IconeSucces"></div>
+        <h2 style="margin:0;">Merci !</h2>
+        <p style="color:var(--k2-texte-clair);font-size:14px;">Votre commande a bien été enregistrée.</p>
+        <div class="k2-confirmation-numero" id="texteNumeroCommande"></div>
+
+        <div id="listeRecapFinal"></div>
+        <div class="k2-total-bloc">
+          <span>Total</span>
+          <span class="valeur" id="texteTotalFinal">0,00 DH</span>
+        </div>
+
+        <p class="k2-confirmation-note">
+          Les cartes seront envoyées par e-mail à <strong id="texteEmailDestinataire"></strong> après confirmation du paiement (virement) par chaque marchand.
+        </p>
+
+        <a href="accueil.html" class="k2-btn k2-btn-primaire" style="margin-top:18px; width:100%;">
+          Retour à l'accueil
+        </a>
+        <a href="mes-commandes.html" class="k2-btn k2-btn-secondaire" style="margin-top:10px; width:100%;">
+          Voir mes commandes
+        </a>
+      </div>
+
+      <div id="etatIntrouvable" class="k2-etat" style="display:none">
+        Nous n'avons pas retrouvé le détail de cette confirmation dans cette session.
+        <br /><a href="mes-commandes.html" style="color:var(--k2-primary);font-weight:700;">Retrouver ma commande via mon e-mail</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="k2NavBas" class="k2-bottom-nav"></div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/icons.js"></script>
+  <script src="assets/nav2.js"></script>
+  <script src="assets/panier2.js"></script>
+  <script src="assets/etape5.js"></script>
+</body>
+</html>
