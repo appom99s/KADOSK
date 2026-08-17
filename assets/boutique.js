@@ -4,6 +4,45 @@
   const etatErreur = document.getElementById("etatErreur");
   const grille = document.getElementById("grilleMarchands");
 
+  // Authentification silencieuse : si la page Wix hôte (ma-boutique.page.js) détecte
+  // que le visiteur est déjà connecté sur www.kadosk.com, elle transmet un jeton de
+  // session via postMessage. On complète alors le flow PKCE pour obtenir un vrai token
+  // vérifié, sans jamais redemander de connexion au visiteur. En cas d'absence de ce
+  // message (page non connectée, ou pas intégrée dans le composant HTML de Ma boutique),
+  // la boutique continue de fonctionner normalement en mode invité.
+  window.addEventListener("message", async (event) => {
+    const donnees = event && event.data;
+    if (!donnees || donnees.type !== "KADOSK_SESSION_TOKEN" || !donnees.sessionToken) {
+      return;
+    }
+    if (KADOSK_AUTH.estConnecte()) {
+      // Déjà authentifié pour cette session navigateur - pas besoin de relancer le flow.
+      return;
+    }
+    try {
+      await KADOSK_AUTH.demarrerAutorisationMembrePourBoutique(donnees.sessionToken);
+      // demarrerAutorisationMembrePourBoutique redirige la page (dans l'iframe) vers
+      // Wix pour terminer l'autorisation - rien d'autre à faire ici, l'exécution
+      // s'arrête à la navigation.
+    } catch (erreur) {
+      console.error("Authentification silencieuse boutique échouée :", erreur);
+      // On n'affiche rien à l'utilisateur : le parcours invité reste disponible.
+    }
+  });
+
+  // Signale à la page Wix hôte (si cette page est bien intégrée via le composant HTML
+  // "Ma boutique") que le script est chargé et prêt à recevoir le jeton de session -
+  // évite une situation où la page hôte enverrait le message avant que ce script ait pu
+  // poser son écouteur ci-dessus.
+  if (window.parent && window.parent !== window) {
+    try {
+      window.parent.postMessage({ type: "KADOSK_BOUTIQUE_READY" }, "*");
+    } catch (erreur) {
+      // Pas intégré dans un composant compatible, ou restriction du navigateur - sans
+      // conséquence, le mode invité reste pleinement fonctionnel.
+    }
+  }
+
   function echapperHtml(valeur) {
     return String(valeur || "")
       .replace(/&/g, "&amp;")

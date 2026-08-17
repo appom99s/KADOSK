@@ -3,63 +3,192 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Carte cadeau — KADOSK</title>
+<title>Commander une carte cadeau — KADOSK</title>
 <link rel="stylesheet" href="assets/style.css" />
 </head>
-<body class="kadosk-public-body">
-  <header class="kadosk-public-header">
-    <a href="boutique.html" class="kadosk-public-logo">
+<body class="kadosk-cmd-body">
+  <header class="kadosk-cmd-nav">
+    <a href="boutique.html" class="kadosk-cmd-logo">
       <img src="assets/logo.png" alt="KADOSK" />
-      <span>KADOSK</span>
     </a>
-    <a href="panier.html" class="kadosk-public-panier-lien">
-      🛒 Panier
-      <span class="kadosk-public-badge" data-panier-badge style="display:none">0</span>
-    </a>
+    <nav class="kadosk-cmd-liens">
+      <a href="index.html">Accueil</a>
+      <a href="boutique.html">Cartes cadeaux</a>
+      <a href="index.html#comment-ca-marche">Comment ça marche ?</a>
+      <a href="index.html#commercants">Pour les commerçants</a>
+    </nav>
+    <div class="kadosk-cmd-actions">
+      <span class="kadosk-cmd-recherche">🔍 <span>Rechercher</span></span>
+      <a href="panier.html" class="kadosk-cmd-icone-panier" title="Panier">
+        🛒
+        <span class="kadosk-public-badge" data-panier-badge style="display:none">0</span>
+      </a>
+      <span class="kadosk-cmd-icone">👤</span>
+    </div>
   </header>
 
-  <main class="kadosk-public-main kadosk-public-main-etroit">
-    <a href="boutique.html" class="kadosk-public-retour">← Retour à la boutique</a>
+  <div class="kadosk-cmd-fil-ariane">
+    <a href="index.html">Accueil</a> &gt; <a href="boutique.html">Cartes cadeaux</a> &gt; <span>Commander</span>
+  </div>
+
+  <main class="kadosk-cmd-main">
+    <h1 class="kadosk-cmd-titre">Commander une carte cadeau 🎁</h1>
+    <p class="kadosk-cmd-soustitre">Faites plaisir à vos proches avec la carte cadeau parfaite.</p>
 
     <div id="etatChargement" class="kadosk-message-info">Chargement...</div>
     <div id="etatErreur" class="kadosk-message-erreur" style="display:none"></div>
 
-    <div id="sectionOffre" style="display:none">
-      <div class="kadosk-fiche-marchand-entete">
-        <div class="kadosk-carte-marchand-logo" id="logoMarchand"></div>
-        <div>
-          <div class="kadosk-public-titre" id="nomBoutique"></div>
-          <div class="kadosk-public-soustitre" id="nomCarte"></div>
+    <div id="sectionOffre" class="kadosk-cmd-grille" style="display:none">
+      <div class="kadosk-cmd-colonne-principale">
+
+        <div class="kadosk-cmd-etapes">
+          <div class="kadosk-cmd-etape kadosk-cmd-etape-active">
+            <span class="kadosk-cmd-etape-numero">1</span>
+            <span class="kadosk-cmd-etape-label">Choix de la carte</span>
+          </div>
+          <div class="kadosk-cmd-etape-trait"></div>
+          <div class="kadosk-cmd-etape">
+            <span class="kadosk-cmd-etape-numero">2</span>
+            <span class="kadosk-cmd-etape-label">Informations</span>
+          </div>
+          <div class="kadosk-cmd-etape-trait"></div>
+          <div class="kadosk-cmd-etape">
+            <span class="kadosk-cmd-etape-numero">3</span>
+            <span class="kadosk-cmd-etape-label">Paiement</span>
+          </div>
+        </div>
+
+        <div class="kadosk-cmd-carte">
+          <div class="kadosk-cmd-produit">
+            <div class="kadosk-cmd-produit-logo" id="logoMarchand"></div>
+            <div class="kadosk-cmd-produit-info">
+              <span class="kadosk-cmd-badge-categorie" id="badgeCategorie" style="display:none"></span>
+              <div class="kadosk-cmd-produit-nom" id="nomBoutique"></div>
+              <div class="kadosk-cmd-produit-desc" id="descriptionCarte"></div>
+              <a href="#" class="kadosk-cmd-lien-conditions" id="lienConditions" style="display:none">Voir les conditions d'utilisation</a>
+            </div>
+          </div>
+          <div class="kadosk-cmd-note-validite" id="texteExpiration">
+            ⓘ <span></span>
+          </div>
+        </div>
+
+        <div class="kadosk-cmd-carte">
+          <div class="kadosk-cmd-label">Montant de la carte</div>
+          <div id="boutonsMontants" class="kadosk-cmd-montants-grille"></div>
+          <div class="kadosk-cmd-autre-montant" id="blocMontantLibre" style="display:none">
+            <label>Autre montant</label>
+            <div class="kadosk-cmd-autre-montant-champ">
+              <input type="number" id="inputMontantLibre" placeholder="0" />
+              <span>DH</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kadosk-cmd-carte kadosk-cmd-quantite-bloc">
+          <div>
+            <div class="kadosk-cmd-label">Quantité</div>
+            <div class="kadosk-quantite-controle">
+              <button type="button" class="kadosk-bouton-secondaire" id="btnMoins">−</button>
+              <span id="texteQuantite">1</span>
+              <button type="button" class="kadosk-bouton-secondaire" id="btnPlus">+</button>
+            </div>
+          </div>
+          <div class="kadosk-cmd-total-partiel">
+            <div class="kadosk-cmd-label">Total de la commande</div>
+            <div class="kadosk-cmd-total-valeur" id="texteTotalPartiel">0,00 DH</div>
+          </div>
+        </div>
+
+        <div class="kadosk-cmd-carte">
+          <div class="kadosk-cmd-section-titre">
+            <span class="kadosk-cmd-icone-ronde">👤</span>
+            <div>
+              <div class="kadosk-cmd-label">Informations sur le destinataire</div>
+              <div class="kadosk-cmd-souslabel">À qui souhaitez-vous offrir cette carte cadeau ?</div>
+            </div>
+          </div>
+          <div class="kadosk-cmd-champs-ligne">
+            <div class="kadosk-champ">
+              <label>Nom complet</label>
+              <input type="text" id="inputNomClient" placeholder="Ex : Mohamed Amine" />
+            </div>
+            <div class="kadosk-champ">
+              <label>Email</label>
+              <input type="email" id="inputEmailClient" placeholder="exemple@email.com" />
+            </div>
+          </div>
+          <div class="kadosk-champ">
+            <label>Message personnalisé (optionnel)</label>
+            <textarea id="inputMessage" maxlength="200" placeholder="Écrivez un petit mot pour accompagner votre cadeau..."></textarea>
+            <div class="kadosk-cmd-compteur"><span id="compteurMessage">0</span>/200</div>
+          </div>
         </div>
       </div>
 
-      <p id="descriptionCarte" class="kadosk-fiche-marchand-desc"></p>
-      <p id="texteExpiration" class="kadosk-message-info"></p>
-
-      <div class="kadosk-champ">
-        <label>Montant</label>
-        <div id="boutonsMontants" class="kadosk-montants-grille"></div>
-      </div>
-
-      <div class="kadosk-champ" id="blocMontantLibre" style="display:none">
-        <label class="kadosk-champ-checkbox">
-          <input type="checkbox" id="checkboxMontantLibre" />
-          Montant libre
-        </label>
-        <input type="number" id="inputMontantLibre" placeholder="Montant en MAD" style="display:none" />
-      </div>
-
-      <div class="kadosk-champ">
-        <label>Quantité</label>
-        <div class="kadosk-quantite-controle">
-          <button type="button" class="kadosk-bouton-secondaire" id="btnMoins">−</button>
-          <span id="texteQuantite">1</span>
-          <button type="button" class="kadosk-bouton-secondaire" id="btnPlus">+</button>
+      <aside class="kadosk-cmd-colonne-laterale">
+        <div class="kadosk-cmd-recap">
+          <div class="kadosk-cmd-label">Récapitulatif de la commande</div>
+          <div class="kadosk-cmd-recap-produit">
+            <div class="kadosk-cmd-recap-logo" id="logoRecap"></div>
+            <div class="kadosk-cmd-recap-info">
+              <div id="nomRecap"></div>
+              <div class="kadosk-cmd-souslabel">Carte cadeau</div>
+            </div>
+            <div class="kadosk-cmd-recap-prix" id="prixRecap">0,00 DH</div>
+          </div>
+          <div class="kadosk-cmd-recap-ligne">
+            <span>Quantité</span>
+            <span id="quantiteRecap">1</span>
+          </div>
+          <div class="kadosk-cmd-recap-ligne">
+            <span>Frais de service</span>
+            <span>Gratuit</span>
+          </div>
+          <div class="kadosk-cmd-recap-total">
+            <span>Total</span>
+            <span id="totalRecap">0,00 DH</span>
+          </div>
         </div>
-      </div>
 
-      <button type="button" class="kadosk-bouton" id="btnAjouterPanier" disabled>Ajouter au panier</button>
-      <p id="messageAjout" class="kadosk-message-info"></p>
+        <div class="kadosk-cmd-securite">
+          <span class="kadosk-cmd-icone-ronde kadosk-cmd-icone-securite">🛡️</span>
+          <div>
+            <div class="kadosk-cmd-label">Paiement 100% sécurisé</div>
+            <div class="kadosk-cmd-souslabel">Vos transactions sont protégées par un cryptage SSL.</div>
+          </div>
+        </div>
+
+        <div class="kadosk-cmd-avantages">
+          <div class="kadosk-cmd-avantage">
+            <span>🚚</span>
+            <div>
+              <div class="kadosk-cmd-avantage-titre">Livraison instantanée</div>
+              <div class="kadosk-cmd-souslabel">La carte cadeau est envoyée par email immédiatement après paiement.</div>
+            </div>
+          </div>
+          <div class="kadosk-cmd-avantage">
+            <span>🏬</span>
+            <div>
+              <div class="kadosk-cmd-avantage-titre">Utilisable en magasin</div>
+              <div class="kadosk-cmd-souslabel" id="texteUtilisable">Valable chez ce commerçant.</div>
+            </div>
+          </div>
+          <div class="kadosk-cmd-avantage">
+            <span>✅</span>
+            <div>
+              <div class="kadosk-cmd-avantage-titre">Échange gratuit</div>
+              <div class="kadosk-cmd-souslabel">Selon les conditions du commerçant si la carte n'a pas été utilisée.</div>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="kadosk-cmd-cta" id="btnAjouterPanier" disabled>
+          Continuer vers le paiement →
+        </button>
+        <div class="kadosk-cmd-verrou">🔒 Paiement sécurisé</div>
+        <p id="messageAjout" class="kadosk-message-info"></p>
+      </aside>
     </div>
   </main>
 

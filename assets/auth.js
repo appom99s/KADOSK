@@ -146,7 +146,7 @@ const KADOSK_AUTH = (function () {
     );
   }
 
-  async function demarrerAutorisationMembre(sessionToken) {
+  async function demarrerAutorisationMembre(sessionToken, cheminRedirectionPersonnalise) {
     const verifier = genererChaineAleatoire(64);
     const defi = await genererDefiPkce(verifier);
     const etat = genererChaineAleatoire(24);
@@ -154,7 +154,14 @@ const KADOSK_AUTH = (function () {
     sessionStorage.setItem(PKCE_STORAGE_KEY, verifier);
     sessionStorage.setItem(STATE_STORAGE_KEY, etat);
 
-    const redirectUri = config().frontendBaseUrl + config().loginCallbackPath;
+    // Chemin de callback personnalisable : le flow marchand (login.html) utilise le
+    // callback par défaut (loginCallbackPath), mais d'autres contextes (ex. la
+    // boutique publique intégrée en HTML sur le site Wix) ont besoin de revenir sur
+    // une page de callback différente, sans passer par la logique 2FA/dashboard du
+    // callback marchand. Le redirectUri utilisé ici DOIT être identique, caractère
+    // pour caractère, à celui utilisé dans traiterRetourAutorisation ci-dessous lors
+    // de l'échange du code - sinon Wix refuse l'échange (redirect_uri mismatch).
+    const redirectUri = config().frontendBaseUrl + (cheminRedirectionPersonnalise || config().loginCallbackPath);
     const tokenVisiteur = await obtenirTokenVisiteur();
 
     const reponse = await appelJson(
@@ -181,7 +188,7 @@ const KADOSK_AUTH = (function () {
     window.location.href = reponse.redirectSession.fullUrl;
   }
 
-  async function traiterRetourAutorisation() {
+  async function traiterRetourAutorisation(cheminRedirectionPersonnalise) {
     const parametres = new URLSearchParams(window.location.search);
     const code = parametres.get("code");
     const etatRecu = parametres.get("state");
@@ -198,7 +205,9 @@ const KADOSK_AUTH = (function () {
       throw new Error("SESSION_INVALIDE");
     }
 
-    const redirectUri = config().frontendBaseUrl + config().loginCallbackPath;
+    // Doit être exactement le même redirectUri que celui utilisé dans
+    // demarrerAutorisationMembre ci-dessus pour cette même tentative de connexion.
+    const redirectUri = config().frontendBaseUrl + (cheminRedirectionPersonnalise || config().loginCallbackPath);
 
     const tokens = await appelJson(OAUTH_TOKEN_URL, {
       clientId: config().clientId,
@@ -254,11 +263,24 @@ const KADOSK_AUTH = (function () {
     window.location.href = config().logoutRedirectPath;
   }
 
+  // Variante dédiée à la boutique publique intégrée en HTML sur le site Wix : utilise
+  // le callback léger boutique-callback.html au lieu du callback marchand (qui gère
+  // 2FA/dashboard, non pertinents ici).
+  async function demarrerAutorisationMembrePourBoutique(sessionToken) {
+    return demarrerAutorisationMembre(sessionToken, config().boutiqueCallbackPath || "/boutique-callback.html");
+  }
+
+  async function traiterRetourAutorisationPourBoutique() {
+    return traiterRetourAutorisation(config().boutiqueCallbackPath || "/boutique-callback.html");
+  }
+
   return {
     loginMembre,
     inscrireMembre,
     demarrerAutorisationMembre,
     traiterRetourAutorisation,
+    demarrerAutorisationMembrePourBoutique,
+    traiterRetourAutorisationPourBoutique,
     obtenirAccessTokenValide,
     obtenirTokenVisiteur,
     estConnecte,
