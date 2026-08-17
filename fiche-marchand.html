@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Carte cadeau — KADOSK</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body class="kadosk-public-body">
+  <header class="kadosk-public-header">
+    <a href="boutique.html" class="kadosk-public-logo">
+      <img src="assets/logo.png" alt="KADOSK" />
+      <span>KADOSK</span>
+    </a>
+    <a href="panier.html" class="kadosk-public-panier-lien">
+      🛒 Panier
+      <span class="kadosk-public-badge" data-panier-badge style="display:none">0</span>
+    </a>
+  </header>
+
+  <main class="kadosk-public-main kadosk-public-main-etroit">
+    <a href="boutique.html" class="kadosk-public-retour">← Retour à la boutique</a>
+
+    <div id="etatChargement" class="kadosk-message-info">Chargement...</div>
+    <div id="etatErreur" class="kadosk-message-erreur" style="display:none"></div>
+
+    <div id="sectionOffre" style="display:none">
+      <div class="kadosk-fiche-marchand-entete">
+        <div class="kadosk-carte-marchand-logo" id="logoMarchand"></div>
+        <div>
+          <div class="kadosk-public-titre" id="nomBoutique"></div>
+          <div class="kadosk-public-soustitre" id="nomCarte"></div>
+        </div>
+      </div>
+
+      <p id="descriptionCarte" class="kadosk-fiche-marchand-desc"></p>
+      <p id="texteExpiration" class="kadosk-message-info"></p>
+
+      <div class="kadosk-champ">
+        <label>Montant</label>
+        <div id="boutonsMontants" class="kadosk-montants-grille"></div>
+      </div>
+
+      <div class="kadosk-champ" id="blocMontantLibre" style="display:none">
+        <label class="kadosk-champ-checkbox">
+          <input type="checkbox" id="checkboxMontantLibre" />
+          Montant libre
+        </label>
+        <input type="number" id="inputMontantLibre" placeholder="Montant en MAD" style="display:none" />
+      </div>
+
+      <div class="kadosk-champ">
+        <label>Quantité</label>
+        <div class="kadosk-quantite-controle">
+          <button type="button" class="kadosk-bouton-secondaire" id="btnMoins">−</button>
+          <span id="texteQuantite">1</span>
+          <button type="button" class="kadosk-bouton-secondaire" id="btnPlus">+</button>
+        </div>
+      </div>
+
+      <button type="button" class="kadosk-bouton" id="btnAjouterPanier" disabled>Ajouter au panier</button>
+      <p id="messageAjout" class="kadosk-message-info"></p>
+    </div>
+  </main>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/panier.js"></script>
+  <script src="assets/fiche-marchand.js"></script>
+</body>
+</html>

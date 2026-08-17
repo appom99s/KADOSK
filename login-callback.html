@@ -46,8 +46,9 @@
     (async function () {
       try {
         await KADOSK_AUTH.traiterRetourAutorisation();
-        // Nouvelle connexion : on efface tout marqueur 2FA résiduel, la
-        // vérification est exigée à chaque connexion.
+        // Nouvelle connexion : on efface tout marqueur 2FA résiduel pour forcer une
+        // vérification fraîche auprès du serveur (qui décide, selon TwoFactorLastVerifiedAt,
+        // si un nouveau code est réellement nécessaire - au maximum tous les 15 jours).
         KADOSK_AUTH.effacerVerification2FA();
 
         const codeReinitialisation = sessionStorage.getItem(CLE_CODE_REINIT);

@@ -51,12 +51,12 @@
   }, 30000);
 
   // ---------------------------------------------------------------------
-  // Double authentification (2FA) : exigée à CHAQUE nouvelle connexion (sauf
-  // biométrie déjà validée au moment du login). Une fois vérifiée pour cette
-  // session (marqueur sessionStorage posé par login-callback.html ou
-  // two-factor.html), on ne rappelle plus le serveur à chaque changement de
-  // page — seul le tout premier chargement de page après une connexion fait
-  // l'appel réseau.
+  // Double authentification (2FA) : le serveur ne redemande un nouveau code
+  // (ou la biométrie) que tous les 15 jours, pas à chaque connexion (voir
+  // verifierBesoin2FA côté backend). Une fois vérifiée pour cette session
+  // (marqueur sessionStorage posé par login-callback.html ou two-factor.html),
+  // on ne rappelle plus le serveur à chaque changement de page — seul le tout
+  // premier chargement de page après une connexion fait l'appel réseau.
   // ---------------------------------------------------------------------
   const PAGES_SANS_VERIF_2FA = ["two-factor.html", "login.html", "login-callback.html"];
   const pageActuelle = window.location.pathname.split("/").pop() || "dashboard.html";

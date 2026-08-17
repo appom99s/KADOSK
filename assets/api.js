@@ -48,6 +48,10 @@ const KADOSK_API = (function () {
       console.error("KADOSK_API réponse non-OK depuis", nom, reponse.status, donnees);
       const erreur = new Error(donnees.error || "ERREUR_SERVEUR");
       erreur.status = reponse.status;
+      // Certains endpoints joignent un détail diagnostic temporaire (erreurReelle/debug)
+      // en cas d'erreur 500 - on le garde accessible sur l'erreur pour pouvoir l'afficher
+      // sans devoir rouvrir les outils de développement à chaque fois.
+      erreur.detail = donnees.erreurReelle || donnees.debug || null;
       throw erreur;
     }
 
@@ -131,6 +135,14 @@ const KADOSK_API = (function () {
     disableBiometric: (code) => appeler("disableBiometric", "POST", { code }),
     startBiometricLogin: () => appeler("startBiometricLogin", "POST"),
     verifyBiometricLogin: (clientDataJSON, authenticatorData, signature) =>
-      appeler("verifyBiometricLogin", "POST", { clientDataJSON, authenticatorData, signature })
+      appeler("verifyBiometricLogin", "POST", { clientDataJSON, authenticatorData, signature }),
+
+    // Boutique publique KADOSK (order.kadosk.com... en fait servie depuis ce même
+    // dossier - boutique.html/fiche-marchand.html/panier.html) : aucune connexion
+    // requise, appels publics avec token visiteur, comme forgotPassword ci-dessus.
+    getActiveMerchants: () => appelerPublic("activeMerchants", "GET"),
+    getGiftCardOffer: (merchantId) => appelerPublic("giftCardOffer?merchantId=" + encodeURIComponent(merchantId), "GET"),
+    placeOrder: (merchantId, montant, buyerEmail, buyerName, quantite, message) =>
+      appelerPublic("placeOrder", "POST", { merchantId, montant, buyerEmail, buyerName, quantite, message })
   };
 })();

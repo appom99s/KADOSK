@@ -92,7 +92,13 @@
       console.error("Erreur chargement cartes cadeaux :", erreur);
       corpsTable.innerHTML = "";
       etatVide.style.display = "block";
-      etatVide.textContent = "Impossible de charger les cartes cadeaux.";
+      // DIAGNOSTIC TEMPORAIRE : affiche le détail réel de l'erreur (fourni par le
+      // backend pour cet endpoint) directement dans la page, pour identifier la
+      // cause sans devoir ouvrir les outils de développement à chaque fois.
+      const detail = erreur && (erreur.detail || erreur.message);
+      etatVide.textContent = detail
+        ? "Impossible de charger les cartes cadeaux. Détail : " + (typeof detail === "string" ? detail : JSON.stringify(detail))
+        : "Impossible de charger les cartes cadeaux.";
     }
   }
 

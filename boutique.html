@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Boutique KADOSK — Cartes cadeaux</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body class="kadosk-public-body">
+  <header class="kadosk-public-header">
+    <a href="boutique.html" class="kadosk-public-logo">
+      <img src="assets/logo.png" alt="KADOSK" />
+      <span>KADOSK</span>
+    </a>
+    <a href="panier.html" class="kadosk-public-panier-lien">
+      🛒 Panier
+      <span class="kadosk-public-badge" data-panier-badge style="display:none">0</span>
+    </a>
+  </header>
+
+  <main class="kadosk-public-main">
+    <h1 class="kadosk-public-titre">Offrez une carte cadeau</h1>
+    <p class="kadosk-public-soustitre">Choisissez un commerce du réseau KADOSK et composez votre carte cadeau.</p>
+
+    <div id="etatChargement" class="kadosk-message-info">Chargement des commerces...</div>
+    <div id="etatVide" class="kadosk-message-info" style="display:none">Aucun commerce disponible pour le moment.</div>
+    <div id="etatErreur" class="kadosk-message-erreur" style="display:none"></div>
+
+    <div id="grilleMarchands" class="kadosk-grille-boutique"></div>
+  </main>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/panier.js"></script>
+  <script src="assets/boutique.js"></script>
+</body>
+</html>

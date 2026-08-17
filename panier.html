@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Votre panier — KADOSK</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body class="kadosk-public-body">
+  <header class="kadosk-public-header">
+    <a href="boutique.html" class="kadosk-public-logo">
+      <img src="assets/logo.png" alt="KADOSK" />
+      <span>KADOSK</span>
+    </a>
+    <a href="panier.html" class="kadosk-public-panier-lien">
+      🛒 Panier
+      <span class="kadosk-public-badge" data-panier-badge style="display:none">0</span>
+    </a>
+  </header>
+
+  <main class="kadosk-public-main kadosk-public-main-etroit">
+    <h1 class="kadosk-public-titre">Votre panier</h1>
+
+    <div id="etatVide" class="kadosk-message-info" style="display:none">
+      Votre panier est vide. <a href="boutique.html">Découvrir les commerces du réseau KADOSK</a>.
+    </div>
+
+    <div id="contenuPanier" style="display:none">
+      <div id="listeGroupes"></div>
+
+      <div class="kadosk-panier-total">
+        <span>Total</span>
+        <strong id="texteTotal">0 MAD</strong>
+      </div>
+
+      <div id="formulaireAcheteur">
+        <div class="kadosk-champ">
+          <label>Votre email (pour recevoir vos cartes cadeaux)</label>
+          <input type="email" id="inputEmail" placeholder="vous@exemple.com" />
+        </div>
+        <div class="kadosk-champ">
+          <label>Nom du destinataire (optionnel, si offert à quelqu'un d'autre)</label>
+          <input type="text" id="inputNom" placeholder="Nom du destinataire" />
+        </div>
+        <div class="kadosk-champ">
+          <label>Message (optionnel)</label>
+          <textarea id="inputMessage" placeholder="Un mot pour accompagner le cadeau..."></textarea>
+        </div>
+
+        <button type="button" class="kadosk-bouton" id="btnValiderCommande">Valider la commande</button>
+        <p id="messageCommande" class="kadosk-message-erreur"></p>
+      </div>
+    </div>
+
+    <div id="resultatCommande" style="display:none"></div>
+  </main>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/panier.js"></script>
+  <script src="assets/panier-checkout.js"></script>
+</body>
+</html>
