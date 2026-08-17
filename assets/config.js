@@ -1,5 +1,5 @@
 window.KADOSK_CONFIG = {
-  clientId: "REMPLACER_PAR_VOTRE_CLIENT_ID_HEADLESS",
+  clientId: "R42596ab1-7d24-468b-8a31-abd953f52194",
   siteBaseUrl: "https://www.kadosk.com",
   frontendBaseUrl: "https://merchant.kadosk.com",
   loginCallbackPath: "/login-callback.html",
