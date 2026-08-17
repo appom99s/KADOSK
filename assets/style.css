@@ -1659,6 +1659,13 @@ a {
   color: var(--kadosk-texte-clair);
 }
 
+/* Variante utilisée quand la page n'a pas de bandeau de navigation au-dessus
+   (ex : fiche-marchand.html, pensée pour être intégrée sans entête) : un peu
+   plus d'air en haut pour ne pas coller au bord de la fenêtre/iframe. */
+.kadosk-cmd-fil-ariane-sans-entete {
+  padding-top: 28px;
+}
+
 .kadosk-cmd-fil-ariane a {
   color: var(--kadosk-texte-clair);
 }
