@@ -154,19 +154,27 @@ const KADOSK_API = (function () {
     // revalidé côté serveur), relecture de confirmation, "Mes commandes" par email.
     createOrder: (items, buyerEmail, recipientName, recipientEmail, message) =>
       appelerPublic("createOrder", "POST", { items, buyerEmail, recipientName, recipientEmail, message }),
-    getOrderByNumber: (orderNumber, buyerEmail) =>
+
+    // Login "Mes commandes" par code reçu par email (remplace l'ancien modèle où
+    // l'email transitait tel quel dans l'URL) - voir assets/mes-commandes.js pour la
+    // gestion du jeton (stocké côté appareil uniquement, jamais de session serveur).
+    demanderCodeCommandes: (buyerEmail) => appelerPublic("loginCodeRequest", "POST", { buyerEmail }),
+    confirmerCodeCommandes: (buyerEmail, code) => appelerPublic("loginCodeConfirm", "POST", { buyerEmail, code }),
+
+    getOrderByNumber: (orderNumber, token) =>
       appelerPublic(
-        "orderByNumber?orderNumber=" + encodeURIComponent(orderNumber) + "&buyerEmail=" + encodeURIComponent(buyerEmail),
+        "orderByNumber?orderNumber=" + encodeURIComponent(orderNumber) + "&token=" + encodeURIComponent(token),
         "GET"
       ),
-    getOrdersByEmail: (buyerEmail) => appelerPublic("ordersByEmail?buyerEmail=" + encodeURIComponent(buyerEmail), "GET"),
+    getOrdersByEmail: (token) => appelerPublic("ordersByEmail?token=" + encodeURIComponent(token), "GET"),
 
     // QR temporaire (30s, anti-rejeu) d'une carte précise, affiché par
     // l'acheteur/destinataire depuis "Mes commandes" - voir mes-commandes.js et
-    // giftCardSecurity.web.js/genererCodeQRTemporaire pour le détail.
-    getQrTemporaire: (giftCardId, buyerEmail) =>
+    // giftCardSecurity.web.js/genererCodeQRTemporaire pour le détail. orderItemId
+    // (pas un identifiant de carte - le client ne le connaît jamais) + jeton acheteur.
+    getQrTemporaire: (orderItemId, token) =>
       appelerPublic(
-        "qrTemporaire?giftCardId=" + encodeURIComponent(giftCardId) + "&buyerEmail=" + encodeURIComponent(buyerEmail),
+        "qrTemporaire?orderItemId=" + encodeURIComponent(orderItemId) + "&token=" + encodeURIComponent(token),
         "GET"
       ),
 

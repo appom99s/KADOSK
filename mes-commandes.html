@@ -16,7 +16,7 @@
   <main class="k2-main" style="max-width:640px;">
     <h1 class="k2-sous-titre" style="text-align:left;">Mes commandes</h1>
     <p style="font-size:13px;color:var(--k2-texte-clair);margin:-14px 0 20px;">
-      KADOSK ne demande pas de mot de passe : entrez l'e-mail utilisé lors de votre commande pour la retrouver.
+      KADOSK ne demande pas de mot de passe : entrez l'e-mail utilisé lors de votre commande, nous vous envoyons un code de vérification.
     </p>
 
     <div class="k2-carte" id="carteRecherche">
@@ -28,9 +28,32 @@
         </div>
       </div>
       <button type="button" class="k2-btn k2-btn-primaire" id="btnRechercher" style="width:100%;">
-        <span id="k2IconeRecherche"></span> Retrouver mes commandes
+        <span id="k2IconeRecherche"></span> Recevoir mon code
       </button>
       <p id="messageErreur" class="k2-etat-erreur" style="font-size:13px;margin:10px 0 0;display:none;"></p>
+    </div>
+
+    <div class="k2-carte" id="carteCode" style="display:none;">
+      <p style="font-size:13px;color:var(--k2-texte-clair);margin:0 0 14px;">
+        Un code à 6 chiffres a été envoyé à <strong id="texteEmailCode"></strong>. Il est valable 10 minutes.
+      </p>
+      <div class="k2-champ" style="margin-bottom:6px;">
+        <label>Code reçu par e-mail</label>
+        <input type="text" id="inputCode" inputmode="numeric" maxlength="6" placeholder="123456" style="letter-spacing:4px;text-align:center;font-size:18px;" />
+      </div>
+      <button type="button" class="k2-btn k2-btn-primaire" id="btnValiderCode" style="width:100%;">Valider le code</button>
+      <p id="messageErreurCode" class="k2-etat-erreur" style="font-size:13px;margin:10px 0 0;display:none;"></p>
+      <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:13px;">
+        <a href="#" id="btnRenvoyerCode">Renvoyer le code</a>
+        <a href="#" id="btnChangerEmail">Changer d'e-mail</a>
+      </div>
+    </div>
+
+    <div class="k2-carte" id="carteConnecte" style="display:none;">
+      <p style="font-size:13px;color:var(--k2-texte-clair);margin:0;">
+        Connecté en tant que <strong id="texteEmailConnecte"></strong> ·
+        <a href="#" id="btnDeconnecter">se déconnecter</a>
+      </p>
     </div>
 
     <div id="etatChargement" class="k2-etat-chargement" style="display:none"><div class="k2-spinner"></div><br />Recherche...</div>
