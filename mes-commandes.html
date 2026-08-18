@@ -11,7 +11,6 @@
     <a href="accueil.html" class="k2-logo">
       <img src="assets/logo.png" alt="KADOSK" />
     </a>
-    <a href="boutique.html" class="k2-topbar-panier" title="Mon panier">🛒<span class="k2-topbar-panier-badge" data-panier-badge style="display:none">0</span></a>
   </div>
 
   <main class="k2-main" style="max-width:640px;">
@@ -34,7 +33,7 @@
       <p id="messageErreur" class="k2-etat-erreur" style="font-size:13px;margin:10px 0 0;display:none;"></p>
     </div>
 
-    <div id="etatChargement" class="k2-etat" style="display:none">Recherche...</div>
+    <div id="etatChargement" class="k2-etat-chargement" style="display:none"><div class="k2-spinner"></div><br />Recherche...</div>
     <div id="etatVide" class="k2-etat" style="display:none">Aucune commande trouvée pour cet e-mail.</div>
 
     <div id="listeCommandes" style="margin-top:16px;"></div>
@@ -42,13 +41,24 @@
 
   <div id="k2NavBas" class="k2-bottom-nav"></div>
 
+  <div id="modalQr" class="k2-qr-overlay" style="display:none;">
+    <div class="k2-qr-modal">
+      <button type="button" id="btnFermerQr" class="k2-qr-fermer" aria-label="Fermer">&times;</button>
+      <h3 style="margin:0 0 4px;">Présentez ce QR en caisse</h3>
+      <p style="font-size:12px;color:var(--k2-texte-clair);margin:0 0 16px;">
+        Ce code se renouvelle automatiquement toutes les 30 secondes pour votre sécurité — inutile de faire une capture d'écran, elle ne fonctionnera plus.
+      </p>
+      <div id="qrCanvasZone" style="display:flex;justify-content:center;margin-bottom:12px;"></div>
+      <div id="qrEtatTexte" style="text-align:center;font-size:13px;color:var(--k2-texte-clair);"></div>
+    </div>
+  </div>
+
   <script src="assets/config.js"></script>
   <script src="assets/auth.js"></script>
   <script src="assets/api.js"></script>
   <script src="assets/icons.js"></script>
   <script src="assets/nav2.js"></script>
   <script src="assets/panier2.js"></script>
-  <script src="assets/favoris-data.js"></script>
   <script src="assets/mes-commandes.js"></script>
 </body>
 </html>

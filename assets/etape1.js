@@ -45,13 +45,6 @@
       .replace(/>/g, "&gt;");
   }
 
-  (window.KADOSK_CATEGORIES || []).forEach((cat) => {
-    const option = document.createElement("option");
-    option.value = cat.valeur;
-    option.textContent = cat.valeur;
-    selectCategorie.appendChild(option);
-  });
-
   let tousLesMarchands = [];
   let nombreAffiches = NB_INITIAL;
 
@@ -160,30 +153,66 @@
     window.location.href = "etape-2-montant.html";
   });
 
-  async function charger() {
-    try {
-      const resultat = await KADOSK_API.getActiveMerchants();
-      tousLesMarchands = resultat.items || [];
-      etatChargement.style.display = "none";
+  // Pré-filtre optionnel (arrivée depuis "Explorer par domaine" sur l'accueil) -
+  // la recherche texte peut s'appliquer tout de suite, mais la catégorie ne peut
+  // être sélectionnée qu'une fois les options réellement disponibles connues (voir
+  // remplirCategoriesDisponibles, appelée après le chargement du catalogue).
+  const parametresUrl = new URLSearchParams(window.location.search);
+  const categorieInitiale = parametresUrl.get("categorie");
+  const rechercheInitiale = parametresUrl.get("q");
+  if (rechercheInitiale) {
+    inputRecherche.value = rechercheInitiale;
+  }
 
-      // Pré-filtre optionnel (arrivée depuis "Explorer par domaine" sur l'accueil).
-      const parametres = new URLSearchParams(window.location.search);
-      const categorieInitiale = parametres.get("categorie");
-      if (categorieInitiale) {
-        selectCategorie.value = categorieInitiale;
-      }
-      const rechercheInitiale = parametres.get("q");
-      if (rechercheInitiale) {
-        inputRecherche.value = rechercheInitiale;
-      }
+  // Ne propose au filtrage QUE les catégories réellement présentes chez au moins un
+  // marchand actif à cet instant - jamais la liste complète des catégories
+  // possibles (une catégorie sans aucun marchand actif ne doit pas apparaître).
+  function remplirCategoriesDisponibles() {
+    const categoriesPresentes = Array.from(
+      new Set(tousLesMarchands.map((m) => m.activityCategory).filter(Boolean))
+    ).sort((a, b) => a.localeCompare(b, "fr"));
 
-      rendreGrille();
-      majSelectionRecap();
-    } catch (erreur) {
-      console.error("Erreur chargement catalogue :", erreur);
-      etatChargement.style.display = "none";
-      etatErreur.style.display = "block";
-      etatErreur.textContent = "Impossible de charger les commerces pour le moment.";
+    const valeurActuelle = selectCategorie.value;
+    selectCategorie.innerHTML = '<option value="">Toutes les catégories</option>';
+    categoriesPresentes.forEach((categorie) => {
+      const option = document.createElement("option");
+      option.value = categorie;
+      option.textContent = categorie;
+      selectCategorie.appendChild(option);
+    });
+
+    // Réapplique la sélection en cours (changement de page, ou pré-filtre venu de
+    // l'accueil) si cette catégorie fait toujours partie de celles disponibles.
+    const aReappliquer = valeurActuelle || categorieInitiale;
+    if (aReappliquer && categoriesPresentes.includes(aReappliquer)) {
+      selectCategorie.value = aReappliquer;
+    }
+  }
+
+  function appliquerCatalogue(resultat) {
+    tousLesMarchands = (resultat && resultat.items) || [];
+    etatChargement.style.display = "none";
+    remplirCategoriesDisponibles();
+    rendreGrille();
+    majSelectionRecap();
+  }
+
+  function gererEchecChargement(erreur) {
+    console.error("Erreur chargement catalogue :", erreur);
+    etatChargement.style.display = "none";
+    etatErreur.style.display = "block";
+    etatErreur.textContent = "Impossible de charger les commerces pour le moment.";
+  }
+
+  // Partagé avec accueil.js (même clé de cache "marchandsActifs") : en arrivant sur
+  // cette page juste après l'accueil, le catalogue déjà connu s'affiche
+  // instantanément (pas de nouvel écran de chargement), pendant qu'une requête en
+  // arrière-plan vérifie s'il y a du nouveau - voir assets/cache.js.
+  function charger() {
+    if (window.KADOSK_CACHE) {
+      KADOSK_CACHE.chargerAvecCache("marchandsActifs", KADOSK_API.getActiveMerchants, appliquerCatalogue).catch(gererEchecChargement);
+    } else {
+      KADOSK_API.getActiveMerchants().then(appliquerCatalogue).catch(gererEchecChargement);
     }
   }
 

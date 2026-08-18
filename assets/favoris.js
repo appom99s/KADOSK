@@ -66,9 +66,7 @@
   }
 
   async function charger() {
-    // Fusionne d'abord les favoris enregistrés sur un autre appareil (si un email a
-    // été identifié ailleurs dans le parcours) avant de lire la liste locale.
-    const idsFavoris = await KADOSK_FAVORIS.synchroniser();
+    const idsFavoris = KADOSK_FAVORIS.lire();
     etatChargement.style.display = "none";
 
     if (idsFavoris.length === 0) {

@@ -6,6 +6,9 @@
 
   KADOSK_NAV.rendreBarreLaterale("kadoskSidebar");
   KADOSK_NAV.rendreEnteteDroite("kadoskEnteteDroite");
+  // Un seul chargement des stats (mis en cache, rafraîchi en arrière-plan),
+  // partagé par les deux zones ci-dessus - voir nav.js/chargerStatsPartagees.
+  KADOSK_NAV.chargerStatsPartagees();
 
   const lienDeconnexion = document.getElementById("lienDeconnexion");
   if (lienDeconnexion) {

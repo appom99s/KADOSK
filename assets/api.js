@@ -168,6 +168,10 @@ const KADOSK_API = (function () {
       appelerPublic(
         "qrTemporaire?giftCardId=" + encodeURIComponent(giftCardId) + "&buyerEmail=" + encodeURIComponent(buyerEmail),
         "GET"
-      )
+      ),
+
+    // Bannières personnalisables en haut de l'accueil (collection Pub) - voir
+    // accueil.js et giftCardSecurity.web.js/getActivePubs.
+    getActivePubs: () => appelerPublic("activePubs", "GET")
   };
 })();

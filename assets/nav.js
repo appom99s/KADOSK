@@ -126,23 +126,6 @@
 
     conteneur.innerHTML = html;
 
-    if (window.KADOSK_API) {
-      window.KADOSK_API.getDashboardStats()
-        .then((stats) => {
-          const badges = conteneur.querySelectorAll("[data-badge]");
-          badges.forEach((badgeEl) => {
-            const cle = badgeEl.getAttribute("data-badge");
-            const valeur = stats[cle];
-            if (valeur) {
-              badgeEl.textContent = valeur;
-              badgeEl.style.display = "inline-block";
-            }
-          });
-          rendreInfosMarchand(stats);
-        })
-        .catch(() => {});
-    }
-
     initialiserMenuMobile(conteneur);
   }
 
@@ -248,6 +231,47 @@
     });
   }
 
+  // Applique les stats (badges "commandes en attente" + infos marchand nom/logo/
+  // palier) partout où elles sont utilisées sur la page - sidebar ET entête - en
+  // un seul passage sur le document entier plutôt que deux passages scopés à
+  // chaque conteneur séparément.
+  function appliquerStatsPartagees(stats) {
+    document.querySelectorAll("[data-badge]").forEach((badgeEl) => {
+      const cle = badgeEl.getAttribute("data-badge");
+      const valeur = stats[cle];
+      if (valeur) {
+        badgeEl.textContent = valeur;
+        badgeEl.style.display = badgeEl.classList.contains("kadosk-cloche-badge") ? "flex" : "inline-block";
+      } else {
+        badgeEl.style.display = "none";
+      }
+    });
+    rendreInfosMarchand(stats);
+  }
+
+  let chargementStatsDemarre = false;
+
+  // À appeler UNE SEULE FOIS par page, après que rendreBarreLaterale ET
+  // rendreEnteteDroite ont toutes les deux construit leur DOM (voir guard.js) -
+  // remplace les deux appels réseau indépendants et redondants qu'il y avait
+  // avant (un par fonction, pour exactement la même donnée) par un seul, mis en
+  // cache via KADOSK_CACHE : la sidebar et l'entête s'affichent instantanément
+  // avec la dernière valeur connue en changeant de page marchand, pendant qu'une
+  // requête en arrière-plan vérifie s'il y a du nouveau (commandes en attente,
+  // palier d'abonnement changé, etc.).
+  function chargerStatsPartagees() {
+    if (chargementStatsDemarre || !window.KADOSK_API) return;
+    chargementStatsDemarre = true;
+
+    if (window.KADOSK_CACHE) {
+      KADOSK_CACHE.chargerAvecCache("dashboardStats", KADOSK_API.getDashboardStats, appliquerStatsPartagees).catch(() => {});
+    } else {
+      // Garde défensive : si cache.js n'est pas (encore) chargé sur cette page,
+      // on retombe simplement sur un appel réseau direct, sans caching.
+      KADOSK_API.getDashboardStats().then(appliquerStatsPartagees).catch(() => {});
+    }
+  }
+
   function formaterDateNotif(valeur) {
     if (!valeur) return "";
     const date = new Date(valeur);
@@ -279,6 +303,13 @@
       "</div>" +
       '<div class="kadosk-avatar" data-marchand-avatar>M</div>' +
       "</div>";
+
+    // Le chargement des stats (badges + infos marchand) partagées entre la sidebar
+    // et cette entête est déclenché une seule fois par chargerStatsPartagees(),
+    // appelée par guard.js APRÈS que les deux zones existent dans le DOM - voir
+    // plus bas. On ne le fait pas ici pour éviter le double appel réseau qu'il y
+    // avait avant (une fois par rendreBarreLaterale, une fois par
+    // rendreEnteteDroite, pour exactement la même donnée).
 
     const cloche = document.getElementById("kadoskCloche");
     const panneau = document.getElementById("kadoskClochePanneau");
@@ -324,18 +355,6 @@
       });
     }
 
-    if (window.KADOSK_API) {
-      window.KADOSK_API.getDashboardStats()
-        .then((stats) => {
-          const badgeEl = conteneur.querySelector('[data-badge="pendingOrdersCount"]');
-          if (badgeEl && stats.pendingOrdersCount) {
-            badgeEl.textContent = stats.pendingOrdersCount;
-            badgeEl.style.display = "flex";
-          }
-          rendreInfosMarchand(stats);
-        })
-        .catch(() => {});
-    }
   }
 
   // Identifiant réduit affiché au marchand à la place du vrai code de la carte
@@ -347,5 +366,5 @@
 
   window.KADOSK_ICONES = ICONES;
   window.KADOSK_MASQUER_ID = masquerIdentifiantCarte;
-  window.KADOSK_NAV = { rendreBarreLaterale, rendreEnteteDroite };
+  window.KADOSK_NAV = { rendreBarreLaterale, rendreEnteteDroite, chargerStatsPartagees };
 })();

@@ -38,10 +38,7 @@
     return date.toLocaleDateString("fr-FR") + " · " + date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
   }
 
-  async function chargerStatistiques() {
-    try {
-      const stats = await KADOSK_API.getDashboardStats();
-
+  function appliquerStatistiques(stats) {
       document.getElementById("kpiCA").textContent = formaterMontant(stats.revenueToday);
       const deltaCA = formaterDeltaPourcentage(stats.revenueToday, stats.revenueYesterday);
       document.getElementById("kpiCADetail").innerHTML =
@@ -67,8 +64,22 @@
       document.getElementById("apercuExpirees").textContent = stats.expiredCardsCount || 0;
 
       renderAlertes(stats);
-    } catch (erreur) {
-      console.error("Erreur chargement statistiques :", erreur);
+  }
+
+  // Partage la clé de cache "dashboardStats" avec nav.js (sidebar/entête) : sur
+  // dashboard.html, KADOSK_CACHE déduplique automatiquement la requête réseau
+  // (voir assets/cache.js, requetesEnCours) - une seule requête part réellement,
+  // et les KPI s'affichent instantanément depuis le cache en revenant sur cette
+  // page, avant d'être rafraîchis en arrière-plan si besoin.
+  function chargerStatistiques() {
+    if (window.KADOSK_CACHE) {
+      KADOSK_CACHE.chargerAvecCache("dashboardStats", KADOSK_API.getDashboardStats, appliquerStatistiques).catch((erreur) => {
+        console.error("Erreur chargement statistiques :", erreur);
+      });
+    } else {
+      KADOSK_API.getDashboardStats().then(appliquerStatistiques).catch((erreur) => {
+        console.error("Erreur chargement statistiques :", erreur);
+      });
     }
   }
 
