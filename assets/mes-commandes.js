@@ -226,6 +226,10 @@
     } catch (erreur) {
       // sans conséquence
     }
+    // Identifie l'acheteur pour la synchro serveur des favoris (voir favoris-data.js).
+    if (window.KADOSK_FAVORIS) {
+      KADOSK_FAVORIS.enregistrerEmailIdentifie(email);
+    }
 
     listeCommandes.innerHTML = "";
     etatVide.style.display = "none";

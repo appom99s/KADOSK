@@ -153,12 +153,7 @@
       champMontantLibreMin.value = parametres.freeAmountMin || "";
       champMontantLibreMax.value = parametres.freeAmountMax || "";
       champExpiration.value = parametres.expirationMonths || 0;
-      // Garde défensive : si settings.html n'a pas encore été redéployé avec la
-      // case "Visible dans le catalogue public KADOSK" (#champVisible), ne pas
-      // planter tout le chargement du formulaire pour autant.
-      if (champVisible) {
-        champVisible.checked = parametres.visible !== false;
-      }
+      champVisible.checked = parametres.visible !== false;
       logoEntrepriseParDefaut = parametres.businessLogoUrl || "";
 
       actualiserVisibilite();
@@ -166,8 +161,7 @@
       mettreAJourApercuLogoActuel();
     } catch (erreur) {
       console.error("Erreur chargement paramètres offre :", erreur);
-      const detail = erreur && erreur.message ? " (" + erreur.message + ")" : "";
-      messageStatutParametres.textContent = "Impossible de charger vos paramètres actuels." + detail;
+      messageStatutParametres.textContent = "Impossible de charger vos paramètres actuels.";
     }
   }
 
@@ -192,10 +186,7 @@
         freeAmountMin: champMontantLibreMin.value ? Number(champMontantLibreMin.value) : null,
         freeAmountMax: champMontantLibreMax.value ? Number(champMontantLibreMax.value) : null,
         expirationMonths: Number(champExpiration.value) || 0,
-        // Idem : si l'élément n'existe pas encore côté HTML déployé, on envoie true
-        // (visible par défaut, comportement identique à celui du backend quand le
-        // paramètre est absent) plutôt que de faire planter tout l'enregistrement.
-        visible: champVisible ? champVisible.checked : true
+        visible: champVisible.checked
       });
 
       messageStatutParametres.style.color = "#1faa6c";
@@ -203,8 +194,7 @@
     } catch (erreur) {
       console.error("Erreur enregistrement paramètres offre :", erreur);
       messageStatutParametres.style.color = "";
-      const detail = erreur && erreur.message ? " (" + erreur.message + ")" : "";
-      messageStatutParametres.textContent = "Échec de l'enregistrement. Vérifiez vos champs." + detail;
+      messageStatutParametres.textContent = "Échec de l'enregistrement. Vérifiez vos champs.";
     } finally {
       boutonEnregistrer.disabled = false;
     }

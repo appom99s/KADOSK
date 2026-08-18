@@ -93,6 +93,10 @@
     }
 
     KADOSK_PANIER2.enregistrerDestinataire({ buyerEmail, recipientName, recipientEmail, message });
+    // Identifie l'acheteur pour la synchro serveur des favoris (voir favoris-data.js).
+    if (window.KADOSK_FAVORIS) {
+      KADOSK_FAVORIS.enregistrerEmailIdentifie(buyerEmail);
+    }
 
     btnValider.disabled = true;
     const libelleOriginal = btnValider.innerHTML;

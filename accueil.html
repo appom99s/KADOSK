@@ -6,6 +6,37 @@
 <title>KADOSK — Le cadeau, simplement</title>
 <link rel="stylesheet" href="assets/kadosk2.css" />
 <style>
+  .k2-section-pub {
+    max-width: 1080px;
+    margin: 18px auto 0;
+    padding: 0 20px;
+  }
+  .k2-pub-piste {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 2px;
+  }
+  .k2-pub-carte {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    border-radius: var(--k2-rayon);
+    overflow: hidden;
+    box-shadow: var(--k2-ombre);
+    background: var(--k2-neutral);
+    display: block;
+    aspect-ratio: 16 / 5;
+  }
+  .k2-pub-carte img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  @media (max-width: 520px) {
+    .k2-pub-carte { aspect-ratio: 16 / 7; }
+  }
   .k2-hero {
     text-align: center;
     padding: 34px 20px 26px;
@@ -141,8 +172,15 @@
     <a href="accueil.html" class="k2-logo">
       <img src="assets/logo.png" alt="KADOSK" />
     </a>
-    <a href="boutique.html" class="k2-retour">Voir toutes les cartes →</a>
+    <div class="k2-topbar-droite">
+      <a href="boutique.html" class="k2-retour">Voir toutes les cartes →</a>
+      <a href="boutique.html" class="k2-topbar-panier" title="Mon panier">🛒<span class="k2-topbar-panier-badge" data-panier-badge style="display:none">0</span></a>
+    </div>
   </div>
+
+  <section class="k2-section-pub" id="sectionPub" style="display:none">
+    <div class="k2-pub-piste" id="pistePub"></div>
+  </section>
 
   <section class="k2-hero">
     <h1>Offrez le choix,<br />simplement.</h1>

@@ -80,6 +80,44 @@
   height: 15px;
 }
 
+/* Groupe droit de la topbar quand il y a plusieurs éléments (ex: accueil.html
+   avec "Voir toutes les cartes" + le panier) - garde justify-content:space-between
+   utilisable avec seulement 2 blocs (logo à gauche, ce groupe à droite). */
+.k2-topbar-droite {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Accès permanent au panier (parcours en 5 étapes) depuis n'importe quelle page -
+   sans lui, un panier commencé sur boutique.html devient invisible/perdu dès qu'on
+   navigue ailleurs (Accueil, Favoris, Mes commandes...) alors que son contenu reste
+   bien en localStorage (voir assets/panier2.js, mettreAJourBadges). */
+.k2-topbar-panier {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  font-size: 21px;
+  line-height: 1;
+}
+
+.k2-topbar-panier-badge {
+  position: absolute;
+  top: -6px;
+  right: -11px;
+  background: var(--k2-primary);
+  color: var(--k2-blanc);
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
 .k2-main {
   max-width: 1080px;
   margin: 0 auto;
@@ -444,6 +482,29 @@
 
 .k2-btn-rond:hover {
   background: var(--k2-neutral);
+}
+
+/* Choix de montant fixe (marchand n'ayant pas activé le montant libre) - voir
+   assets/etape2.js, rendreChoixMontant. */
+.k2-montant-choix-bouton {
+  padding: 9px 16px;
+  border: 1px solid var(--k2-bordure);
+  border-radius: 999px;
+  background: var(--k2-blanc);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--k2-texte);
+  cursor: pointer;
+}
+
+.k2-montant-choix-bouton:hover {
+  background: var(--k2-neutral);
+}
+
+.k2-montant-choix-bouton.actif {
+  background: var(--k2-primary);
+  border-color: var(--k2-primary);
+  color: var(--k2-blanc);
 }
 
 .k2-btn-supprimer {

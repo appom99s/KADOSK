@@ -71,9 +71,13 @@
 
   function rendreCarte(marchand) {
     const selectionne = KADOSK_PANIER2.estSelectionne(marchand.merchantId);
+    // Le nom de la BOUTIQUE (marchand.businessName) est le label principal - le nom
+    // de la carte cadeau (marchand.name, éditable librement par le marchand dans
+    // ses paramètres) n'est qu'une info secondaire, affichée seulement si distincte.
+    const nomAffiche = marchand.businessName || marchand.name || "";
     const logo = marchand.logoUrl
-      ? `<img src="${echapperHtml(marchand.logoUrl)}" alt="${echapperHtml(marchand.name)}" />`
-      : `<span>${echapperHtml((marchand.name || "?").slice(0, 1).toUpperCase())}</span>`;
+      ? `<img src="${echapperHtml(marchand.logoUrl)}" alt="${echapperHtml(nomAffiche)}" />`
+      : `<span>${echapperHtml((nomAffiche || "?").slice(0, 1).toUpperCase())}</span>`;
 
     const div = document.createElement("div");
     div.className = "k2-carte-select" + (selectionne ? " selectionnee" : "");
@@ -81,8 +85,11 @@
     div.innerHTML =
       `<span class="k2-carte-select-check">${window.KADOSK_ICONE("check")}</span>` +
       `<div class="k2-carte-select-logo">${logo}</div>` +
-      `<div class="k2-carte-select-nom">${echapperHtml(marchand.name)}</div>` +
-      `<div class="k2-carte-select-cat">${echapperHtml(marchand.activityCategory || marchand.businessName)}</div>`;
+      `<div class="k2-carte-select-nom">${echapperHtml(nomAffiche)}</div>` +
+      (marchand.name && marchand.name !== nomAffiche
+        ? `<div class="k2-carte-select-entreprise">${echapperHtml(marchand.name)}</div>`
+        : "") +
+      `<div class="k2-carte-select-cat">${echapperHtml(marchand.activityCategory || "")}</div>`;
 
     div.addEventListener("click", () => {
       if (KADOSK_PANIER2.estSelectionne(marchand.merchantId)) {
@@ -131,7 +138,7 @@
     blocSelection.style.display = nombre > 0 ? "flex" : "none";
     texteSelection.textContent = `${nombre} carte${nombre > 1 ? "s" : ""} sélectionnée${nombre > 1 ? "s" : ""}`;
     btnContinuer.disabled = nombre === 0;
-    listeSelectionDetail.innerHTML = lignes.map((l) => echapperHtml(l.name || l.businessName)).join(" · ");
+    listeSelectionDetail.innerHTML = lignes.map((l) => echapperHtml(l.businessName || l.name)).join(" · ");
   }
 
   lienVoirSelection.addEventListener("click", (evenement) => {

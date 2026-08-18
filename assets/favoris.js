@@ -17,16 +17,17 @@
     const div = document.createElement("div");
     div.className = "k2-carte-select";
     div.style.cursor = "default";
+    const nomAffiche = marchand.businessName || marchand.name || "";
     const logo = marchand.logoUrl
-      ? `<img src="${echapperHtml(marchand.logoUrl)}" alt="${echapperHtml(marchand.name)}" />`
-      : `<span>${echapperHtml((marchand.name || "?").slice(0, 1).toUpperCase())}</span>`;
+      ? `<img src="${echapperHtml(marchand.logoUrl)}" alt="${echapperHtml(nomAffiche)}" />`
+      : `<span>${echapperHtml((nomAffiche || "?").slice(0, 1).toUpperCase())}</span>`;
 
     div.innerHTML = `
       <button type="button" class="k2-favori-btn actif" data-retirer>${window.KADOSK_ICONE("heart")}</button>
       <a href="fiche-marchand.html?merchantId=${encodeURIComponent(marchand.merchantId)}" style="display:contents;">
         <div class="k2-carte-select-logo">${logo}</div>
-        <div class="k2-carte-select-nom">${echapperHtml(marchand.name)}</div>
-        ${marchand.businessName && marchand.businessName !== marchand.name ? `<div class="k2-carte-select-entreprise">${echapperHtml(marchand.businessName)}</div>` : ""}
+        <div class="k2-carte-select-nom">${echapperHtml(nomAffiche)}</div>
+        ${marchand.name && marchand.name !== nomAffiche ? `<div class="k2-carte-select-entreprise">${echapperHtml(marchand.name)}</div>` : ""}
         <div class="k2-carte-select-cat">${echapperHtml(marchand.activityCategory || "")}</div>
       </a>
       <button type="button" class="k2-btn k2-btn-secondaire" data-ajouter-panier style="width:100%; padding:8px; font-size:12.5px; margin-top:4px;">
@@ -65,7 +66,9 @@
   }
 
   async function charger() {
-    const idsFavoris = KADOSK_FAVORIS.lire();
+    // Fusionne d'abord les favoris enregistrés sur un autre appareil (si un email a
+    // été identifié ailleurs dans le parcours) avant de lire la liste locale.
+    const idsFavoris = await KADOSK_FAVORIS.synchroniser();
     etatChargement.style.display = "none";
 
     if (idsFavoris.length === 0) {

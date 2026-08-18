@@ -22,6 +22,35 @@
     }
   });
 
+  // --- Bannières personnalisables (collection Pub, gérée depuis le Content Manager
+  // Wix) : section en haut de l'accueil, ne s'affiche que s'il y a au moins une
+  // bannière active à la date du jour (filtrage déjà fait côté serveur, voir
+  // getActivePubs). Silencieuse en cas d'échec : l'accueil reste utilisable sans.
+  async function chargerPub() {
+    const section = document.getElementById("sectionPub");
+    const piste = document.getElementById("pistePub");
+    if (!section || !piste || !window.KADOSK_API || !KADOSK_API.getActivePubs) return;
+
+    try {
+      const resultat = await KADOSK_API.getActivePubs();
+      const pubs = ((resultat && resultat.items) || []).filter((pub) => pub.imageUrl);
+      if (pubs.length === 0) return;
+
+      piste.innerHTML = pubs
+        .map((pub) => {
+          const image = `<img src="${echapperHtml(pub.imageUrl)}" alt="${echapperHtml(pub.title || "")}" />`;
+          return pub.linkUrl
+            ? `<a class="k2-pub-carte" href="${echapperHtml(pub.linkUrl)}">${image}</a>`
+            : `<div class="k2-pub-carte">${image}</div>`;
+        })
+        .join("");
+      section.style.display = "block";
+    } catch (erreur) {
+      console.error("Erreur chargement bannières :", erreur);
+    }
+  }
+  chargerPub();
+
   // --- Explorer par domaine ---
   const grilleCategories = document.getElementById("grilleCategories");
   (window.KADOSK_CATEGORIES || []).forEach((cat) => {
@@ -33,9 +62,12 @@
   });
 
   function rendreCarteMarchand(marchand, estNouveau) {
+    // Le nom de la BOUTIQUE (businessName) est le label principal - voir même
+    // correction dans assets/etape1.js.
+    const nomAffiche = marchand.businessName || marchand.name || "";
     const logo = marchand.logoUrl
-      ? `<img src="${echapperHtml(marchand.logoUrl)}" alt="${echapperHtml(marchand.name)}" />`
-      : `<span>${echapperHtml((marchand.name || "?").slice(0, 1).toUpperCase())}</span>`;
+      ? `<img src="${echapperHtml(marchand.logoUrl)}" alt="${echapperHtml(nomAffiche)}" />`
+      : `<span>${echapperHtml((nomAffiche || "?").slice(0, 1).toUpperCase())}</span>`;
 
     const favori = window.KADOSK_FAVORIS ? window.KADOSK_FAVORIS.estFavori(marchand.merchantId) : false;
 
@@ -48,8 +80,8 @@
       <button type="button" class="k2-favori-btn ${favori ? "actif" : ""}" data-favori>${window.KADOSK_ICONE("heart")}</button>
       <a href="fiche-marchand.html?merchantId=${encodeURIComponent(marchand.merchantId)}" style="display:contents;">
         <div class="k2-carte-select-logo">${logo}</div>
-        <div class="k2-carte-select-nom">${echapperHtml(marchand.name)}</div>
-        ${marchand.businessName && marchand.businessName !== marchand.name ? `<div class="k2-carte-select-entreprise">${echapperHtml(marchand.businessName)}</div>` : ""}
+        <div class="k2-carte-select-nom">${echapperHtml(nomAffiche)}</div>
+        ${marchand.name && marchand.name !== nomAffiche ? `<div class="k2-carte-select-entreprise">${echapperHtml(marchand.name)}</div>` : ""}
         <div class="k2-carte-select-cat">${echapperHtml(marchand.activityCategory || "")}</div>
       </a>
     `;
@@ -98,10 +130,12 @@
         recents.slice(0, 5).forEach((m) => grilleNouveautes.appendChild(rendreCarteMarchand(m, true)));
       }
 
-      // Pour vous : basé sur les favoris déjà enregistrés localement (aucune
-      // recommandation inventée - KADOSK ne suit pas la navigation des visiteurs).
+      // Pour vous : basé sur les favoris déjà enregistrés (localement, et fusionnés
+      // depuis le serveur si un email a été identifié ailleurs - voir
+      // favoris-data.js/synchroniser). Aucune recommandation inventée - KADOSK ne
+      // suit pas la navigation des visiteurs.
       if (window.KADOSK_FAVORIS) {
-        const idsFavoris = window.KADOSK_FAVORIS.lire();
+        const idsFavoris = await window.KADOSK_FAVORIS.synchroniser();
         const favoris = marchands.filter((m) => idsFavoris.includes(m.merchantId));
         if (favoris.length > 0) {
           sectionPourVous.style.display = "block";
