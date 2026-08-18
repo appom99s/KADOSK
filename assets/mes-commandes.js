@@ -9,6 +9,104 @@
   document.getElementById("k2IconeMail").innerHTML = window.KADOSK_ICONE("mail");
   document.getElementById("k2IconeRecherche").innerHTML = window.KADOSK_ICONE("search");
 
+  // ---------------------------------------------------------------------------
+  // QR temporaire (30s, anti-rejeu) : chaque carte réellement émise (giftCardId,
+  // renvoyé par getOrderByNumber) peut afficher un QR qui se renouvelle
+  // automatiquement - voir KADOSK_API.getQrTemporaire / giftCardSecurity.web.js.
+  // Le code permanent n'est jamais transmis ni affiché ici.
+  // ---------------------------------------------------------------------------
+  const modalQr = document.getElementById("modalQr");
+  const btnFermerQr = document.getElementById("btnFermerQr");
+  const qrCanvasZone = document.getElementById("qrCanvasZone");
+  const qrEtatTexte = document.getElementById("qrEtatTexte");
+
+  let minuteurQr = null;
+  let instanceQr = null;
+
+  function chargerLibQRCode() {
+    if (window.QRCode) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  function arreterRafraichissementQr() {
+    if (minuteurQr) {
+      clearInterval(minuteurQr);
+      minuteurQr = null;
+    }
+  }
+
+  function fermerModalQr() {
+    arreterRafraichissementQr();
+    modalQr.style.display = "none";
+  }
+
+  btnFermerQr.addEventListener("click", fermerModalQr);
+  modalQr.addEventListener("click", (evenement) => {
+    if (evenement.target === modalQr) fermerModalQr();
+  });
+
+  async function rafraichirQr(giftCardId, email) {
+    try {
+      const resultat = await KADOSK_API.getQrTemporaire(giftCardId, email);
+
+      if (!instanceQr) {
+        qrCanvasZone.innerHTML = "";
+        instanceQr = new window.QRCode(qrCanvasZone, {
+          text: resultat.payload,
+          width: 200,
+          height: 200,
+          colorDark: "#1f3a34",
+          colorLight: "#ffffff"
+        });
+      } else {
+        instanceQr.clear();
+        instanceQr.makeCode(resultat.payload);
+      }
+
+      qrEtatTexte.textContent = `Renouvellement dans ${resultat.expiresInSeconds}s...`;
+    } catch (erreur) {
+      console.error("Erreur génération QR temporaire :", erreur);
+      const message =
+        erreur && erreur.message === "GIFT_CARD_EXPIRED"
+          ? "Cette carte a expiré."
+          : erreur && erreur.message === "GIFT_CARD_ALREADY_REDEEMED"
+          ? "Cette carte a déjà été entièrement utilisée."
+          : erreur && erreur.message === "GIFT_CARD_NOT_ACTIVATED"
+          ? "Cette carte n'a pas encore été activée."
+          : "Impossible d'afficher le QR pour le moment.";
+      qrCanvasZone.innerHTML = "";
+      qrEtatTexte.textContent = message;
+      arreterRafraichissementQr();
+    }
+  }
+
+  async function ouvrirModalQr(giftCardId, email) {
+    instanceQr = null;
+    qrCanvasZone.innerHTML = '<div class="k2-spinner"></div>';
+    qrEtatTexte.textContent = "";
+    modalQr.style.display = "flex";
+
+    try {
+      await chargerLibQRCode();
+    } catch (erreur) {
+      qrCanvasZone.innerHTML = "";
+      qrEtatTexte.textContent = "Impossible de charger le générateur de QR.";
+      return;
+    }
+
+    await rafraichirQr(giftCardId, email);
+    arreterRafraichissementQr();
+    // Un cran plus fréquent que les 30s du pas TOTP, pour ne jamais laisser un QR
+    // expiré affiché plus de quelques secondes à l'écran.
+    minuteurQr = setInterval(() => rafraichirQr(giftCardId, email), 5000);
+  }
+
   const CLE_SESSION_EMAIL = "kadosk_mes_commandes_email";
 
   function emailValide(valeur) {
@@ -80,15 +178,30 @@
         const detail = await KADOSK_API.getOrderByNumber(commande.orderNumber, email);
         zoneDetail.innerHTML =
           (detail.merchants || [])
-            .map(
-              (m) => `
-          <div class="k2-confirmation-ligne">
-            <span>${echapperHtml(m.businessName)}${m.quantity > 1 ? " × " + m.quantity : ""}</span>
+            .map((m) => {
+              const nomAffiche = m.cardName && m.cardName !== m.businessName ? `${m.cardName} (${m.businessName})` : m.businessName;
+              const boutonsQr = (m.giftCardIds || [])
+                .map(
+                  (id, index) =>
+                    `<button type="button" class="k2-qr-bouton-ligne" data-giftcardid="${echapperHtml(id)}">${window.KADOSK_ICONE ? window.KADOSK_ICONE("qr-code") : ""} Voir le QR${m.giftCardIds.length > 1 ? " (carte " + (index + 1) + ")" : ""}</button>`
+                )
+                .join("");
+              return `
+          <div class="k2-confirmation-ligne" style="align-items:flex-start;">
+            <span>${echapperHtml(nomAffiche)}${m.quantity > 1 ? " × " + m.quantity : ""}<br />${boutonsQr}</span>
             <span>${formaterMontant(m.subtotal)}</span>
-          </div>`
-            )
+          </div>`;
+            })
             .join("") +
           `<div style="font-size:12px; color:var(--k2-texte-clair); margin-top:10px;">Destinataire : ${echapperHtml(detail.recipientName)} (${echapperHtml(detail.recipientEmail)})</div>`;
+
+        zoneDetail.querySelectorAll("[data-giftcardid]").forEach((bouton) => {
+          bouton.addEventListener("click", (evenement) => {
+            evenement.stopPropagation();
+            ouvrirModalQr(bouton.dataset.giftcardid, email);
+          });
+        });
+
         detailCharge = true;
       } catch (erreur) {
         zoneDetail.textContent = "Impossible de charger le détail de cette commande.";

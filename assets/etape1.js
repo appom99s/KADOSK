@@ -16,7 +16,6 @@
   document.getElementById("k2IconeRecherche").innerHTML = window.KADOSK_ICONE("search");
   document.getElementById("k2IconeContinuer").innerHTML = window.KADOSK_ICONE("arrow-right");
   document.getElementById("k2IconeSecurite").innerHTML = window.KADOSK_ICONE("shield-check");
-  document.getElementById("k2IconeChargement").innerHTML = window.KADOSK_ICONE("gift");
 
   // Authentification silencieuse (voir ma-boutique.page.js) : si la page Wix hôte
   // détecte un membre déjà connecté sur www.kadosk.com, elle transmet un jeton de

@@ -14,6 +14,7 @@
   const champMontantLibreMin = document.getElementById("champMontantLibreMin");
   const champMontantLibreMax = document.getElementById("champMontantLibreMax");
   const champExpiration = document.getElementById("champExpiration");
+  const champVisible = document.getElementById("champVisible");
   const boutonEnregistrer = document.getElementById("boutonEnregistrer");
   const messageStatutParametres = document.getElementById("messageStatutParametres");
   const lienReinitialiserLogo = document.getElementById("lienReinitialiserLogo");
@@ -152,6 +153,7 @@
       champMontantLibreMin.value = parametres.freeAmountMin || "";
       champMontantLibreMax.value = parametres.freeAmountMax || "";
       champExpiration.value = parametres.expirationMonths || 0;
+      champVisible.checked = parametres.visible !== false;
       logoEntrepriseParDefaut = parametres.businessLogoUrl || "";
 
       actualiserVisibilite();
@@ -183,7 +185,8 @@
         freeAmountEnabled: champMontantLibreActif.checked,
         freeAmountMin: champMontantLibreMin.value ? Number(champMontantLibreMin.value) : null,
         freeAmountMax: champMontantLibreMax.value ? Number(champMontantLibreMax.value) : null,
-        expirationMonths: Number(champExpiration.value) || 0
+        expirationMonths: Number(champExpiration.value) || 0,
+        visible: champVisible.checked
       });
 
       messageStatutParametres.style.color = "#1faa6c";

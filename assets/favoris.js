@@ -26,7 +26,8 @@
       <a href="fiche-marchand.html?merchantId=${encodeURIComponent(marchand.merchantId)}" style="display:contents;">
         <div class="k2-carte-select-logo">${logo}</div>
         <div class="k2-carte-select-nom">${echapperHtml(marchand.name)}</div>
-        <div class="k2-carte-select-cat">${echapperHtml(marchand.activityCategory || marchand.businessName)}</div>
+        ${marchand.businessName && marchand.businessName !== marchand.name ? `<div class="k2-carte-select-entreprise">${echapperHtml(marchand.businessName)}</div>` : ""}
+        <div class="k2-carte-select-cat">${echapperHtml(marchand.activityCategory || "")}</div>
       </a>
       <button type="button" class="k2-btn k2-btn-secondaire" data-ajouter-panier style="width:100%; padding:8px; font-size:12.5px; margin-top:4px;">
         Ajouter au panier

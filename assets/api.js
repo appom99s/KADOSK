@@ -74,6 +74,11 @@ const KADOSK_API = (function () {
     getDashboardStats: () => appeler("dashboardStats", "GET"),
     checkGiftCard: (code) => appeler("checkGiftCard", "POST", { code }),
     redeemGiftCard: (code, amount) => appeler("redeemGiftCard", "POST", { code, amount }),
+    // QR temporaire (30s, anti-rejeu) scanné par le marchand en caisse - le payload
+    // scanné (KDSKQR1:...) n'est jamais le code permanent. Authentifié comme
+    // checkGiftCard/redeemGiftCard (token du marchand connecté, pas un appel public).
+    checkQrTemporaire: (payload) => appeler("qrTemporaireCheck", "POST", { payload }),
+    redeemQrTemporaire: (payload, amount) => appeler("qrTemporaireRedeem", "POST", { payload, amount }),
     getDraftOrders: () => appeler("draftOrders", "GET"),
     activateOrder: (giftCardId, buyerEmail, buyerName, message) =>
       appeler("activateOrder", "POST", { giftCardId, buyerEmail, buyerName, message }),
@@ -154,6 +159,15 @@ const KADOSK_API = (function () {
         "orderByNumber?orderNumber=" + encodeURIComponent(orderNumber) + "&buyerEmail=" + encodeURIComponent(buyerEmail),
         "GET"
       ),
-    getOrdersByEmail: (buyerEmail) => appelerPublic("ordersByEmail?buyerEmail=" + encodeURIComponent(buyerEmail), "GET")
+    getOrdersByEmail: (buyerEmail) => appelerPublic("ordersByEmail?buyerEmail=" + encodeURIComponent(buyerEmail), "GET"),
+
+    // QR temporaire (30s, anti-rejeu) d'une carte précise, affiché par
+    // l'acheteur/destinataire depuis "Mes commandes" - voir mes-commandes.js et
+    // giftCardSecurity.web.js/genererCodeQRTemporaire pour le détail.
+    getQrTemporaire: (giftCardId, buyerEmail) =>
+      appelerPublic(
+        "qrTemporaire?giftCardId=" + encodeURIComponent(giftCardId) + "&buyerEmail=" + encodeURIComponent(buyerEmail),
+        "GET"
+      )
   };
 })();

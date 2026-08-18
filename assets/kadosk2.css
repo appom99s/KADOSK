@@ -312,6 +312,15 @@
   color: var(--k2-texte-clair);
 }
 
+/* Nom de l'entreprise, affiché en plus du nom de la carte quand ils diffèrent
+   (ex. carte "Carte cadeau Fête" chez l'entreprise "Yves Rocher SARL"). */
+.k2-carte-select-entreprise {
+  font-size: 10.5px;
+  color: var(--k2-texte-clair);
+  opacity: 0.85;
+  margin-top: -4px;
+}
+
 .k2-voir-plus {
   display: flex;
   flex-direction: column;
@@ -809,6 +818,37 @@
   color: var(--k2-danger);
 }
 
+/* --- Spinner de chargement (remplace les textes "Chargement..." nus) --- */
+.k2-spinner {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--k2-neutral);
+  border-top-color: var(--k2-secondary);
+  border-radius: 50%;
+  animation: k2-rotation 0.8s linear infinite;
+  margin-bottom: 10px;
+}
+
+.k2-spinner-sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+  margin: 0 6px 0 0;
+  vertical-align: -3px;
+}
+
+@keyframes k2-rotation {
+  to { transform: rotate(360deg); }
+}
+
+.k2-etat-chargement {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--k2-texte-clair);
+  font-size: 13.5px;
+}
+
 /* --- Barre de navigation mobile persistante (Accueil / Mes commandes / Favoris / Mon compte) --- */
 .k2-bottom-nav {
   position: fixed;
@@ -873,4 +913,55 @@
     grid-column: 1 / -1;
     justify-self: start;
   }
+}
+
+/* QR temporaire (anti-rejeu, 30s) — modale affichée depuis mes-commandes.html */
+.k2-qr-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 30, 27, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+}
+
+.k2-qr-modal {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 22px 22px;
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.k2-qr-fermer {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--k2-texte-clair);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.k2-qr-bouton-ligne {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--k2-primary);
+  background: var(--k2-light);
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-top: 6px;
 }

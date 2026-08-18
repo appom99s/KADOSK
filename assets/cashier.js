@@ -56,6 +56,11 @@
   }
 
   let codeCarteActuelle = null;
+  // Rempli uniquement quand la carte affichée vient d'un QR temporaire (30s,
+  // anti-rejeu) plutôt que d'un code permanent scanné/saisi - voir boucleScan()
+  // et encaisser() plus bas. Jamais les deux en même temps que codeCarteActuelle.
+  let payloadQrActuel = null;
+  const PREFIXE_QR_TEMPORAIRE = "KDSKQR1:";
 
   const ongletScan = document.getElementById("ongletScan");
   const ongletManuel = document.getElementById("ongletManuel");
@@ -233,8 +238,14 @@
           if (codeDetecte) {
             messageStatutScan.textContent = "Code détecté, vérification en cours…";
             afficherEtatCameraArretee();
-            champCode.value = codeDetecte;
-            rechercherCarte();
+            if (codeDetecte.startsWith(PREFIXE_QR_TEMPORAIRE)) {
+              // QR temporaire anti-rejeu (voir "Mes commandes" côté acheteur) : jamais
+              // le code permanent, jamais saisi manuellement - uniquement via ce scan.
+              rechercherCarteParQr(codeDetecte);
+            } else {
+              champCode.value = codeDetecte;
+              rechercherCarte();
+            }
             return;
           }
         }
@@ -397,6 +408,7 @@
     blocBoutonEncaisser.style.display = "none";
     messageStatutEncaissement.textContent = "";
     codeCarteActuelle = null;
+    payloadQrActuel = null;
     desactiverPaveNumerique();
   }
 
@@ -461,8 +473,50 @@
     }
   }
 
+  // Même rôle que rechercherCarte(), mais pour un QR temporaire anti-rejeu : le
+  // payload change toutes les 30s, donc pas de champ de saisie manuelle possible
+  // ici - uniquement déclenché depuis boucleScan() ci-dessus.
+  async function rechercherCarteParQr(payload) {
+    codeCarteActuelle = null;
+    payloadQrActuel = null;
+    messageStatutEncaissement.textContent = "";
+
+    carteInfo.style.display = "block";
+    carteInfo.textContent = "Vérification en cours...";
+    blocMontant.style.display = "none";
+    blocBoutonEncaisser.style.display = "none";
+
+    try {
+      const statut = await KADOSK_API.checkQrTemporaire(payload);
+
+      afficherDetailsCarte(statut);
+      jouerSonSucces();
+
+      payloadQrActuel = payload;
+      champMontant.value = String(statut.remainingBalance).replace(".", ",");
+      blocMontant.style.display = "block";
+      blocBoutonEncaisser.style.display = "flex";
+      activerPaveNumeriqueSiMobile();
+    } catch (erreur) {
+      payloadQrActuel = null;
+      const codeErreur = erreur && erreur.message;
+      if (codeErreur === "QR_CODE_EXPIRE") {
+        carteInfo.textContent = "Ce QR a expiré (il se renouvelle toutes les 30s) — redemandez au client de le rafraîchir et rescannez.";
+      } else if (codeErreur === "TROP_DE_TENTATIVES") {
+        carteInfo.textContent = "Trop de tentatives de vérification. Merci de réessayer plus tard.";
+      } else if (codeErreur === "MERCHANT_PLAN_NOT_ACTIVE") {
+        carteInfo.textContent = "Votre abonnement KADOSK n'est pas actif. Vérifiez la section Abonnement dans Mon entreprise.";
+      } else if (codeErreur === "NOT_AUTHENTICATED" || codeErreur === "MERCHANT_NOT_FOUND" || codeErreur === "MERCHANT_ROLE_NOT_ASSIGNED") {
+        carteInfo.textContent = "Session expirée. Merci de vous reconnecter.";
+      } else {
+        carteInfo.textContent = "Carte introuvable.";
+        jouerSonRejet();
+      }
+    }
+  }
+
   async function encaisser() {
-    if (!codeCarteActuelle) {
+    if (!codeCarteActuelle && !payloadQrActuel) {
       return;
     }
 
@@ -475,7 +529,13 @@
     boutonEncaisser.disabled = true;
 
     try {
-      const resultat = await KADOSK_API.redeemGiftCard(codeCarteActuelle, montant);
+      // Le payload d'un QR temporaire expire ~30-60s après affichage : si le
+      // marchand tarde entre le scan et le clic "Encaisser", l'appel ci-dessous
+      // échoue avec QR_CODE_EXPIRE plutôt que d'encaisser sur un état obsolète -
+      // c'est le comportement voulu (anti-rejeu), pas un bug.
+      const resultat = payloadQrActuel
+        ? await KADOSK_API.redeemQrTemporaire(payloadQrActuel, montant)
+        : await KADOSK_API.redeemGiftCard(codeCarteActuelle, montant);
 
       messageStatutEncaissement.style.color = "#1faa6c";
       messageStatutEncaissement.textContent = resultat.fullyRedeemed
@@ -489,7 +549,9 @@
       }
     } catch (erreur) {
       messageStatutEncaissement.style.color = "";
-      messageStatutEncaissement.textContent = erreur && erreur.message === "TROP_DE_TENTATIVES"
+      messageStatutEncaissement.textContent = erreur && erreur.message === "QR_CODE_EXPIRE"
+        ? "Le QR a expiré avant l'encaissement (il se renouvelle toutes les 30s) — redemandez au client de le rafraîchir et rescannez."
+        : erreur && erreur.message === "TROP_DE_TENTATIVES"
         ? "Trop de tentatives. Merci de réessayer plus tard."
         : "L'encaissement a échoué. Merci de réessayer.";
     } finally {
