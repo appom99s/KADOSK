@@ -24,7 +24,7 @@
     etatIntrouvable.style.display = "none";
 
     texteNumeroCommande.textContent = commande.orderNumber || "";
-    texteEmailDestinataire.textContent = commande.recipientEmail || "";
+    texteEmailDestinataire.textContent = commande.forSelf ? "votre adresse" : commande.recipientEmail || "";
 
     listeRecapFinal.innerHTML = (commande.merchants || [])
       .map(

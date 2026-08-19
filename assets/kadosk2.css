@@ -824,6 +824,31 @@
 .k2-badge-refused { background: var(--k2-danger-tint); color: var(--k2-danger); }
 .k2-badge-expired { background: var(--k2-neutral); color: var(--k2-texte-clair); }
 .k2-badge-utilisee { background: var(--k2-neutral); color: var(--k2-texte-clair); margin-top: 4px; }
+.k2-badge-cadeau { background: var(--k2-succes-tint); color: #2f6a5c; margin-top: 4px; }
+
+/* --- Étape 4 : "pour moi-même" / "pour quelqu'un d'autre" --- */
+.k2-pour-qui {
+  display: flex;
+  gap: 8px;
+}
+
+.k2-pour-qui-option {
+  flex: 1;
+  padding: 11px 14px;
+  border-radius: var(--k2-rayon-sm);
+  border: 1.5px solid var(--k2-bordure);
+  background: var(--k2-blanc);
+  color: var(--k2-texte);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.k2-pour-qui-option.actif {
+  background: var(--k2-primary);
+  border-color: var(--k2-primary);
+  color: var(--k2-blanc);
+}
 
 /* --- Favoris : coeur sur une carte --- */
 .k2-favori-btn {

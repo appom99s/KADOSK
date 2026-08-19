@@ -270,6 +270,13 @@
               const boutonsQr = cartes
                 .map((carte, index) => {
                   const suffixe = cartes.length > 1 ? " (carte " + (index + 1) + ")" : "";
+                  // Carte offerte à quelqu'un d'autre : jamais de bouton QR ici - l'acheteur
+                  // ne doit pas pouvoir utiliser le QR du destinataire de son propre cadeau
+                  // (le serveur bloque déjà l'appel, voir genererCodeQRTemporaire, mais on
+                  // évite même de proposer un bouton qui échouerait silencieusement).
+                  if (!carte.forSelf) {
+                    return `<span class="k2-badge k2-badge-cadeau">🎁 Envoyée à ${echapperHtml(carte.recipientName || "")}${suffixe}</span>`;
+                  }
                   if (carte.redeemed) {
                     // Carte entièrement utilisée : pas de QR à générer - le solde réel
                     // n'est jamais affiché ici, seulement ce badge "utilisée".
@@ -285,7 +292,9 @@
           </div>`;
             })
             .join("") +
-          `<div style="font-size:12px; color:var(--k2-texte-clair); margin-top:10px;">Destinataire : ${echapperHtml(detail.recipientName)} (${echapperHtml(detail.recipientEmail)})</div>`;
+          (detail.forSelf
+            ? ""
+            : `<div style="font-size:12px; color:var(--k2-texte-clair); margin-top:10px;">Destinataire : ${echapperHtml(detail.recipientName)} (${echapperHtml(detail.recipientEmail)})</div>`);
 
         zoneDetail.querySelectorAll("[data-orderitemid]").forEach((bouton) => {
           bouton.addEventListener("click", (evenement) => {
@@ -337,6 +346,20 @@
     }
   }
 
+  // Si la page est intégrée dans un site Wix via iframe et que le visiteur est déjà
+  // membre Wix connecté (voir assets/wix-bridge.js), on pré-remplit juste le champ
+  // e-mail par confort - le code à 6 chiffres reste toujours exigé, ce pont ne
+  // dispense jamais de la vérification (voir demanderCodeCommandes/
+  // confirmerCodeCommandes côté serveur).
+  function preremplirEmailSiConnuDeWix(email) {
+    if (email && !inputEmail.value.trim()) {
+      inputEmail.value = email;
+    }
+  }
+  document.addEventListener("kadosk:wix-member", (evenement) => {
+    if (evenement.detail) preremplirEmailSiConnuDeWix(evenement.detail.email);
+  });
+
   async function demarrerConnexion() {
     const session = lireSessionAcheteur();
     if (session) {
@@ -344,6 +367,9 @@
       await chargerCommandes(session);
     } else {
       afficherEtapeEmail();
+      if (window.KADOSK_WIX_MEMBER) {
+        preremplirEmailSiConnuDeWix(window.KADOSK_WIX_MEMBER.email);
+      }
     }
   }
 

@@ -122,11 +122,18 @@ const KADOSK_PANIER2 = (function () {
 
   // Destinataire + message (étape 4) : saisis une seule fois pour tout le panier,
   // conservés séparément du panier lui-même le temps de la navigation entre étapes.
-  function enregistrerDestinataire({ buyerEmail, recipientName, recipientEmail, message }) {
+  function enregistrerDestinataire({ buyerEmail, recipientName, recipientEmail, message, forSelf }) {
     try {
       localStorage.setItem(
         CLE_DESTINATAIRE,
-        JSON.stringify({ buyerEmail: buyerEmail || "", recipientName: recipientName || "", recipientEmail: recipientEmail || "", message: message || "" })
+        JSON.stringify({
+          buyerEmail: buyerEmail || "",
+          recipientName: recipientName || "",
+          recipientEmail: recipientEmail || "",
+          message: message || "",
+          // "Pour moi-même" (true) vs "pour quelqu'un d'autre" (false) - voir etape4.js.
+          forSelf: forSelf !== false
+        })
       );
     } catch (erreur) {
       console.error("KADOSK_PANIER2 : impossible d'enregistrer le destinataire :", erreur);
@@ -136,9 +143,9 @@ const KADOSK_PANIER2 = (function () {
   function lireDestinataire() {
     try {
       const brut = localStorage.getItem(CLE_DESTINATAIRE);
-      return brut ? JSON.parse(brut) : { buyerEmail: "", recipientName: "", recipientEmail: "", message: "" };
+      return brut ? JSON.parse(brut) : { buyerEmail: "", recipientName: "", recipientEmail: "", message: "", forSelf: true };
     } catch (erreur) {
-      return { buyerEmail: "", recipientName: "", recipientEmail: "", message: "" };
+      return { buyerEmail: "", recipientName: "", recipientEmail: "", message: "", forSelf: true };
     }
   }
 

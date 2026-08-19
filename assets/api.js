@@ -152,8 +152,8 @@ const KADOSK_API = (function () {
 
     // Parcours en 5 étapes (panier multi-marchands) : création de commande (tout est
     // revalidé côté serveur), relecture de confirmation, "Mes commandes" par email.
-    createOrder: (items, buyerEmail, recipientName, recipientEmail, message) =>
-      appelerPublic("createOrder", "POST", { items, buyerEmail, recipientName, recipientEmail, message }),
+    createOrder: (items, buyerEmail, recipientName, recipientEmail, message, forSelf) =>
+      appelerPublic("createOrder", "POST", { items, buyerEmail, recipientName, recipientEmail, message, forSelf }),
 
     // Login "Mes commandes" par code reçu par email (remplace l'ancien modèle où
     // l'email transitait tel quel dans l'URL) - voir assets/mes-commandes.js pour la
