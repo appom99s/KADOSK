@@ -1,4 +1,20 @@
 (function () {
+  // AUDIT SÉCURITÉ : échappeur HTML local garanti - ne dépend plus de
+  // window.KADOSK_ECHAPPER_HTML (défini par nav.js) avec repli silencieux sur "pas
+  // d'échappement du tout" si ce script n'était pas chargé ou pas encore exécuté.
+  // buyerName/buyerEmail viennent d'une commande créée par un visiteur anonyme non
+  // authentifié (placeGiftCardOrder) et sont affichés ici dans le tableau de bord DU
+  // MARCHAND, qui contient les jetons OAuth du marchand en localStorage - un nom
+  // d'acheteur non échappé y serait un vecteur de vol de session (XSS stocké).
+  function echapperHtml(valeur) {
+    return String(valeur === null || valeur === undefined ? "" : valeur)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   function poserIcone(id, nomIcone, taille) {
     const el = document.getElementById(id);
     if (el && window.KADOSK_ICONES && window.KADOSK_ICONES[nomIcone]) {
@@ -137,13 +153,12 @@
 
       conteneur.innerHTML = commandes
         .map((commande) => {
-          const echapper = window.KADOSK_ECHAPPER_HTML || ((v) => v);
-          const initiale = echapper((commande.buyerName || commande.buyerEmail || "?").trim().charAt(0).toUpperCase());
+          const initiale = echapperHtml((commande.buyerName || commande.buyerEmail || "?").trim().charAt(0).toUpperCase());
           return (
             '<div class="kadosk-liste-item">' +
             '<div class="kadosk-liste-icone">' + initiale + "</div>" +
             '<div class="kadosk-liste-corps">' +
-            '<div class="kadosk-liste-titre">' + echapper(commande.buyerName || commande.buyerEmail || "Client") + "</div>" +
+            '<div class="kadosk-liste-titre">' + echapperHtml(commande.buyerName || commande.buyerEmail || "Client") + "</div>" +
             '<div class="kadosk-liste-sous-titre">' + formaterDateHeure(commande.createdAt) + "</div>" +
             "</div>" +
             '<div class="kadosk-liste-droite">' +
