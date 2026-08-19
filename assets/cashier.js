@@ -2,6 +2,22 @@
   // L'authentification, la barre latérale, l'en-tête et la déconnexion sont
   // gérées par guard.js (chargé avant ce script).
 
+  // AUDIT SÉCURITÉ : échappeur HTML local garanti - ne dépend plus de
+  // window.KADOSK_ECHAPPER_HTML (défini par nav.js) avec repli silencieux sur "pas
+  // d'échappement du tout" si ce script n'était pas chargé. statut.buyerName/
+  // buyerEmail viennent d'une commande créée par un visiteur anonyme non authentifié
+  // et sont affichés ici (ligneInfo) dans la page d'encaissement DU MARCHAND, qui
+  // contient les jetons OAuth du marchand en localStorage - un nom non échappé y
+  // serait un vecteur de vol de session (XSS stocké).
+  function echapperHtml(valeur) {
+    return String(valeur === null || valeur === undefined ? "" : valeur)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   // --- Sons de retour (succès / rejet) --------------------------------------
   // Générés directement via l'API Web Audio (deux tonalités synthétisées), sans
   // fichier audio externe à héberger. Les navigateurs exigent qu'un AudioContext
@@ -368,11 +384,10 @@
   }
 
   function ligneInfo(label, valeur) {
-    const echapper = window.KADOSK_ECHAPPER_HTML || ((v) => v);
     return (
       '<div style="display:flex; justify-content:space-between; gap:12px; padding:5px 0; font-size:13px;">' +
-      '<span style="color:var(--kadosk-texte-clair);">' + echapper(label) + "</span>" +
-      '<span style="font-weight:600; text-align:right;">' + echapper(valeur) + "</span>" +
+      '<span style="color:var(--kadosk-texte-clair);">' + echapperHtml(label) + "</span>" +
+      '<span style="font-weight:600; text-align:right;">' + echapperHtml(valeur) + "</span>" +
       "</div>"
     );
   }
