@@ -69,11 +69,16 @@ const KADOSK_PANIER2 = (function () {
     return lignes;
   }
 
+  // Plafond aligné sur la limite serveur (creerCommandeMultiMarchand) - garder les
+  // deux synchronisés : le plafond client n'est qu'un confort d'UX, la vraie limite
+  // est toujours revérifiée côté backend.
+  const QUANTITE_MAX = 5;
+
   function definirQuantite(merchantId, quantite) {
     const lignes = lire();
     const ligne = lignes.find((l) => l.merchantId === merchantId);
     if (!ligne) return lignes;
-    ligne.quantite = Math.max(1, Math.min(20, Math.floor(Number(quantite) || 1)));
+    ligne.quantite = Math.max(1, Math.min(QUANTITE_MAX, Math.floor(Number(quantite) || 1)));
     ecrire(lignes);
     return lignes;
   }
@@ -146,6 +151,7 @@ const KADOSK_PANIER2 = (function () {
   }
 
   return {
+    QUANTITE_MAX,
     lire,
     selectionner,
     deselectionner,

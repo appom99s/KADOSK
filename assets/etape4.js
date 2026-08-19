@@ -33,6 +33,22 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(valeur || "").trim());
   }
 
+  // Si l'acheteur est déjà connecté sur "Mes commandes" (jeton local, voir
+  // mes-commandes.js), on pré-remplit son e-mail par confort - simple lecture locale,
+  // jamais de décision de sécurité : le serveur revalide toujours buyerEmail lui-même.
+  function lireEmailAcheteurConnecte() {
+    try {
+      const brut = localStorage.getItem("kadosk_buyer_token");
+      if (!brut) return "";
+      const donnees = JSON.parse(brut);
+      if (!donnees || !donnees.email || !donnees.expiresAt) return "";
+      if (Date.now() > donnees.expiresAt) return "";
+      return donnees.email;
+    } catch (erreur) {
+      return "";
+    }
+  }
+
   function rendreRecap() {
     const lignes = KADOSK_PANIER2.lire();
     listeRecap.innerHTML = lignes
@@ -52,7 +68,7 @@
     inputNomDestinataire.value = sauvegarde.recipientName || "";
     inputEmailDestinataire.value = sauvegarde.recipientEmail || "";
     inputMessage.value = sauvegarde.message || "";
-    inputEmailAcheteur.value = sauvegarde.buyerEmail || "";
+    inputEmailAcheteur.value = sauvegarde.buyerEmail || lireEmailAcheteurConnecte() || "";
     compteurMessage.textContent = String(inputMessage.value.length);
   }
 

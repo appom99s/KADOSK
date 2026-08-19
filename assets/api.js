@@ -143,7 +143,7 @@ const KADOSK_API = (function () {
       appeler("verifyBiometricLogin", "POST", { clientDataJSON, authenticatorData, signature }),
 
     // Boutique publique KADOSK (order.kadosk.com... en fait servie depuis ce même
-    // dossier - boutique.html/fiche-marchand.html/panier.html) : aucune connexion
+    // dossier - boutique.html/etape-2 à 5) : aucune connexion
     // requise, appels publics avec token visiteur, comme forgotPassword ci-dessus.
     getActiveMerchants: () => appelerPublic("activeMerchants", "GET"),
     getGiftCardOffer: (merchantId) => appelerPublic("giftCardOffer?merchantId=" + encodeURIComponent(merchantId), "GET"),

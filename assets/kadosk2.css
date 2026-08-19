@@ -321,6 +321,39 @@
   margin-top: -4px;
 }
 
+/* Sélecteur de quantité (1 à 5) affiché uniquement sur une carte marchand déjà
+   sélectionnée à l'étape 1. */
+.k2-carte-select-quantite {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.k2-carte-select-quantite button {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  border: 1.5px solid var(--k2-bordure);
+  background: var(--k2-blanc);
+  color: var(--k2-primary);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.k2-carte-select-quantite button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.k2-carte-select-quantite span {
+  min-width: 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .k2-voir-plus {
   display: flex;
   flex-direction: column;
@@ -790,6 +823,7 @@
 .k2-badge-partial { background: rgba(196, 155, 58, 0.16); color: #8a6a1f; }
 .k2-badge-refused { background: var(--k2-danger-tint); color: var(--k2-danger); }
 .k2-badge-expired { background: var(--k2-neutral); color: var(--k2-texte-clair); }
+.k2-badge-utilisee { background: var(--k2-neutral); color: var(--k2-texte-clair); margin-top: 4px; }
 
 /* --- Favoris : coeur sur une carte --- */
 .k2-favori-btn {

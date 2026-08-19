@@ -24,7 +24,7 @@
 
     div.innerHTML = `
       <button type="button" class="k2-favori-btn actif" data-retirer>${window.KADOSK_ICONE("heart")}</button>
-      <a href="fiche-marchand.html?merchantId=${encodeURIComponent(marchand.merchantId)}" style="display:contents;">
+      <a href="boutique.html?merchantId=${encodeURIComponent(marchand.merchantId)}" style="display:contents;">
         <div class="k2-carte-select-logo">${logo}</div>
         <div class="k2-carte-select-nom">${echapperHtml(nomAffiche)}</div>
         ${marchand.name && marchand.name !== nomAffiche ? `<div class="k2-carte-select-entreprise">${echapperHtml(marchand.name)}</div>` : ""}

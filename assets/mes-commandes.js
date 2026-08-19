@@ -266,11 +266,17 @@
           (detail.merchants || [])
             .map((m) => {
               const nomAffiche = m.cardName && m.cardName !== m.businessName ? `${m.cardName} (${m.businessName})` : m.businessName;
-              const boutonsQr = (m.qrIds || [])
-                .map(
-                  (id, index) =>
-                    `<button type="button" class="k2-qr-bouton-ligne" data-orderitemid="${echapperHtml(id)}">${window.KADOSK_ICONE ? window.KADOSK_ICONE("qr-code") : ""} Voir le QR${m.qrIds.length > 1 ? " (carte " + (index + 1) + ")" : ""}</button>`
-                )
+              const cartes = m.cards || [];
+              const boutonsQr = cartes
+                .map((carte, index) => {
+                  const suffixe = cartes.length > 1 ? " (carte " + (index + 1) + ")" : "";
+                  if (carte.redeemed) {
+                    // Carte entièrement utilisée : pas de QR à générer - le solde réel
+                    // n'est jamais affiché ici, seulement ce badge "utilisée".
+                    return `<span class="k2-badge k2-badge-utilisee">Carte utilisée${suffixe}</span>`;
+                  }
+                  return `<button type="button" class="k2-qr-bouton-ligne" data-orderitemid="${echapperHtml(carte.orderItemId)}">${window.KADOSK_ICONE ? window.KADOSK_ICONE("qr-code") : ""} Voir le QR${suffixe}</button>`;
+                })
                 .join("");
               return `
           <div class="k2-confirmation-ligne" style="align-items:flex-start;">

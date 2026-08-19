@@ -47,6 +47,11 @@
 
   let tousLesMarchands = [];
   let nombreAffiches = NB_INITIAL;
+  // Pré-sélection depuis un lien direct vers un marchand précis (ex. logo cliqué
+  // sur l'accueil ou dans les favoris) - remplace l'ancienne page fiche-marchand.html
+  // (retirée) qui affichait un marchand seul avant de commander : on arrive
+  // maintenant directement ici, avec ce marchand déjà coché dans la sélection.
+  let merchantIdPreselectionne = null;
 
   function marchandsFiltres() {
     const recherche = (inputRecherche.value || "").trim().toLowerCase();
@@ -60,6 +65,47 @@
       const correspondCategorie = !categorie || m.activityCategory === categorie;
       return correspondRecherche && correspondCategorie;
     });
+  }
+
+  const QUANTITE_MAX = (window.KADOSK_PANIER2 && KADOSK_PANIER2.QUANTITE_MAX) || 5;
+
+  // Affiche/rafraîchit le sélecteur de quantité (1 à QUANTITE_MAX) d'une carte
+  // marchand déjà sélectionnée. Le plafond n'est qu'un confort d'UX - la vraie
+  // limite est toujours revérifiée côté backend (creerCommandeMultiMarchand).
+  function rendreQuantite(div, marchandId) {
+    let zone = div.querySelector(".k2-carte-select-quantite");
+    if (!zone) {
+      zone = document.createElement("div");
+      zone.className = "k2-carte-select-quantite";
+      zone.innerHTML =
+        '<button type="button" data-qte-moins aria-label="Réduire la quantité">−</button>' +
+        "<span data-qte-valeur>1</span>" +
+        '<button type="button" data-qte-plus aria-label="Augmenter la quantité">+</button>';
+      div.appendChild(zone);
+
+      zone.querySelector("[data-qte-moins]").addEventListener("click", (evenement) => {
+        evenement.stopPropagation();
+        const ligne = KADOSK_PANIER2.lire().find((l) => l.merchantId === marchandId);
+        if (!ligne) return;
+        KADOSK_PANIER2.definirQuantite(marchandId, (ligne.quantite || 1) - 1);
+        rendreQuantite(div, marchandId);
+        majSelectionRecap();
+      });
+      zone.querySelector("[data-qte-plus]").addEventListener("click", (evenement) => {
+        evenement.stopPropagation();
+        const ligne = KADOSK_PANIER2.lire().find((l) => l.merchantId === marchandId);
+        if (!ligne) return;
+        KADOSK_PANIER2.definirQuantite(marchandId, (ligne.quantite || 1) + 1);
+        rendreQuantite(div, marchandId);
+        majSelectionRecap();
+      });
+    }
+
+    const ligne = KADOSK_PANIER2.lire().find((l) => l.merchantId === marchandId);
+    const quantite = (ligne && ligne.quantite) || 1;
+    zone.querySelector("[data-qte-valeur]").textContent = String(quantite);
+    zone.querySelector("[data-qte-moins]").disabled = quantite <= 1;
+    zone.querySelector("[data-qte-plus]").disabled = quantite >= QUANTITE_MAX;
   }
 
   function rendreCarte(marchand) {
@@ -84,10 +130,16 @@
         : "") +
       `<div class="k2-carte-select-cat">${echapperHtml(marchand.activityCategory || "")}</div>`;
 
+    if (selectionne) {
+      rendreQuantite(div, marchand.merchantId);
+    }
+
     div.addEventListener("click", () => {
       if (KADOSK_PANIER2.estSelectionne(marchand.merchantId)) {
         KADOSK_PANIER2.deselectionner(marchand.merchantId);
         div.classList.remove("selectionnee");
+        const zone = div.querySelector(".k2-carte-select-quantite");
+        if (zone) zone.remove();
       } else {
         KADOSK_PANIER2.selectionner({
           merchantId: marchand.merchantId,
@@ -98,6 +150,7 @@
           accentColor: marchand.accentColor
         });
         div.classList.add("selectionnee");
+        rendreQuantite(div, marchand.merchantId);
       }
       majSelectionRecap();
     });
@@ -163,6 +216,7 @@
   if (rechercheInitiale) {
     inputRecherche.value = rechercheInitiale;
   }
+  merchantIdPreselectionne = parametresUrl.get("merchantId") || null;
 
   // Ne propose au filtrage QUE les catégories réellement présentes chez au moins un
   // marchand actif à cet instant - jamais la liste complète des catégories
@@ -193,6 +247,22 @@
     tousLesMarchands = (resultat && resultat.items) || [];
     etatChargement.style.display = "none";
     remplirCategoriesDisponibles();
+
+    if (merchantIdPreselectionne && !KADOSK_PANIER2.estSelectionne(merchantIdPreselectionne)) {
+      const marchandCible = tousLesMarchands.find((m) => m.merchantId === merchantIdPreselectionne);
+      if (marchandCible) {
+        KADOSK_PANIER2.selectionner({
+          merchantId: marchandCible.merchantId,
+          businessName: marchandCible.businessName,
+          name: marchandCible.name,
+          logoUrl: marchandCible.logoUrl,
+          category: marchandCible.activityCategory,
+          accentColor: marchandCible.accentColor
+        });
+      }
+      merchantIdPreselectionne = null;
+    }
+
     rendreGrille();
     majSelectionRecap();
   }
