@@ -132,8 +132,32 @@
           </div>
           <p style="font-size:12px; color:var(--kadosk-texte-clair); margin-top:10px;">
             Le fond et la mise en page de la carte sont fixes (charte KADOSK). Seuls votre logo, le nom de l'offre et le montant s'adaptent.
+            Ce logo et cette couleur d'accent sont aussi utilisés sur le certificat cadeau PDF téléchargé par vos clients.
           </p>
         </div>
+      </div>
+
+      <div class="kadosk-panneau-large" style="margin-top:20px;">
+        <h2>Modèle de facture client</h2>
+        <p style="font-size:12px; color:var(--kadosk-texte-clair); margin:0 0 16px;">
+          Ces informations (RC, IF, adresse) apparaissent sur la facture d'achat envoyée à votre client à la confirmation du paiement. Le logo utilisé est celui défini ci-dessus.
+        </p>
+        <div class="kadosk-champ">
+          <label for="champFactureRc">Registre du Commerce (RC)</label>
+          <input type="text" id="champFactureRc" placeholder="ex. 123456" />
+        </div>
+        <div class="kadosk-champ">
+          <label for="champFactureIf">Identifiant Fiscal (IF)</label>
+          <input type="text" id="champFactureIf" placeholder="ex. 78901234" />
+        </div>
+        <div class="kadosk-champ">
+          <label for="champFactureAdresse">Adresse de facturation</label>
+          <input type="text" id="champFactureAdresse" placeholder="ex. 12 rue des Fleurs, Casablanca" />
+        </div>
+        <div class="kadosk-ligne-boutons">
+          <button class="kadosk-bouton" id="boutonEnregistrerFacture">Enregistrer le modèle de facture</button>
+        </div>
+        <div class="kadosk-message-erreur" id="messageStatutFacture"></div>
       </div>
     </main>
   </div>

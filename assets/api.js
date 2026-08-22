@@ -84,6 +84,8 @@ const KADOSK_API = (function () {
       appeler("activateOrder", "POST", { giftCardId, buyerEmail, buyerName, message }),
     getOfferSettings: () => appeler("offerSettings", "GET"),
     saveOfferSettings: (parametres) => appeler("offerSettings", "POST", parametres),
+    getInvoiceTemplate: () => appeler("invoiceTemplate", "GET"),
+    saveInvoiceTemplate: (rc, ifNumber, address) => appeler("invoiceTemplate", "POST", { rc, ifNumber, address }),
     getTransactionLog: (giftCardId) => appeler("transactionLog?giftCardId=" + encodeURIComponent(giftCardId), "GET"),
     getRecentTransactions: (code, limit) => {
       const parametres = [];

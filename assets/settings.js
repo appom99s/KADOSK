@@ -232,4 +232,57 @@
   }
 
   chargerParametres();
+
+  // Modèle de facture client (RC/IF/adresse) - formulaire indépendant de l'offre
+  // Gift Card ci-dessus : son propre chargement/enregistrement pour qu'un échec
+  // sur l'un ne bloque jamais l'autre.
+  const champFactureRc = document.getElementById("champFactureRc");
+  const champFactureIf = document.getElementById("champFactureIf");
+  const champFactureAdresse = document.getElementById("champFactureAdresse");
+  const boutonEnregistrerFacture = document.getElementById("boutonEnregistrerFacture");
+  const messageStatutFacture = document.getElementById("messageStatutFacture");
+
+  async function chargerModeleFacture() {
+    if (!champFactureRc) return;
+    try {
+      const modele = await KADOSK_API.getInvoiceTemplate();
+      champFactureRc.value = modele.rc || "";
+      champFactureIf.value = modele.ifNumber || "";
+      champFactureAdresse.value = modele.address || "";
+    } catch (erreur) {
+      console.error("Erreur chargement modèle de facture :", erreur);
+      messageStatutFacture.textContent = "Impossible de charger votre modèle de facture actuel.";
+    }
+  }
+
+  async function enregistrerModeleFacture() {
+    messageStatutFacture.style.color = "";
+    messageStatutFacture.textContent = "";
+
+    const rc = champFactureRc.value.trim();
+    const ifNumber = champFactureIf.value.trim();
+    const adresse = champFactureAdresse.value.trim();
+    if (!rc || !ifNumber || !adresse) {
+      messageStatutFacture.textContent = "RC, IF et adresse sont tous obligatoires.";
+      return;
+    }
+
+    boutonEnregistrerFacture.disabled = true;
+    try {
+      await KADOSK_API.saveInvoiceTemplate(rc, ifNumber, adresse);
+      messageStatutFacture.style.color = "#1faa6c";
+      messageStatutFacture.textContent = "Modèle de facture enregistré.";
+    } catch (erreur) {
+      console.error("Erreur enregistrement modèle de facture :", erreur);
+      const detail = erreur && erreur.message ? " (" + erreur.message + ")" : "";
+      messageStatutFacture.textContent = "Échec de l'enregistrement." + detail;
+    } finally {
+      boutonEnregistrerFacture.disabled = false;
+    }
+  }
+
+  if (boutonEnregistrerFacture) {
+    boutonEnregistrerFacture.addEventListener("click", enregistrerModeleFacture);
+    chargerModeleFacture();
+  }
 })();

@@ -290,9 +290,12 @@
                   return `<button type="button" class="k2-qr-bouton-ligne" data-orderitemid="${echapperHtml(carte.orderItemId)}">${window.KADOSK_ICONE ? window.KADOSK_ICONE("qr-code") : ""} Voir le QR${suffixe}</button> ${boutonPdf}`;
                 })
                 .join("");
+              // Une facture d'achat par marchand (pas par carte) : elle couvre toute
+              // la ligne de commande chez ce marchand (voir facture-achat-pdf.js).
+              const boutonFacture = `<button type="button" class="k2-qr-bouton-ligne" data-facture-merchant="${echapperHtml(m.merchantId)}">Télécharger la facture</button>`;
               return `
           <div class="k2-confirmation-ligne" style="align-items:flex-start;">
-            <span>${echapperHtml(nomAffiche)}${m.quantity > 1 ? " × " + m.quantity : ""}<br />${boutonsQr}</span>
+            <span>${echapperHtml(nomAffiche)}${m.quantity > 1 ? " × " + m.quantity : ""}<br />${boutonsQr} ${boutonFacture}</span>
             <span>${formaterMontant(m.subtotal)}</span>
           </div>`;
             })
@@ -309,7 +312,7 @@
         });
 
         zoneDetail.querySelectorAll("[data-pdf-index]").forEach((bouton) => {
-          bouton.addEventListener("click", (evenement) => {
+          bouton.addEventListener("click", async (evenement) => {
             evenement.stopPropagation();
             const [merchantId, indexCarte] = bouton.dataset.pdfIndex.split("::");
             const m = (detail.merchants || []).find((entree) => entree.merchantId === merchantId);
@@ -319,14 +322,47 @@
               console.error("Générateur de certificat PDF non chargé.");
               return;
             }
-            window.KADOSK_CARTE_CADEAU_PDF.telecharger({
+            // logoUrl/accentColor : template visuel choisi par le marchand dans
+            // settings.html (GiftCardLogoUrl/GiftCardAccentColor), résolu côté
+            // backend dans getCommandeParNumero - voir carte-cadeau-pdf.js.
+            await window.KADOSK_CARTE_CADEAU_PDF.telecharger({
               businessName: m.cardName || m.businessName,
               amount: m.amount,
               forSelf: carte.forSelf,
               recipientName: carte.recipientName,
               message: detail.message || "",
               expirationDate: carte.expirationDate,
-              orderNumber: detail.orderNumber
+              orderNumber: detail.orderNumber,
+              logoUrl: m.logoUrl || "",
+              accentColor: m.accentColor || "teal"
+            });
+          });
+        });
+
+        zoneDetail.querySelectorAll("[data-facture-merchant]").forEach((bouton) => {
+          bouton.addEventListener("click", async (evenement) => {
+            evenement.stopPropagation();
+            const m = (detail.merchants || []).find((entree) => entree.merchantId === bouton.dataset.factureMerchant);
+            if (!m) return;
+            if (!window.KADOSK_FACTURE_ACHAT_PDF) {
+              console.error("Générateur de facture d'achat non chargé.");
+              return;
+            }
+            // rc/ifNumber/address/logoUrl : modèle de facture renseigné par le
+            // marchand dans settings.html (voir getInvoiceTemplateMarchand /
+            // getCommandeParNumero) - jamais recalculé ici.
+            await window.KADOSK_FACTURE_ACHAT_PDF.telecharger({
+              businessName: m.cardName || m.businessName,
+              cardName: m.cardName,
+              rc: m.invoiceRc,
+              ifNumber: m.invoiceIf,
+              address: m.invoiceAddress,
+              logoUrl: m.logoUrl,
+              quantity: m.quantity,
+              subtotal: m.subtotal,
+              orderNumber: detail.orderNumber,
+              createdAt: detail.createdAt,
+              buyerEmail: (document.getElementById("texteEmailConnecte") || {}).textContent || ""
             });
           });
         });
