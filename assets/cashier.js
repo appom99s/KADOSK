@@ -453,6 +453,16 @@
         jouerSonRejet();
         return;
       }
+      if (statut.status === "SUSPENDED") {
+        carteInfo.textContent = "Cette carte est suspendue temporairement. Contactez le support KADOSK.";
+        jouerSonRejet();
+        return;
+      }
+      if (statut.status === "CANCELLED") {
+        carteInfo.textContent = "Cette carte a été annulée et ne peut plus être utilisée.";
+        jouerSonRejet();
+        return;
+      }
       if (statut.status !== "ACTIVE") {
         carteInfo.textContent = "Cette carte a déjà été entièrement utilisée.";
         jouerSonRejet();
@@ -517,6 +527,10 @@
       const codeErreur = erreur && erreur.message;
       if (codeErreur === "QR_CODE_EXPIRE") {
         carteInfo.textContent = "Ce QR a expiré (il se renouvelle toutes les 30s) — redemandez au client de le rafraîchir et rescannez.";
+      } else if (codeErreur === "GIFT_CARD_SUSPENDED") {
+        carteInfo.textContent = "Cette carte est suspendue temporairement. Contactez le support KADOSK.";
+      } else if (codeErreur === "GIFT_CARD_CANCELLED") {
+        carteInfo.textContent = "Cette carte a été annulée et ne peut plus être utilisée.";
       } else if (codeErreur === "TROP_DE_TENTATIVES") {
         carteInfo.textContent = "Trop de tentatives de vérification. Merci de réessayer plus tard.";
       } else if (codeErreur === "MERCHANT_PLAN_NOT_ACTIVE") {
@@ -564,10 +578,15 @@
       }
     } catch (erreur) {
       messageStatutEncaissement.style.color = "";
-      messageStatutEncaissement.textContent = erreur && erreur.message === "QR_CODE_EXPIRE"
+      const codeErreurEncaissement = erreur && erreur.message;
+      messageStatutEncaissement.textContent = codeErreurEncaissement === "QR_CODE_EXPIRE"
         ? "Le QR a expiré avant l'encaissement (il se renouvelle toutes les 30s) — redemandez au client de le rafraîchir et rescannez."
-        : erreur && erreur.message === "TROP_DE_TENTATIVES"
+        : codeErreurEncaissement === "TROP_DE_TENTATIVES"
         ? "Trop de tentatives. Merci de réessayer plus tard."
+        : codeErreurEncaissement === "GIFT_CARD_SUSPENDED"
+        ? "Cette carte a été suspendue entre-temps. Contactez le support KADOSK."
+        : codeErreurEncaissement === "GIFT_CARD_CANCELLED"
+        ? "Cette carte a été annulée entre-temps et ne peut plus être utilisée."
         : "L'encaissement a échoué. Merci de réessayer.";
     } finally {
       boutonEncaisser.disabled = false;

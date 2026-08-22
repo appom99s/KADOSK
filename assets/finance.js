@@ -150,6 +150,49 @@
     });
   }
 
+  const corpsTableFinanceDetail = document.getElementById("corpsTableFinanceDetail");
+  const etatVideFinanceDetail = document.getElementById("etatVideFinanceDetail");
+
+  const LIBELLES_STATUT_VERSEMENT = {
+    "À_DEFINIR_reversement_non_encore_modelise": "En attente (à définir)"
+  };
+
+  async function chargerFinanceDetail() {
+    if (!corpsTableFinanceDetail) return;
+    try {
+      const resultat = await KADOSK_API.getFinanceDetail();
+      const lignes = resultat.items || [];
+
+      if (lignes.length === 0) {
+        etatVideFinanceDetail.style.display = "block";
+        corpsTableFinanceDetail.innerHTML = "";
+        return;
+      }
+      etatVideFinanceDetail.style.display = "none";
+
+      corpsTableFinanceDetail.innerHTML = lignes
+        .map((ligne) => {
+          const date = ligne.createdAt ? new Date(ligne.createdAt).toLocaleDateString("fr-FR") : "—";
+          const statut = LIBELLES_STATUT_VERSEMENT[ligne.statutPaiementKadosk] || ligne.statutPaiementKadosk || "—";
+          return (
+            "<tr>" +
+            "<td>" + (ligne.orderNumber || "—") + "</td>" +
+            "<td>" + (ligne.montantTTC !== null ? formaterMontant(ligne.montantTTC) + " DH" : "—") + "</td>" +
+            "<td>" + (ligne.montantCommission !== null && ligne.montantCommission !== undefined ? formaterMontant(ligne.montantCommission) + " DH" : "—") + "</td>" +
+            "<td>" + (ligne.montantNet !== null ? formaterMontant(ligne.montantNet) + " DH" : "—") + "</td>" +
+            "<td><span class=\"kadosk-badge-attente\">" + statut + "</span></td>" +
+            "<td>" + date + "</td>" +
+            "</tr>"
+          );
+        })
+        .join("");
+    } catch (erreur) {
+      console.error("Erreur chargement détail finance par commande :", erreur);
+      corpsTableFinanceDetail.innerHTML = '<tr><td colspan="6">Impossible de charger le détail.</td></tr>';
+    }
+  }
+
   charger();
   chargerCommissionMensuelle();
+  chargerFinanceDetail();
 })();

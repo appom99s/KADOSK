@@ -347,17 +347,14 @@
   }
 
   // Si la page est intégrée dans un site Wix via iframe et que le visiteur est déjà
-  // membre Wix connecté (voir assets/wix-bridge.js), on pré-remplit juste le champ
-  // e-mail par confort - le code à 6 chiffres reste toujours exigé, ce pont ne
-  // dispense jamais de la vérification (voir demanderCodeCommandes/
-  // confirmerCodeCommandes côté serveur).
-  function preremplirEmailSiConnuDeWix(email) {
-    if (email && !inputEmail.value.trim()) {
-      inputEmail.value = email;
-    }
-  }
-  document.addEventListener("kadosk:wix-member", (evenement) => {
-    if (evenement.detail) preremplirEmailSiConnuDeWix(evenement.detail.email);
+  // membre Wix connecté, assets/wix-bridge.js écrit directement une VRAIE session
+  // acheteur dans localStorage (jeton signé par le serveur via
+  // genererJetonAcheteurPourMembreWix, Permissions.SiteMember) puis déclenche cet
+  // événement - il ne s'agit pas d'un simple pré-remplissage, l'acheteur est
+  // réellement connecté, sans code à 6 chiffres. On relance donc simplement la même
+  // logique qu'au chargement de la page.
+  document.addEventListener("kadosk:buyer-logged-in", () => {
+    demarrerConnexion();
   });
 
   async function demarrerConnexion() {
@@ -367,9 +364,6 @@
       await chargerCommandes(session);
     } else {
       afficherEtapeEmail();
-      if (window.KADOSK_WIX_MEMBER) {
-        preremplirEmailSiConnuDeWix(window.KADOSK_WIX_MEMBER.email);
-      }
     }
   }
 

@@ -96,6 +96,7 @@ const KADOSK_API = (function () {
     getAllGiftCards: (status) =>
       appeler("allGiftCards" + (status ? "?status=" + encodeURIComponent(status) : ""), "GET"),
     getFinanceSummary: () => appeler("financeSummary", "GET"),
+    getFinanceDetail: () => appeler("financeDetail", "GET"),
     getMerchantProfile: () => appeler("merchantProfile", "GET"),
     getSubscriptionInfo: () => appeler("subscriptionInfo", "GET"),
     refuseOrder: (giftCardId, reason) => appeler("refuseOrder", "POST", { giftCardId, reason }),
@@ -180,6 +181,50 @@ const KADOSK_API = (function () {
 
     // Bannières personnalisables en haut de l'accueil (collection Pub) - voir
     // accueil.js et giftCardSecurity.web.js/getActivePubs.
-    getActivePubs: () => appelerPublic("activePubs", "GET")
+    getActivePubs: () => appelerPublic("activePubs", "GET"),
+
+    // --- Admin (section 6 de l'audit KADOSK) --------------------------------
+    // Authentifiés comme le reste (appeler, pas appelerPublic) : le serveur exige
+    // en plus une entrée AdminUsers pour l'identité Wix Member connectée - voir
+    // adminSecurity.web.js :: obtenirAdminConfirme. Aucun de ces appels ne
+    // transmet de rôle/sous-rôle : c'est toujours le serveur qui le détermine.
+    getAdminDashboard: () => appeler("adminDashboard", "GET"),
+    getAdminMerchants: (recherche, statut, page) =>
+      appeler(
+        "adminMerchants?recherche=" + encodeURIComponent(recherche || "") +
+          "&statut=" + encodeURIComponent(statut || "") +
+          "&page=" + encodeURIComponent(page || "1"),
+        "GET"
+      ),
+    getAdminMerchantDetail: (merchantId) =>
+      appeler("adminMerchantDetail?merchantId=" + encodeURIComponent(merchantId), "GET"),
+    setAdminMerchantStatus: (merchantId, action, raison) =>
+      appeler("adminMerchantStatus", "POST", { merchantId, action, raison }),
+    searchAdminClient: (email) =>
+      appeler("adminClientSearch?email=" + encodeURIComponent(email), "GET"),
+    getAdminOrders: (statut, page) =>
+      appeler("adminOrders?statut=" + encodeURIComponent(statut || "") + "&page=" + encodeURIComponent(page || "1"), "GET"),
+    getAdminGiftCards: (statut, page) =>
+      appeler("adminGiftCards?statut=" + encodeURIComponent(statut || "") + "&page=" + encodeURIComponent(page || "1"), "GET"),
+    getAdminTransactions: (orderNumber) =>
+      appeler("adminTransactions?orderNumber=" + encodeURIComponent(orderNumber), "GET"),
+    getAdminTransaction360: (orderNumber) =>
+      appeler("adminTransaction360?orderNumber=" + encodeURIComponent(orderNumber), "GET"),
+    getAdminFinanceSummary: () => appeler("adminFinanceSummary", "GET"),
+    getAdminCommissions: (merchantId, page) =>
+      appeler(
+        "adminCommissions?merchantId=" + encodeURIComponent(merchantId || "") +
+          "&page=" + encodeURIComponent(page || "1"),
+        "GET"
+      ),
+    getAdminInvoices: (merchantId, page) =>
+      appeler(
+        "adminInvoices?merchantId=" + encodeURIComponent(merchantId || "") +
+          "&page=" + encodeURIComponent(page || "1"),
+        "GET"
+      ),
+    getAdminReconciliation: () => appeler("adminReconciliation", "GET"),
+    setAdminGiftCardStatus: (giftCardId, action, raison) =>
+      appeler("adminGiftCardStatus", "POST", { giftCardId, action, raison })
   };
 })();

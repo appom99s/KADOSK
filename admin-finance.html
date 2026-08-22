@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KADOSK Admin — Finance</title>
+<link rel="stylesheet" href="assets/admin-style.css" />
+</head>
+<body>
+  <div class="adm-app">
+    <aside class="adm-sidebar" id="admSidebar"></aside>
+    <main class="adm-main">
+      <div class="adm-entete">
+        <h1>Finance</h1>
+        <span class="adm-badge-role" id="admBadgeRole">—</span>
+      </div>
+
+      <div class="adm-grille-kpi" style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px;">
+        <div class="adm-panneau" style="margin:0;">
+          <div style="font-size:12px; color:var(--adm-texte-clair,#888);">Commissions cumulées</div>
+          <div style="font-size:22px; font-weight:600;" id="kpiCommissions">—</div>
+        </div>
+        <div class="adm-panneau" style="margin:0;">
+          <div style="font-size:12px; color:var(--adm-texte-clair,#888);">Facturé TTC cumulé</div>
+          <div style="font-size:22px; font-weight:600;" id="kpiFactureTTC">—</div>
+        </div>
+        <div class="adm-panneau" style="margin:0;">
+          <div style="font-size:12px; color:var(--adm-texte-clair,#888);">Nombre de factures</div>
+          <div style="font-size:22px; font-weight:600;" id="kpiNombreFactures">—</div>
+        </div>
+        <div class="adm-panneau" style="margin:0;">
+          <div style="font-size:12px; color:var(--adm-texte-clair,#888);">Remboursements en attente</div>
+          <div style="font-size:22px; font-weight:600;" id="kpiRemboursementsAttente">—</div>
+        </div>
+      </div>
+
+      <div class="adm-panneau">
+        <div class="adm-panneau-entete">
+          <h2>Réconciliation financière</h2>
+          <button class="adm-bouton secondaire" id="boutonRelancerReconciliation">Relancer la vérification</button>
+        </div>
+        <p style="font-size:12px; color:var(--adm-texte-clair,#888); margin:-6px 0 12px;">
+          Vérification en lecture seule de la chaîne Commande → Gift Card → Commission → Facture. Aucune correction automatique - signalement uniquement.
+        </p>
+        <div id="conteneurAnomalies"><div class="adm-vide">Chargement…</div></div>
+      </div>
+
+      <div class="adm-panneau">
+        <div class="adm-toolbar">
+          <input class="adm-input" id="champMerchantIdCommissions" placeholder="Filtrer par ID marchand..." style="flex:1; min-width:220px;" />
+          <button class="adm-bouton secondaire" id="boutonFiltrerCommissions">Filtrer</button>
+        </div>
+        <h2 style="margin-top:4px;">Commissions</h2>
+        <div id="conteneurCommissions"><div class="adm-vide">Chargement…</div></div>
+      </div>
+
+      <div class="adm-panneau">
+        <div class="adm-toolbar">
+          <input class="adm-input" id="champMerchantIdFactures" placeholder="Filtrer par ID marchand..." style="flex:1; min-width:220px;" />
+          <button class="adm-bouton secondaire" id="boutonFiltrerFactures">Filtrer</button>
+        </div>
+        <h2 style="margin-top:4px;">Factures</h2>
+        <div id="conteneurFactures"><div class="adm-vide">Chargement…</div></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/auth.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/admin-nav.js"></script>
+  <script src="assets/admin-guard.js"></script>
+  <script src="assets/admin-finance.js"></script>
+</body>
+</html>

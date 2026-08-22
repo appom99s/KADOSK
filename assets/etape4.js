@@ -75,15 +75,12 @@
     appliquerPourQui();
   });
 
-  // Si l'acheteur est déjà connecté sur "Mes commandes" (jeton local, voir
-  // mes-commandes.js) OU déjà connecté en tant que membre Wix sur le site parent
-  // (page intégrée via iframe, voir assets/wix-bridge.js), on pré-remplit son e-mail
-  // par confort - simple lecture locale, jamais de décision de sécurité : le serveur
-  // revalide toujours buyerEmail lui-même.
+  // Si l'acheteur est déjà connecté sur "Mes commandes" (jeton local) - y compris via
+  // le pont membre Wix quand cette page est intégrée en iframe dans le site Wix
+  // principal, voir assets/wix-bridge.js, qui écrit ce même jeton - on pré-remplit son
+  // e-mail par confort - simple lecture locale, jamais de décision de sécurité : le
+  // serveur revalide toujours buyerEmail lui-même.
   function lireEmailAcheteurConnecte() {
-    if (window.KADOSK_WIX_MEMBER && window.KADOSK_WIX_MEMBER.email) {
-      return window.KADOSK_WIX_MEMBER.email;
-    }
     try {
       const brut = localStorage.getItem("kadosk_buyer_token");
       if (!brut) return "";
@@ -96,11 +93,11 @@
     }
   }
 
-  // Le message du site Wix parent (voir assets/wix-bridge.js) arrive de façon
-  // asynchrone, potentiellement après le premier remplissage du formulaire - on
-  // complète alors le champ e-mail acheteur SEULEMENT s'il est encore vide, pour ne
-  // jamais écraser une saisie déjà faite par le visiteur.
-  document.addEventListener("kadosk:wix-member", (evenement) => {
+  // Le pont Wix (assets/wix-bridge.js) écrit la session de façon asynchrone,
+  // potentiellement après le premier remplissage du formulaire - on complète alors le
+  // champ e-mail acheteur SEULEMENT s'il est encore vide, pour ne jamais écraser une
+  // saisie déjà faite par le visiteur.
+  document.addEventListener("kadosk:buyer-logged-in", (evenement) => {
     if (!inputEmailAcheteur.value.trim() && evenement.detail && evenement.detail.email) {
       inputEmailAcheteur.value = evenement.detail.email;
     }
