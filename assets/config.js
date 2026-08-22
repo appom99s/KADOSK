@@ -4,7 +4,7 @@ window.KADOSK_CONFIG = {
   frontendBaseUrl: "https://merchant.kadosk.com",
   loginCallbackPath: "/login-callback.html",
   logoutRedirectPath: "/login.html",
-  AdminCallbackPath : "admin-login-callback.html",
+  AdminCallbackPath : "/admin-login-callback.html",
   // Callback léger utilisé par la boutique publique (authentification silencieuse du
   // membre déjà connecté sur www.kadosk.com) - distinct du callback marchand, qui gère
   // en plus la 2FA et la redirection vers le dashboard.
