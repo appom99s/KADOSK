@@ -96,7 +96,7 @@
           .join(" &nbsp;·&nbsp; ");
         return `
         <tr>
-          <td>${echapperHtml(m.businessName || m.legalName || "—")}</td>
+          <td><a class="adm-lien-action" href="admin-merchant-detail.html?id=${encodeURIComponent(m.id)}">${echapperHtml(m.businessName || m.legalName || "—")}</a></td>
           <td>${echapperHtml(m.city || "—")}</td>
           <td><span class="adm-statut ${classeStatut(m.merchantStatus)}">${echapperHtml(m.merchantStatus || "—")}</span></td>
           <td>${m.adminBlocked ? '<span class="adm-statut refuse">Bloqué</span>' : ""}</td>

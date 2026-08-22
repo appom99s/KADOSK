@@ -100,21 +100,24 @@
     // Jamais de solde ni de code en clair ici, même côté Admin (voir audit 6.6) -
     // uniquement statut et métadonnées non sensibles.
     const lignes = items
-      .map(
-        (c) => `
+      .map((c) => {
+        const lienDetail = c.orderNumber
+          ? `<a class="adm-lien-action" href="admin-transaction-360.html?ref=${encodeURIComponent(c.orderNumber)}">${echapperHtml(c.orderNumber)}</a>`
+          : "—";
+        return `
         <tr>
-          <td>${echapperHtml(c.id)}</td>
-          <td>${echapperHtml(c.merchantId)}</td>
+          <td>${lienDetail}</td>
+          <td>${echapperHtml(c.merchantName || c.merchantId)}</td>
           <td><span class="adm-statut ${classeStatut(c.codeStatus)}">${echapperHtml(c.codeStatus)}</span></td>
           <td>${formaterDate(c.expirationDate)}</td>
           <td>${formaterDate(c.createdAt)}</td>
           <td>${actionsDisponibles(c.codeStatus).map(([action, libelle]) => `<a class="adm-lien-action" data-id="${c.id}" data-action="${action}">${libelle}</a>`).join(" &nbsp;·&nbsp; ") || "—"}</td>
-        </tr>`
-      )
+        </tr>`;
+      })
       .join("");
     conteneurListe.innerHTML = `
       <table class="adm-table">
-        <thead><tr><th>ID Carte</th><th>Marchand</th><th>Statut</th><th>Expiration</th><th>Créée le</th><th>Actions</th></tr></thead>
+        <thead><tr><th>REF CMD (détail)</th><th>Marchand</th><th>Statut</th><th>Expiration</th><th>Créée le</th><th>Actions</th></tr></thead>
         <tbody>${lignes}</tbody>
       </table>`;
     conteneurListe.querySelectorAll("[data-action]").forEach((lien) => {

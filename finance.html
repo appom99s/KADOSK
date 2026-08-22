@@ -107,6 +107,28 @@
         </table>
         <div class="kadosk-liste-vide" id="etatVideFinanceDetail" style="display:none;">Aucune commande acceptée pour le moment.</div>
       </div>
+
+      <div class="kadosk-panneau-large" style="margin-top:16px;">
+        <h2>Mes factures KADOSK</h2>
+        <p style="font-size:12px; color:var(--kadosk-texte-clair); margin:-8px 0 14px;">
+          Facture HT/TVA/TTC émise par KADOSK pour chaque commission prélevée. Téléchargez le PDF pour votre comptabilité.
+        </p>
+        <table class="kadosk-table">
+          <thead>
+            <tr>
+              <th>N° Facture</th>
+              <th>REF CMD</th>
+              <th>Montant HT</th>
+              <th>TVA</th>
+              <th>Montant TTC</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="corpsTableFactures"></tbody>
+        </table>
+        <div class="kadosk-liste-vide" id="etatVideFactures" style="display:none;">Aucune facture pour le moment.</div>
+      </div>
     </main>
   </div>
 
@@ -116,6 +138,8 @@
   <script src="assets/cache.js"></script>
   <script src="assets/nav.js"></script>
   <script src="assets/guard.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="assets/invoice-pdf.js"></script>
   <script src="assets/finance.js"></script>
 </body>
 </html>

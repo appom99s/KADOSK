@@ -192,7 +192,62 @@
     }
   }
 
+  const corpsTableFactures = document.getElementById("corpsTableFactures");
+  const etatVideFactures = document.getElementById("etatVideFactures");
+
+  async function chargerFactures() {
+    if (!corpsTableFactures) return;
+    try {
+      const resultat = await KADOSK_API.getMyInvoices();
+      const lignes = resultat.items || [];
+
+      if (lignes.length === 0) {
+        etatVideFactures.style.display = "block";
+        corpsTableFactures.innerHTML = "";
+        return;
+      }
+      etatVideFactures.style.display = "none";
+
+      corpsTableFactures.innerHTML = lignes
+        .map((f, index) => {
+          const date = f.createdAt ? new Date(f.createdAt).toLocaleDateString("fr-FR") : "—";
+          return (
+            "<tr>" +
+            "<td>" + (f.invoiceNumber || "—") + "</td>" +
+            "<td>" + (f.orderNumber || "—") + "</td>" +
+            "<td>" + formaterMontant(f.montantHT) + " DH</td>" +
+            "<td>" + (f.tauxTVA !== undefined && f.tauxTVA !== null ? f.tauxTVA + " %" : "—") + "</td>" +
+            "<td>" + formaterMontant(f.montantTTC) + " DH</td>" +
+            "<td>" + date + "</td>" +
+            '<td><button class="kadosk-lien-voir-tout" style="background:none; border:none; padding:0;" data-index="' + index + '">PDF</button></td>' +
+            "</tr>"
+          );
+        })
+        .join("");
+
+      corpsTableFactures.querySelectorAll("[data-index]").forEach((bouton) => {
+        bouton.addEventListener("click", () => {
+          const f = lignes[Number(bouton.dataset.index)];
+          KADOSK_FACTURE_PDF.telecharger({
+            invoiceNumber: f.invoiceNumber,
+            orderNumber: f.orderNumber,
+            createdAt: f.createdAt,
+            montantHT: f.montantHT,
+            tauxTVA: f.tauxTVA,
+            montantTVA: f.montantTVA,
+            montantTTC: f.montantTTC,
+            merchantName: resultat.merchantBusinessName || ""
+          });
+        });
+      });
+    } catch (erreur) {
+      console.error("Erreur chargement factures :", erreur);
+      corpsTableFactures.innerHTML = '<tr><td colspan="7">Impossible de charger les factures.</td></tr>';
+    }
+  }
+
   charger();
   chargerCommissionMensuelle();
   chargerFinanceDetail();
+  chargerFactures();
 })();

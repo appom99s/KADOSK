@@ -90,7 +90,7 @@
         .map(
           (c) => `
         <tr>
-          <td>${echapperHtml(c.merchantId)}</td>
+          <td>${echapperHtml(c.merchantName || c.merchantId)}</td>
           <td>${c.taux ? c.taux + " %" : "—"}</td>
           <td>${formaterMontant(c.montant)}</td>
           <td>${formaterDate(c.createdAt)}</td>
@@ -119,15 +119,15 @@
       }
       const lignes = items
         .map(
-          (f) => `
+          (f, index) => `
         <tr>
           <td>${echapperHtml(f.invoiceNumber)}</td>
           <td><a class="adm-lien-action" href="admin-transaction-360.html?ref=${encodeURIComponent(f.orderNumber)}">${echapperHtml(f.orderNumber)}</a></td>
-          <td>${echapperHtml(f.merchantId)}</td>
+          <td>${echapperHtml(f.merchantName || f.merchantId)}</td>
           <td>${formaterMontant(f.montantHT)}</td>
           <td>${f.tauxTVA !== undefined && f.tauxTVA !== null ? f.tauxTVA + " %" : "—"}</td>
           <td>${formaterMontant(f.montantTTC)}</td>
-          <td>${f.pdfUrl ? `<a class="adm-lien-action" href="${echapperHtml(f.pdfUrl)}" target="_blank">PDF</a>` : "—"}</td>
+          <td><a class="adm-lien-action" data-index="${index}">PDF</a></td>
           <td>${formaterDate(f.createdAt)}</td>
         </tr>`
         )
@@ -137,6 +137,21 @@
           <thead><tr><th>N° Facture</th><th>REF CMD</th><th>Marchand</th><th>HT</th><th>TVA</th><th>TTC</th><th>PDF</th><th>Date</th></tr></thead>
           <tbody>${lignes}</tbody>
         </table>`;
+      conteneurFactures.querySelectorAll("[data-index]").forEach((lien) => {
+        lien.addEventListener("click", () => {
+          const f = items[Number(lien.dataset.index)];
+          KADOSK_FACTURE_PDF.telecharger({
+            invoiceNumber: f.invoiceNumber,
+            orderNumber: f.orderNumber,
+            createdAt: f.createdAt,
+            montantHT: f.montantHT,
+            tauxTVA: f.tauxTVA,
+            montantTVA: f.montantTVA,
+            montantTTC: f.montantTTC,
+            merchantName: f.merchantName || f.merchantId || ""
+          });
+        });
+      });
     } catch (erreur) {
       console.error("Echec chargement factures Admin :", erreur);
       conteneurFactures.innerHTML = '<div class="adm-vide">Erreur de chargement. Merci de réessayer.</div>';

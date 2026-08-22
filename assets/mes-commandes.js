@@ -270,19 +270,24 @@
               const boutonsQr = cartes
                 .map((carte, index) => {
                   const suffixe = cartes.length > 1 ? " (carte " + (index + 1) + ")" : "";
+                  // Le bouton PDF (certificat cadeau décoratif, jamais un instrument
+                  // d'encaissement - voir carte-cadeau-pdf.js) reste disponible même
+                  // pour une carte offerte à quelqu'un d'autre : c'est justement ce PDF
+                  // que l'acheteur veut imprimer/transmettre pour faire son cadeau.
+                  const boutonPdf = `<button type="button" class="k2-qr-bouton-ligne" data-pdf-index="${echapperHtml(m.merchantId)}::${index}">Télécharger le certificat PDF${suffixe}</button>`;
                   // Carte offerte à quelqu'un d'autre : jamais de bouton QR ici - l'acheteur
                   // ne doit pas pouvoir utiliser le QR du destinataire de son propre cadeau
                   // (le serveur bloque déjà l'appel, voir genererCodeQRTemporaire, mais on
                   // évite même de proposer un bouton qui échouerait silencieusement).
                   if (!carte.forSelf) {
-                    return `<span class="k2-badge k2-badge-cadeau">🎁 Envoyée à ${echapperHtml(carte.recipientName || "")}${suffixe}</span>`;
+                    return `<span class="k2-badge k2-badge-cadeau">🎁 Envoyée à ${echapperHtml(carte.recipientName || "")}${suffixe}</span> ${boutonPdf}`;
                   }
                   if (carte.redeemed) {
                     // Carte entièrement utilisée : pas de QR à générer - le solde réel
                     // n'est jamais affiché ici, seulement ce badge "utilisée".
                     return `<span class="k2-badge k2-badge-utilisee">Carte utilisée${suffixe}</span>`;
                   }
-                  return `<button type="button" class="k2-qr-bouton-ligne" data-orderitemid="${echapperHtml(carte.orderItemId)}">${window.KADOSK_ICONE ? window.KADOSK_ICONE("qr-code") : ""} Voir le QR${suffixe}</button>`;
+                  return `<button type="button" class="k2-qr-bouton-ligne" data-orderitemid="${echapperHtml(carte.orderItemId)}">${window.KADOSK_ICONE ? window.KADOSK_ICONE("qr-code") : ""} Voir le QR${suffixe}</button> ${boutonPdf}`;
                 })
                 .join("");
               return `
@@ -300,6 +305,29 @@
           bouton.addEventListener("click", (evenement) => {
             evenement.stopPropagation();
             ouvrirModalQr(bouton.dataset.orderitemid, token);
+          });
+        });
+
+        zoneDetail.querySelectorAll("[data-pdf-index]").forEach((bouton) => {
+          bouton.addEventListener("click", (evenement) => {
+            evenement.stopPropagation();
+            const [merchantId, indexCarte] = bouton.dataset.pdfIndex.split("::");
+            const m = (detail.merchants || []).find((entree) => entree.merchantId === merchantId);
+            const carte = m && m.cards && m.cards[Number(indexCarte)];
+            if (!m || !carte) return;
+            if (!window.KADOSK_CARTE_CADEAU_PDF) {
+              console.error("Générateur de certificat PDF non chargé.");
+              return;
+            }
+            window.KADOSK_CARTE_CADEAU_PDF.telecharger({
+              businessName: m.cardName || m.businessName,
+              amount: m.amount,
+              forSelf: carte.forSelf,
+              recipientName: carte.recipientName,
+              message: detail.message || "",
+              expirationDate: carte.expirationDate,
+              orderNumber: detail.orderNumber
+            });
           });
         });
 
